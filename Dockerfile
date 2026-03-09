@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ─── Stage 1: Builder (optional lint/validation step) ───────────────────────
 # For a pure static app, the builder stage is lightweight.
 # If you later add a build step (e.g., npm run build), do it here.
@@ -33,3 +34,10 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+=======
+FROM nginx:alpine
+
+COPY . /usr/share/nginx/html
+
+EXPOSE 80
+>>>>>>> 0c6e5cd9726a8a9b9bedaaf8af45a63027f6ce2c
