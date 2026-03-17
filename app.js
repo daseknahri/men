@@ -2,109 +2,7 @@
 // const WHATSAPP_NUMBER = '212626081745';
 
 // Default Data — Full Menu from Restaurant Board
-const defaultMenu = [
-    // ═══════════════════════ BURGERS ═══════════════════════
-    { id: 1, cat: 'Burgers', name: 'Cheese-Burger', desc: '1 Steak, Fromage, Salade', ingredients: ['Steak haché', 'Fromage', 'Salade', 'Sauce'], price: 22, images: [] },
-    { id: 2, cat: 'Burgers', name: 'Quality-Burger', desc: '1 Steak, Oeuf, Fromage, Salade', ingredients: ['Steak haché', 'Oeuf', 'Fromage', 'Salade'], price: 25, images: [] },
-    { id: 3, cat: 'Burgers', name: 'Double-Cheese', desc: '2 Steaks, Fromage, Salade', ingredients: ['2 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 32, images: [] },
-    { id: 4, cat: 'Burgers', name: 'Triple-Burger', desc: '3 Steaks, Fromage, Salade', ingredients: ['3 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 50, badge: 'XXL', images: [] },
-    { id: 5, cat: 'Burgers', name: 'Bigg-Burger', desc: '2 Steaks, Fromage, Salade', ingredients: ['2 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 33, images: [] },
-    { id: 6, cat: 'Burgers', name: 'Chicken-Burger', desc: '1 Steak Poulet, Fromage, Salade', ingredients: ['Steak poulet', 'Fromage', 'Salade', 'Sauce'], price: 24, images: [] },
-    { id: 7, cat: 'Burgers', name: 'Roasty Chicken', desc: 'Poulet rôti, Fromage, Salade', ingredients: ['Poulet rôti', 'Fromage', 'Salade'], price: 28, images: [] },
-    { id: 8, cat: 'Burgers', name: 'Fish-Supreme', desc: 'Filet de poisson, Fromage, Salade', ingredients: ['Filet de poisson', 'Fromage', 'Salade', 'Sauce tartare'], price: 28, images: [] },
-    { id: 9, cat: 'Burgers', name: 'Menu Enfants', desc: 'Burger + Cheese + Frites + Boisson', ingredients: ['Mini burger', 'Fromage', 'Frites', 'Boisson'], price: 40, badge: 'Kids', images: [] },
-
-    // ═══════════════════ SANDWICH FROID ═══════════════════
-    { id: 10, cat: 'Sandwich Froid', name: 'Sandwich Thon', desc: 'Thon, Salade, Frites', ingredients: ['Thon', 'Salade', 'Frites', 'Mayonnaise'], price: 15, images: [] },
-    { id: 11, cat: 'Sandwich Froid', name: 'Sandwich Mortadelle', desc: 'Mortadelle, Salade, Frites', ingredients: ['Mortadelle', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 12, cat: 'Sandwich Froid', name: 'Sandwich Cacher', desc: 'Cacher, Salade, Frites', ingredients: ['Cacher', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 13, cat: 'Sandwich Froid', name: 'Sandwich Oeuf', desc: 'Oeuf, Salade, Frites', ingredients: ['Oeuf', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 14, cat: 'Sandwich Froid', name: 'Sandwich Tortilla', desc: 'Tortilla, Salade, Frites', ingredients: ['Tortilla', 'Salade', 'Frites'], price: 15, images: [] },
-    { id: 15, cat: 'Sandwich Froid', name: 'Sandwich Tortilla Spéciale', desc: 'Tortilla spéciale, Salade, Frites', ingredients: ['Tortilla', 'Garniture spéciale', 'Salade', 'Frites'], price: 20, badge: 'Spécial', images: [] },
-
-    // ═══════════════════ SANDWICH CHAUD ═══════════════════
-    { id: 16, cat: 'Sandwich Chaud', name: 'Sandwich Escalope', desc: 'Escalope grillée, Salade, Frites', ingredients: ['Escalope', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 17, cat: 'Sandwich Chaud', name: 'Sandwich Poulet', desc: 'Poulet grillé, Salade, Frites', ingredients: ['Poulet', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 18, cat: 'Sandwich Chaud', name: 'Sandwich Viande Hachée', desc: 'Viande hachée, Salade, Frites', ingredients: ['Viande hachée', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 19, cat: 'Sandwich Chaud', name: 'Sandwich Saucisse', desc: 'Saucisse grillée, Salade, Frites', ingredients: ['Saucisse', 'Salade', 'Frites', 'Sauce'], price: 25, images: [] },
-    { id: 20, cat: 'Sandwich Chaud', name: 'Sandwich Fruits de Mer', desc: 'Fruits de mer, Salade, Frites', ingredients: ['Crevettes', 'Calamar', 'Salade', 'Frites'], price: 40, badge: 'Premium', images: [] },
-    { id: 21, cat: 'Sandwich Chaud', name: 'Sandwich Foie', desc: 'Foie grillé, Salade, Frites', ingredients: ['Foie', 'Salade', 'Frites', 'Oignons'], price: 35, images: [] },
-    { id: 22, cat: 'Sandwich Chaud', name: 'Sandwich Mixte', desc: 'Mix viandes, Salade, Frites', ingredients: ['Mix viandes', 'Salade', 'Frites', 'Sauce'], price: 35, images: [] },
-    { id: 23, cat: 'Sandwich Chaud', name: 'Sandwich Cordon Bleu', desc: 'Cordon bleu, Salade, Frites', ingredients: ['Cordon bleu', 'Fromage', 'Salade', 'Frites'], price: 27, images: [] },
-    { id: 24, cat: 'Sandwich Chaud', name: 'Sandwich Chawarma', desc: 'Chawarma, Salade, Frites', ingredients: ['Chawarma', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-
-    // ═══════════════════════ PLATS ═══════════════════════
-    { id: 25, cat: 'Plats', name: 'Plat Poulet', desc: 'Poulet grillé avec riz ou frites, salade', ingredients: ['Poulet', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 26, cat: 'Plats', name: 'Plat Viande Hachée', desc: 'Viande hachée avec riz ou frites, salade', ingredients: ['Viande hachée', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 27, cat: 'Plats', name: 'Plat Chawarma', desc: 'Chawarma avec riz ou frites, salade', ingredients: ['Chawarma', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 28, cat: 'Plats', name: 'Plat Saucisse', desc: 'Saucisse avec riz ou frites, salade', ingredients: ['Saucisse', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 29, cat: 'Plats', name: 'Plat Cordon Bleu', desc: 'Cordon bleu avec riz ou frites, salade', ingredients: ['Cordon bleu', 'Riz ou Frites', 'Salade'], price: 45, images: [] },
-    { id: 30, cat: 'Plats', name: 'Plat Foie', desc: 'Foie grillé avec riz ou frites, salade', ingredients: ['Foie', 'Riz ou Frites', 'Salade'], price: 45, images: [] },
-    { id: 31, cat: 'Plats', name: 'Plat Fruits de Mer', desc: 'Fruits de mer avec riz ou frites, salade', ingredients: ['Crevettes', 'Calamar', 'Riz ou Frites', 'Salade'], price: 50, badge: 'Premium', images: [] },
-    { id: 32, cat: 'Plats', name: 'Plat Mixte', desc: 'Mix viandes avec riz ou frites, salade', ingredients: ['Mix viandes', 'Riz ou Frites', 'Salade'], price: 50, images: [] },
-    { id: 33, cat: 'Plats', name: 'Plat Escalope', desc: 'Escalope avec riz ou frites, salade', ingredients: ['Escalope', 'Riz ou Frites', 'Salade'], price: 40, images: [] },
-
-    // ═══════════════════════ PANINIS ═══════════════════════
-    { id: 34, cat: 'Paninis', name: 'Panini Thon', desc: 'Panini grillé au thon', ingredients: ['Thon', 'Fromage', 'Sauce'], price: 18, images: [] },
-    { id: 35, cat: 'Paninis', name: 'Panini Fromage', desc: 'Panini grillé fromage fondu', ingredients: ['Fromage fondu', 'Herbes'], price: 18, images: [] },
-    { id: 36, cat: 'Paninis', name: 'Panini Poulet', desc: 'Panini grillé au poulet', ingredients: ['Poulet', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 37, cat: 'Paninis', name: 'Panini Viande Hachée', desc: 'Panini grillé viande hachée', ingredients: ['Viande hachée', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 38, cat: 'Paninis', name: 'Panini Saucisse', desc: 'Panini grillé saucisse', ingredients: ['Saucisse', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 39, cat: 'Paninis', name: 'Panini Chawarma', desc: 'Panini grillé chawarma', ingredients: ['Chawarma', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 40, cat: 'Paninis', name: 'Panini Fruits de Mer', desc: 'Panini grillé fruits de mer', ingredients: ['Crevettes', 'Calamar', 'Fromage', 'Sauce'], price: 35, images: [] },
-    { id: 41, cat: 'Paninis', name: 'Panini Mixte', desc: 'Panini grillé mixte', ingredients: ['Mix viandes', 'Fromage', 'Sauce'], price: 35, images: [] },
-
-    // ═══════════════════════ TACOS ═══════════════════════
-    { id: 42, cat: 'Tacos', name: 'Tacos Poulet (L)', desc: 'Poulet, fromage, sauce', ingredients: ['Poulet', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 43, cat: 'Tacos', name: 'Tacos Poulet (XL)', desc: 'Poulet, fromage, sauce — XL', ingredients: ['Poulet (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 44, cat: 'Tacos', name: 'Tacos Viande Hachée (L)', desc: 'Viande hachée, fromage, sauce', ingredients: ['Viande hachée', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 45, cat: 'Tacos', name: 'Tacos Viande Hachée (XL)', desc: 'Viande hachée, fromage, sauce — XL', ingredients: ['Viande hachée (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 46, cat: 'Tacos', name: 'Tacos Cordon Bleu (L)', desc: 'Cordon bleu, fromage, sauce', ingredients: ['Cordon bleu', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 47, cat: 'Tacos', name: 'Tacos Cordon Bleu (XL)', desc: 'Cordon bleu, fromage, sauce — XL', ingredients: ['Cordon bleu (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 48, cat: 'Tacos', name: 'Tacos Nuggets (L)', desc: 'Nuggets, fromage, sauce', ingredients: ['Nuggets', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 49, cat: 'Tacos', name: 'Tacos Nuggets (XL)', desc: 'Nuggets, fromage, sauce — XL', ingredients: ['Nuggets (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 50, cat: 'Tacos', name: 'Tacos Tenders (L)', desc: 'Tenders, fromage, sauce', ingredients: ['Tenders', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 51, cat: 'Tacos', name: 'Tacos Tenders (XL)', desc: 'Tenders, fromage, sauce — XL', ingredients: ['Tenders (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 52, cat: 'Tacos', name: 'Tacos Fish (L)', desc: 'Poisson, fromage, sauce', ingredients: ['Poisson pané', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 53, cat: 'Tacos', name: 'Tacos Fish (XL)', desc: 'Poisson, fromage, sauce — XL', ingredients: ['Poisson pané (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 54, cat: 'Tacos', name: 'Tacos Escalope (L)', desc: 'Escalope, fromage, sauce', ingredients: ['Escalope', 'Fromage', 'Sauce fromagère'], price: 45, images: [] },
-    { id: 55, cat: 'Tacos', name: 'Tacos Escalope (XL)', desc: 'Escalope, fromage, sauce — XL', ingredients: ['Escalope (double)', 'Fromage', 'Sauce fromagère'], price: 55, badge: 'XL', images: [] },
-    { id: 56, cat: 'Tacos', name: 'Tacos Mixte 2 Viandes (L)', desc: '2 viandes, fromage, sauce', ingredients: ['2 Viandes au choix', 'Fromage', 'Sauce fromagère'], price: 50, images: [] },
-    { id: 57, cat: 'Tacos', name: 'Tacos Mixte 2 Viandes (XL)', desc: '2 viandes, fromage, sauce — XL', ingredients: ['2 Viandes au choix (double)', 'Fromage', 'Sauce fromagère'], price: 65, badge: 'XL', images: [] },
-    { id: 58, cat: 'Tacos', name: 'Tacos 3 Viandes', desc: '3 viandes, fromage, sauce', ingredients: ['3 Viandes au choix', 'Fromage', 'Sauce fromagère'], price: 65, badge: 'Géant', images: [] },
-    { id: 59, cat: 'Tacos', name: 'Tacos Chawarma (L)', desc: 'Chawarma, fromage, sauce', ingredients: ['Chawarma', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 60, cat: 'Tacos', name: 'Tacos Chawarma (XL)', desc: 'Chawarma, fromage, sauce — XL', ingredients: ['Chawarma (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 61, cat: 'Tacos', name: 'Tacos Saucisse (L)', desc: 'Saucisse, fromage, sauce', ingredients: ['Saucisse', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 62, cat: 'Tacos', name: 'Tacos Saucisse (XL)', desc: 'Saucisse, fromage, sauce — XL', ingredients: ['Saucisse (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-
-    // ═══════════════════ GRATINÉ ═══════════════════════
-    { id: 63, cat: 'Gratiné', name: 'Gratiné (L)', desc: 'Gratiné au fromage', ingredients: ['Viande', 'Fromage gratiné', 'Frites', 'Sauce'], price: 45, images: [] },
-    { id: 64, cat: 'Gratiné', name: 'Gratiné (XL)', desc: 'Gratiné au fromage — XL', ingredients: ['Viande (double)', 'Fromage gratiné', 'Frites', 'Sauce'], price: 60, badge: 'XL', images: [] },
-
-    // ═══════════════════════ DIVERS ═══════════════════════
-    { id: 65, cat: 'Divers', name: '6 Nuggets', desc: '6 pièces croustillantes', ingredients: ['Nuggets de poulet', 'Sauce'], price: 25, images: [] },
-    { id: 66, cat: 'Divers', name: '6 Croquettes', desc: '6 croquettes croustillantes', ingredients: ['Croquettes', 'Sauce'], price: 30, images: [] },
-    { id: 67, cat: 'Divers', name: 'Plat de Frites', desc: 'Portion de frites', ingredients: ['Frites', 'Sel'], price: 7, images: [] },
-    { id: 68, cat: 'Divers', name: 'Supplément Fromage', desc: 'Fromage en supplément', ingredients: ['Fromage'], price: 10, images: [] },
-
-    // ═══════════════════════ SALADES ═══════════════════════
-    { id: 69, cat: 'Salades', name: 'Salade Niçoise', desc: 'Salade niçoise fraîche', ingredients: ['Thon', 'Oeuf', 'Tomate', 'Olives', 'Laitue'], price: 20, images: [] },
-    { id: 70, cat: 'Salades', name: 'Salade Rosa', desc: 'Salade rosa', ingredients: ['Laitue', 'Tomate', 'Concombre', 'Carotte', 'Vinaigrette'], price: 20, images: [] },
-    { id: 71, cat: 'Salades', name: 'Salade Poulet', desc: 'Salade au poulet grillé', ingredients: ['Poulet grillé', 'Laitue', 'Tomate', 'Maïs', 'Sauce'], price: 25, images: [] },
-    { id: 72, cat: 'Salades', name: 'Salade Panda', desc: 'Salade panda premium', ingredients: ['Mix salade', 'Garniture spéciale', 'Sauce chef'], price: 30, badge: 'Premium', images: [] },
-];
-
-const defaultCatEmojis = {
-    'Burgers': '🍔',
-    'Sandwich Froid': '🥪',
-    'Sandwich Chaud': '🔥',
-    'Plats': '🍽️',
-    'Paninis': '🥖',
-    'Tacos': '🌮',
-    'Gratiné': '🧀',
-    'Divers': '🍟',
-    'Salades': '🥗'
-};
+// Data and Translations are now loaded from shared.js
 
 
 // Persistence Layer
@@ -126,24 +24,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
     categories = [...new Set(menu.map(m => m.cat))];
-    renderCatNav();
-    renderDropdown();
-    renderMenu();
+    if (document.getElementById('catScroll')) renderCatNav();
+    if (document.getElementById('dropdownMenu')) renderDropdown();
+    if (document.getElementById('menuWrap')) renderMenu();
     renderPromo();
     renderSocialLinks();
-    setupScroll();
+    renderHours();
+    renderGallery();
+    if (document.getElementById('menuWrap')) setupScroll();
     startSlider();
     updateWifiUI();
     updateWhatsAppLinks();
+    renderLocation();
 
-    setLang('fr', document.querySelector('.lang-btn'));
-    updateStatus();
+    // Safety check for language initialization
+    const initialLangBtn = document.querySelector('.lang-btn') || document.querySelector('.lang-drop-btn');
+    setLang('fr', initialLangBtn);
+
+    if (document.getElementById('statusBadge')) updateStatus();
 
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
-            document.getElementById('headerNav').classList.remove('mobile-open');
+            const nav = document.getElementById('headerNav');
+            if (nav) nav.classList.remove('mobile-open');
         });
     });
+}
+
+// ═══════════════════════ DYNAMIC HOURS ═══════════════════════
+function renderHours() {
+    const grid = document.getElementById('hoursGrid');
+    const noteEl = document.getElementById('hoursNote');
+    if (!grid) return;
+
+    const hours = JSON.parse(localStorage.getItem('foody_hours')) || window.defaultHours;
+    const note = localStorage.getItem('foody_hours_note') || window.defaultHoursNote || '';
+
+    grid.innerHTML = hours.map(h => `
+        <div class="hours-row${h.highlight ? ' highlight-row' : ''}">
+            <span class="hours-day" data-i18n="${h.i18n}">${h.day}</span>
+            <span class="hours-dash"></span>
+            <span class="hours-time">${h.open} – ${h.close}</span>
+        </div>
+    `).join('');
+
+    if (noteEl && note) noteEl.textContent = note;
 }
 
 function updateWifiUI() {
@@ -200,6 +125,45 @@ function renderSocialLinks() {
     if (footerContainer) footerContainer.innerHTML = footerIcons;
 }
 
+function renderGallery() {
+    const grid = document.getElementById('mainGalleryGrid');
+    if (!grid) return;
+
+    const images = restaurantConfig.gallery || [];
+    if (images.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; opacity:0.5; padding:40px;">Bientôt de nouvelles photos...</p>';
+        return;
+    }
+
+    grid.innerHTML = images.map(img => `
+        <div class="gallery-item" onclick="openGalleryLightbox('${img}')">
+            <img src="${img}" alt="Gallery Image" loading="lazy" />
+        </div>
+    `).join('');
+}
+
+function renderLocation() {
+    const addressText = document.getElementById('contactAddressText');
+    const footerAddressText = document.getElementById('footerAddressText');
+    const addressCard = document.getElementById('contactAddressCard');
+
+    if (restaurantConfig.location) {
+        if (addressText) addressText.textContent = restaurantConfig.location.address;
+        if (footerAddressText) footerAddressText.textContent = restaurantConfig.location.address;
+        if (addressCard && restaurantConfig.location.url) {
+            addressCard.onclick = () => {
+                window.open(restaurantConfig.location.url, '_blank');
+            };
+        }
+    }
+}
+
+function openGalleryLightbox(src) {
+    // We can reuse the product detail modal or create a simple lightbox
+    // For now, let's keep it simple or integrate with existing modal logic
+    showToast('Photo agrandie (Lightbox à venir)');
+}
+
 function openSocialModal() {
     document.getElementById('socialOverlay').classList.add('open');
     document.getElementById('socialModal').classList.add('open');
@@ -230,30 +194,7 @@ function renderPromo() {
 
 
 // STATUS LOGIC
-function updateStatus() {
-    const now = new Date();
-    const hour = now.getHours();
-    const day = now.getDay(); // 0=Sun, 1=Mon...
-
-    let isOpen = false;
-    if (day >= 1 && day <= 4) { // Mon-Thu
-        if (hour >= 11 && hour < 23) isOpen = true;
-    } else if (day === 5 || day === 6) { // Fri-Sat
-        if (hour >= 11 && hour <= 23) isOpen = true;
-    } else if (day === 0) { // Sun
-        if (hour >= 12 && hour < 23) isOpen = true;
-    }
-
-    const badge = document.getElementById('statusBadge');
-    if (!badge) return;
-    badge.className = 'status-badge ' + (isOpen ? 'status-open' : 'status-closed');
-    const textEl = document.getElementById('statusText');
-    if (textEl) {
-        textEl.setAttribute('data-i18n', isOpen ? 'status_open' : 'status_closed');
-        // Initial text
-        textEl.textContent = isOpen ? 'Ouvert' : 'Fermé';
-    }
-}
+// Status is now managed by shared.js
 
 // SLIDER
 function startSlider() {
@@ -447,146 +388,15 @@ function sendWA() {
 }
 
 // TOAST
-function showToast(text) {
-    document.querySelectorAll('.toast').forEach(t => t.remove());
-    const t = document.createElement('div'); t.className = 'toast'; t.textContent = text;
-    document.body.appendChild(t); setTimeout(() => t.classList.add('show'), 50);
-    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 2000);
-}
+// Toast is now managed by shared.js
 
 // MOBILE MENU
 function toggleMobileMenu() {
     document.getElementById('headerNav').classList.toggle('mobile-open');
 }
 
-// ===== i18n LANGUAGE SYSTEM =====
-const translations = {
-    fr: {
-        status_open: 'Ouvert', status_closed: 'Fermé', status_loading: 'Chargement...',
-        nav_home: 'Accueil', nav_menu: 'Menu', nav_about: 'À Propos', nav_events: 'Événements',
-        nav_contact: 'Contact', nav_hours: 'Horaires', nav_order: 'COMMANDER', nav_directions: 'ITINÉRAIRE',
-        hero_sub1: 'Préparez-vous pour', hero_cta: 'COMMANDER EN LIGNE',
-        hero_sub2: 'Essayez Notre', hero_desc2: 'Frites & Boisson inclus',
-        hero_sub3: 'Frais Chaque Jour', hero_desc3: 'Sandwichs, Paninis & plus',
-        see_order: 'Voir ma commande',
-        about_tag: 'Notre Histoire', about_title: 'À Propos de <span>Foody</span>',
-        about_tagline: 'Burgers, Tacos & Plus Encore',
-        about_p1: 'Chers invités, notre histoire commence dans les ruelles vibrantes de Tanger. Passionnés par la cuisine de rue authentique, nous avons voulu créer un lieu où chaque bouchée raconte une histoire de saveur, de fraîcheur et d\'amour.',
-        about_p2: 'Depuis notre humble début, nous avons toujours cru que la meilleure nourriture est celle préparée avec les ingrédients les plus frais, des recettes halal authentiques, et surtout, beaucoup de passion.',
-        about_p3: 'Notre mission est simple : vous offrir la meilleure qualité, un service exceptionnel, et une expérience culinaire inoubliable.',
-        about_welcome: 'Bienvenue, revenez nous voir !', about_thanks: 'Merci,',
-        about_years: 'Ans d\'Expérience', about_items: 'Plats au Menu', about_halal: 'Halal & Frais', about_rating: 'Avis Clients',
-        events_tag: 'Célébrez avec nous', events_title: 'Événements <span>Privés</span>',
-        event_birthday: 'Anniversaires', event_birthday_desc: 'Célébrez votre jour spécial avec un menu personnalisé et une ambiance festive.',
-        event_family: 'Réunions Familiales', event_family_desc: 'Un espace chaleureux pour réunir votre famille autour de plats délicieux.',
-        event_corporate: 'Événements Corporate', event_corporate_desc: 'Impressionnez vos collègues avec un traiteur professionnel et savoureux.',
-        event_party: 'Fêtes Privées', event_party_desc: 'Louez notre espace pour une soirée inoubliable avec vos amis.',
-        events_cta_text: 'Intéressé par un événement ? Contactez-nous !', events_cta_btn: '📩 Demander un Devis',
-        hours_tag: 'Quand nous visiter', hours_title: 'Horaires <span>d\'Ouverture</span>',
-        day_mon: 'Lundi', day_tue: 'Mardi', day_wed: 'Mercredi', day_thu: 'Jeudi', day_fri: 'Vendredi', day_sat: 'Samedi', day_sun: 'Dimanche',
-        hours_note: '🔥 Ouvert tous les jours ! Livraison disponible.',
-        contact_tag: 'Venez Manger', contact_title: 'Contactez-<span>Nous</span>',
-        contact_address_title: 'Adresse', contact_phone_title: 'Téléphone',
-        side_menu: 'MENU', side_wifi: 'CODE WIFI', side_insta: 'INSTAGRAM',
-        wifi_title: 'WiFi Gratuit', wifi_scan: 'Scannez pour vous connecter',
-        promo_badge: 'PROMO DU JOUR', promo_add: 'AJOUTER AU PANIER',
-        ingredients_label: 'Ingrédients', add_to_cart: 'AJOUTER AU PANIER',
-    },
-    en: {
-        status_open: 'Open', status_closed: 'Closed', status_loading: 'Loading...',
-        nav_home: 'Home', nav_menu: 'Menu', nav_about: 'About Us', nav_events: 'Events',
-        nav_contact: 'Contact Us', nav_hours: 'Hours', nav_order: 'ORDER ONLINE', nav_directions: 'GET DIRECTIONS',
-        hero_sub1: 'Get ready for', hero_cta: 'ORDER ONLINE',
-        hero_sub2: 'Try Our', hero_desc2: 'Includes Fries & Drink',
-        hero_sub3: 'Fresh Daily', hero_desc3: 'Sandwiches, Paninis & more',
-        see_order: 'See my order',
-        about_tag: 'Our Story', about_title: 'About <span>Foody</span>',
-        about_tagline: 'Burgers, Tacos & More',
-        about_p1: 'Dear guests, our story begins in the vibrant streets of Tangier. Passionate about authentic street food, we wanted to create a place where every bite tells a story of flavor, freshness and love.',
-        about_p2: 'Since our humble beginnings, we have always believed that the best food is made with the freshest ingredients, authentic halal recipes, and above all, plenty of passion.',
-        about_p3: 'Our mission is simple: to offer you the best quality, exceptional service, and an unforgettable culinary experience.',
-        about_welcome: 'Welcome, please come visit us again!', about_thanks: 'Thank you,',
-        about_years: 'Years Experience', about_items: 'Menu Items', about_halal: 'Halal & Fresh', about_rating: 'Customer Reviews',
-        events_tag: 'Celebrate with us', events_title: 'Private <span>Events</span>',
-        event_birthday: 'Birthdays', event_birthday_desc: 'Celebrate your special day with a custom menu and festive ambiance.',
-        event_family: 'Family Gatherings', event_family_desc: 'A warm space to bring your family together around delicious dishes.',
-        event_corporate: 'Corporate Events', event_corporate_desc: 'Impress your colleagues with professional and tasty catering.',
-        event_party: 'Private Parties', event_party_desc: 'Rent our space for an unforgettable evening with friends.',
-        events_cta_text: 'Interested in an event? Contact us!', events_cta_btn: '📩 Request a Quote',
-        hours_tag: 'When to visit', hours_title: 'Opening <span>Hours</span>',
-        day_mon: 'Monday', day_tue: 'Tuesday', day_wed: 'Wednesday', day_thu: 'Thursday', day_fri: 'Friday', day_sat: 'Saturday', day_sun: 'Sunday',
-        hours_note: '🔥 Open every day! Delivery available.',
-        contact_tag: 'Come eat', contact_title: 'Contact <span>Us</span>',
-        contact_address_title: 'Address', contact_phone_title: 'Phone',
-        side_menu: 'MENU', side_wifi: 'WIFI CODE', side_insta: 'INSTAGRAM',
-        wifi_title: 'Free WiFi', wifi_scan: 'Scan to connect',
-        promo_badge: 'PROMO OF THE DAY', promo_add: 'ADD TO CART',
-        ingredients_label: 'Ingredients', add_to_cart: 'ADD TO CART',
-    },
-    ar: {
-        status_open: 'مفتوح', status_closed: 'مغلق', status_loading: 'جاري التحميل...',
-        nav_home: 'الرئيسية', nav_menu: 'القائمة', nav_about: 'من نحن', nav_events: 'الفعاليات',
-        nav_contact: 'اتصل بنا', nav_hours: 'أوقات العمل', nav_order: 'اطلب الآن', nav_directions: 'الاتجاهات',
-        hero_sub1: 'استعد لـ', hero_cta: 'اطلب أونلاين',
-        hero_sub2: 'جرب', hero_desc2: 'مع بطاطس ومشروب',
-        hero_sub3: 'طازج يومياً', hero_desc3: 'سندويشات، بانيني والمزيد',
-        see_order: 'عرض طلبي',
-        about_tag: 'قصتنا', about_title: 'عن <span>فودي</span>',
-        about_tagline: 'برجر، تاكوس والمزيد',
-        about_p1: 'أعزاءنا الضيوف، تبدأ قصتنا في أزقة طنجة النابضة بالحياة. شغوفون بالأكل الشعبي الأصيل، أردنا خلق مكان كل لقمة فيه تحكي قصة نكهة وطزاجة وحب.',
-        about_p2: 'منذ بدايتنا المتواضعة، آمنا دائماً أن أفضل طعام يُحضّر بأطزج المكونات، ووصفات حلال أصيلة، وقبل كل شيء، بالكثير من الشغف.',
-        about_p3: 'مهمتنا بسيطة: تقديم أفضل جودة، خدمة استثنائية، وتجربة طعام لا تُنسى.',
-        about_welcome: 'مرحباً، عودوا لزيارتنا!', about_thanks: 'شكراً لكم،',
-        about_years: 'سنة خبرة', about_items: 'طبق في القائمة', about_halal: 'حلال وطازج', about_rating: 'آراء الزبائن',
-        events_tag: 'احتفل معنا', events_title: 'فعاليات <span>خاصة</span>',
-        event_birthday: 'أعياد الميلاد', event_birthday_desc: 'احتفل بيومك الخاص مع قائمة مخصصة وأجواء احتفالية.',
-        event_family: 'لقاءات عائلية', event_family_desc: 'مساحة دافئة لجمع عائلتك حول أطباق لذيذة.',
-        event_corporate: 'فعاليات الشركات', event_corporate_desc: 'أبهر زملاءك بتقديم طعام احترافي ولذيذ.',
-        event_party: 'حفلات خاصة', event_party_desc: 'استأجر مساحتنا لسهرة لا تُنسى مع أصدقائك.',
-        events_cta_text: 'مهتم بفعالية؟ تواصل معنا!', events_cta_btn: '📩 اطلب عرض سعر',
-        hours_tag: 'متى تزورنا', hours_title: 'أوقات <span>العمل</span>',
-        day_mon: 'الاثنين', day_tue: 'الثلاثاء', day_wed: 'الأربعاء', day_thu: 'الخميس', day_fri: 'الجمعة', day_sat: 'السبت', day_sun: 'الأحد',
-        hours_note: '🔥 مفتوح كل يوم! التوصيل متاح.',
-        contact_tag: 'تعال كُل', contact_title: 'اتصل <span>بنا</span>',
-        contact_address_title: 'العنوان', contact_phone_title: 'الهاتف',
-        side_menu: 'القائمة', side_wifi: 'كود الواي فاي', side_insta: 'إنستغرام',
-        wifi_title: 'واي فاي مجاني', wifi_scan: 'امسح الرمز للاتصال',
-        promo_badge: 'عرض اليوم', promo_add: 'أضف إلى السلة',
-        ingredients_label: 'المكونات', add_to_cart: 'أضف إلى السلة',
-    }
-};
 
-let currentLang = 'fr';
-
-function setLang(lang, btn) {
-    currentLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active-lang'));
-    btn.classList.add('active-lang');
-    const dict = translations[lang];
-    if (!dict) return;
-
-    // Set RTL for Arabic
-    const html = document.getElementById('htmlRoot');
-    if (lang === 'ar') {
-        html.setAttribute('dir', 'rtl');
-        html.setAttribute('lang', 'ar');
-    } else {
-        html.setAttribute('dir', 'ltr');
-        html.setAttribute('lang', lang);
-    }
-
-    // Update all translatable elements
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-            if (dict[key].includes('<span>')) {
-                el.innerHTML = dict[key];
-            } else {
-                el.textContent = dict[key];
-            }
-        }
-    });
-}
+// Language and Translations are now managed by shared.js
 
 // WIFI MODAL
 function openWifiModal() {
@@ -660,4 +470,70 @@ function closeProductModal() {
     document.getElementById('productOverlay').classList.remove('open');
     document.getElementById('productModal').classList.remove('open');
     document.body.style.overflow = '';
+}
+
+// ═══════════════════════ EVENT BOOKING ═══════════════════════
+let currentEventType = '';
+
+function openEventModal(type) {
+    currentEventType = type;
+    const overlay = document.getElementById('eventBookingOverlay');
+    const modal = document.getElementById('eventBookingModal');
+    const title = document.getElementById('eventBookingTitle');
+    const icon = document.getElementById('eventBookingIcon');
+
+    if (!modal || !overlay) return;
+
+    // Reset inputs for each new opening
+    const nameInput = document.getElementById('eventCustName');
+    const phoneInput = document.getElementById('eventCustPhone');
+    if (nameInput) nameInput.value = '';
+    if (phoneInput) phoneInput.value = '';
+
+    title.textContent = `Réserver : ${type}`;
+
+    // Set dynamic icons based on type
+    const icons = {
+        'Anniversaire': '🎂',
+        'Réunion Familiale': '👨‍👩‍👧‍👦',
+        'Événement Corporate': '🏢',
+        'Fête Privée': '🎉'
+    };
+    icon.textContent = icons[type] || '📅';
+
+    overlay.classList.add('open');
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEventModal() {
+    document.getElementById('eventBookingOverlay').classList.remove('open');
+    document.getElementById('eventBookingModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function sendEventWA() {
+    const name = document.getElementById('eventCustName').value.trim();
+    const phone = document.getElementById('eventCustPhone').value.trim();
+
+    if (!name) {
+        alert('Veuillez entrer votre nom.');
+        document.getElementById('eventCustName').focus();
+        return;
+    }
+    if (!phone) {
+        alert('Veuillez entrer votre numéro de téléphone.');
+        document.getElementById('eventCustPhone').focus();
+        return;
+    }
+
+    const waNum = socialLinks.whatsapp || '212626081745';
+    let msg = `✨ *RÉSERVATION ÉVÉNEMENT – FOODY*\n━━━━━━━━━━━━━━━━\n`;
+    msg += `🏢 *Type:* ${currentEventType}\n`;
+    msg += `👤 *Client:* ${name}\n`;
+    msg += `📱 *Tél:* ${phone}\n`;
+    msg += `━━━━━━━━━━━━━━━━\n\n🙏 Merci de me contacter pour confirmer les détails !`;
+
+    window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
+    closeEventModal();
 }

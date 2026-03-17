@@ -1,100 +1,27 @@
-// ============================================
-//  FOODY – Admin Dashboard Logic (PRO)
-// ============================================
+// Use shared data from shared.js
+let menu = JSON.parse(localStorage.getItem('foody_menu'));
+if (!Array.isArray(menu) || menu.length === 0) {
+    menu = window.defaultMenu || [];
+    localStorage.setItem('foody_menu', JSON.stringify(menu));
+}
 
-const defaultMenu = [
-    // BURGERS
-    { id: 1, cat: 'Burgers', name: 'Cheese-Burger', desc: '1 Steak, Fromage, Salade', ingredients: ['Steak haché', 'Fromage', 'Salade', 'Sauce'], price: 22, images: [] },
-    { id: 2, cat: 'Burgers', name: 'Quality-Burger', desc: '1 Steak, Oeuf, Fromage, Salade', ingredients: ['Steak haché', 'Oeuf', 'Fromage', 'Salade'], price: 25, images: [] },
-    { id: 3, cat: 'Burgers', name: 'Double-Cheese', desc: '2 Steaks, Fromage, Salade', ingredients: ['2 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 32, images: [] },
-    { id: 4, cat: 'Burgers', name: 'Triple-Burger', desc: '3 Steaks, Fromage, Salade', ingredients: ['3 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 50, badge: 'XXL', images: [] },
-    { id: 5, cat: 'Burgers', name: 'Bigg-Burger', desc: '2 Steaks, Fromage, Salade', ingredients: ['2 Steaks hachés', 'Fromage', 'Salade', 'Sauce'], price: 33, images: [] },
-    { id: 6, cat: 'Burgers', name: 'Chicken-Burger', desc: '1 Steak Poulet, Fromage, Salade', ingredients: ['Steak poulet', 'Fromage', 'Salade', 'Sauce'], price: 24, images: [] },
-    { id: 7, cat: 'Burgers', name: 'Roasty Chicken', desc: 'Poulet rôti, Fromage, Salade', ingredients: ['Poulet rôti', 'Fromage', 'Salade'], price: 28, images: [] },
-    { id: 8, cat: 'Burgers', name: 'Fish-Supreme', desc: 'Filet de poisson, Fromage, Salade', ingredients: ['Filet de poisson', 'Fromage', 'Salade', 'Sauce tartare'], price: 28, images: [] },
-    { id: 9, cat: 'Burgers', name: 'Menu Enfants', desc: 'Burger + Cheese + Frites + Boisson', ingredients: ['Mini burger', 'Fromage', 'Frites', 'Boisson'], price: 40, badge: 'Kids', images: [] },
-    // SANDWICH FROID
-    { id: 10, cat: 'Sandwich Froid', name: 'Sandwich Thon', desc: 'Thon, Salade, Frites', ingredients: ['Thon', 'Salade', 'Frites', 'Mayonnaise'], price: 15, images: [] },
-    { id: 11, cat: 'Sandwich Froid', name: 'Sandwich Mortadelle', desc: 'Mortadelle, Salade, Frites', ingredients: ['Mortadelle', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 12, cat: 'Sandwich Froid', name: 'Sandwich Cacher', desc: 'Cacher, Salade, Frites', ingredients: ['Cacher', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 13, cat: 'Sandwich Froid', name: 'Sandwich Oeuf', desc: 'Oeuf, Salade, Frites', ingredients: ['Oeuf', 'Salade', 'Frites'], price: 12, images: [] },
-    { id: 14, cat: 'Sandwich Froid', name: 'Sandwich Tortilla', desc: 'Tortilla, Salade, Frites', ingredients: ['Tortilla', 'Salade', 'Frites'], price: 15, images: [] },
-    { id: 15, cat: 'Sandwich Froid', name: 'Sandwich Tortilla Spéciale', desc: 'Tortilla spéciale, Salade, Frites', ingredients: ['Tortilla', 'Garniture spéciale', 'Salade', 'Frites'], price: 20, badge: 'Spécial', images: [] },
-    // SANDWICH CHAUD
-    { id: 16, cat: 'Sandwich Chaud', name: 'Sandwich Escalope', desc: 'Escalope grillée, Salade, Frites', ingredients: ['Escalope', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 17, cat: 'Sandwich Chaud', name: 'Sandwich Poulet', desc: 'Poulet grillé, Salade, Frites', ingredients: ['Poulet', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 18, cat: 'Sandwich Chaud', name: 'Sandwich Viande Hachée', desc: 'Viande hachée, Salade, Frites', ingredients: ['Viande hachée', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    { id: 19, cat: 'Sandwich Chaud', name: 'Sandwich Saucisse', desc: 'Saucisse grillée, Salade, Frites', ingredients: ['Saucisse', 'Salade', 'Frites', 'Sauce'], price: 25, images: [] },
-    { id: 20, cat: 'Sandwich Chaud', name: 'Sandwich Fruits de Mer', desc: 'Fruits de mer, Salade, Frites', ingredients: ['Crevettes', 'Calamar', 'Salade', 'Frites'], price: 40, badge: 'Premium', images: [] },
-    { id: 21, cat: 'Sandwich Chaud', name: 'Sandwich Foie', desc: 'Foie grillé, Salade, Frites', ingredients: ['Foie', 'Salade', 'Frites', 'Oignons'], price: 35, images: [] },
-    { id: 22, cat: 'Sandwich Chaud', name: 'Sandwich Mixte', desc: 'Mix viandes, Salade, Frites', ingredients: ['Mix viandes', 'Salade', 'Frites', 'Sauce'], price: 35, images: [] },
-    { id: 23, cat: 'Sandwich Chaud', name: 'Sandwich Cordon Bleu', desc: 'Cordon bleu, Salade, Frites', ingredients: ['Cordon bleu', 'Fromage', 'Salade', 'Frites'], price: 27, images: [] },
-    { id: 24, cat: 'Sandwich Chaud', name: 'Sandwich Chawarma', desc: 'Chawarma, Salade, Frites', ingredients: ['Chawarma', 'Salade', 'Frites', 'Sauce'], price: 27, images: [] },
-    // PLATS
-    { id: 25, cat: 'Plats', name: 'Plat Poulet', desc: 'Poulet grillé avec riz ou frites, salade', ingredients: ['Poulet', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 26, cat: 'Plats', name: 'Plat Viande Hachée', desc: 'Viande hachée avec riz ou frites, salade', ingredients: ['Viande hachée', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 27, cat: 'Plats', name: 'Plat Chawarma', desc: 'Chawarma avec riz ou frites, salade', ingredients: ['Chawarma', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 28, cat: 'Plats', name: 'Plat Saucisse', desc: 'Saucisse avec riz ou frites, salade', ingredients: ['Saucisse', 'Riz ou Frites', 'Salade'], price: 38, images: [] },
-    { id: 29, cat: 'Plats', name: 'Plat Cordon Bleu', desc: 'Cordon bleu avec riz ou frites, salade', ingredients: ['Cordon bleu', 'Riz ou Frites', 'Salade'], price: 45, images: [] },
-    { id: 30, cat: 'Plats', name: 'Plat Foie', desc: 'Foie grillé avec riz ou frites, salade', ingredients: ['Foie', 'Riz ou Frites', 'Salade'], price: 45, images: [] },
-    { id: 31, cat: 'Plats', name: 'Plat Fruits de Mer', desc: 'Fruits de mer avec riz ou frites, salade', ingredients: ['Crevettes', 'Calamar', 'Riz ou Frites', 'Salade'], price: 50, badge: 'Premium', images: [] },
-    { id: 32, cat: 'Plats', name: 'Plat Mixte', desc: 'Mix viandes avec riz ou frites, salade', ingredients: ['Mix viandes', 'Riz ou Frites', 'Salade'], price: 50, images: [] },
-    { id: 33, cat: 'Plats', name: 'Plat Escalope', desc: 'Escalope avec riz ou frites, salade', ingredients: ['Escalope', 'Riz ou Frites', 'Salade'], price: 40, images: [] },
-    // PANINIS
-    { id: 34, cat: 'Paninis', name: 'Panini Thon', desc: 'Panini grillé au thon', ingredients: ['Thon', 'Fromage', 'Sauce'], price: 18, images: [] },
-    { id: 35, cat: 'Paninis', name: 'Panini Fromage', desc: 'Panini grillé fromage fondu', ingredients: ['Fromage fondu', 'Herbes'], price: 18, images: [] },
-    { id: 36, cat: 'Paninis', name: 'Panini Poulet', desc: 'Panini grillé au poulet', ingredients: ['Poulet', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 37, cat: 'Paninis', name: 'Panini Viande Hachée', desc: 'Panini grillé viande hachée', ingredients: ['Viande hachée', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 38, cat: 'Paninis', name: 'Panini Saucisse', desc: 'Panini grillé saucisse', ingredients: ['Saucisse', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 39, cat: 'Paninis', name: 'Panini Chawarma', desc: 'Panini grillé chawarma', ingredients: ['Chawarma', 'Fromage', 'Sauce'], price: 25, images: [] },
-    { id: 40, cat: 'Paninis', name: 'Panini Fruits de Mer', desc: 'Panini grillé fruits de mer', ingredients: ['Crevettes', 'Calamar', 'Fromage', 'Sauce'], price: 35, images: [] },
-    { id: 41, cat: 'Paninis', name: 'Panini Mixte', desc: 'Panini grillé mixte', ingredients: ['Mix viandes', 'Fromage', 'Sauce'], price: 35, images: [] },
-    // TACOS
-    { id: 42, cat: 'Tacos', name: 'Tacos Poulet (L)', desc: 'Poulet, fromage, sauce', ingredients: ['Poulet', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 43, cat: 'Tacos', name: 'Tacos Poulet (XL)', desc: 'Poulet, fromage, sauce — XL', ingredients: ['Poulet (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 44, cat: 'Tacos', name: 'Tacos Viande Hachée (L)', desc: 'Viande hachée, fromage, sauce', ingredients: ['Viande hachée', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 45, cat: 'Tacos', name: 'Tacos Viande Hachée (XL)', desc: 'Viande hachée, fromage, sauce — XL', ingredients: ['Viande hachée (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 46, cat: 'Tacos', name: 'Tacos Cordon Bleu (L)', desc: 'Cordon bleu, fromage, sauce', ingredients: ['Cordon bleu', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 47, cat: 'Tacos', name: 'Tacos Cordon Bleu (XL)', desc: 'Cordon bleu, fromage, sauce — XL', ingredients: ['Cordon bleu (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 48, cat: 'Tacos', name: 'Tacos Nuggets (L)', desc: 'Nuggets, fromage, sauce', ingredients: ['Nuggets', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 49, cat: 'Tacos', name: 'Tacos Nuggets (XL)', desc: 'Nuggets, fromage, sauce — XL', ingredients: ['Nuggets (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 50, cat: 'Tacos', name: 'Tacos Tenders (L)', desc: 'Tenders, fromage, sauce', ingredients: ['Tenders', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 51, cat: 'Tacos', name: 'Tacos Tenders (XL)', desc: 'Tenders, fromage, sauce — XL', ingredients: ['Tenders (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 52, cat: 'Tacos', name: 'Tacos Fish (L)', desc: 'Poisson, fromage, sauce', ingredients: ['Poisson pané', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 53, cat: 'Tacos', name: 'Tacos Fish (XL)', desc: 'Poisson, fromage, sauce — XL', ingredients: ['Poisson pané (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 54, cat: 'Tacos', name: 'Tacos Escalope (L)', desc: 'Escalope, fromage, sauce', ingredients: ['Escalope', 'Fromage', 'Sauce fromagère'], price: 45, images: [] },
-    { id: 55, cat: 'Tacos', name: 'Tacos Escalope (XL)', desc: 'Escalope, fromage, sauce — XL', ingredients: ['Escalope (double)', 'Fromage', 'Sauce fromagère'], price: 55, badge: 'XL', images: [] },
-    { id: 56, cat: 'Tacos', name: 'Tacos Mixte 2 Viandes (L)', desc: '2 viandes, fromage, sauce', ingredients: ['2 Viandes au choix', 'Fromage', 'Sauce fromagère'], price: 50, images: [] },
-    { id: 57, cat: 'Tacos', name: 'Tacos Mixte 2 Viandes (XL)', desc: '2 viandes, fromage, sauce — XL', ingredients: ['2 Viandes au choix (double)', 'Fromage', 'Sauce fromagère'], price: 65, badge: 'XL', images: [] },
-    { id: 58, cat: 'Tacos', name: 'Tacos 3 Viandes', desc: '3 viandes, fromage, sauce', ingredients: ['3 Viandes au choix', 'Fromage', 'Sauce fromagère'], price: 65, badge: 'Géant', images: [] },
-    { id: 59, cat: 'Tacos', name: 'Tacos Chawarma (L)', desc: 'Chawarma, fromage, sauce', ingredients: ['Chawarma', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 60, cat: 'Tacos', name: 'Tacos Chawarma (XL)', desc: 'Chawarma, fromage, sauce — XL', ingredients: ['Chawarma (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    { id: 61, cat: 'Tacos', name: 'Tacos Saucisse (L)', desc: 'Saucisse, fromage, sauce', ingredients: ['Saucisse', 'Fromage', 'Sauce fromagère'], price: 35, images: [] },
-    { id: 62, cat: 'Tacos', name: 'Tacos Saucisse (XL)', desc: 'Saucisse, fromage, sauce — XL', ingredients: ['Saucisse (double)', 'Fromage', 'Sauce fromagère'], price: 50, badge: 'XL', images: [] },
-    // GRATINÉ
-    { id: 63, cat: 'Gratiné', name: 'Gratiné (L)', desc: 'Gratiné au fromage', ingredients: ['Viande', 'Fromage gratiné', 'Frites', 'Sauce'], price: 45, images: [] },
-    { id: 64, cat: 'Gratiné', name: 'Gratiné (XL)', desc: 'Gratiné au fromage — XL', ingredients: ['Viande (double)', 'Fromage gratiné', 'Frites', 'Sauce'], price: 60, badge: 'XL', images: [] },
-    // DIVERS
-    { id: 65, cat: 'Divers', name: '6 Nuggets', desc: '6 pièces croustillantes', ingredients: ['Nuggets de poulet', 'Sauce'], price: 25, images: [] },
-    { id: 66, cat: 'Divers', name: '6 Croquettes', desc: '6 croquettes croustillantes', ingredients: ['Croquettes', 'Sauce'], price: 30, images: [] },
-    { id: 67, cat: 'Divers', name: 'Plat de Frites', desc: 'Portion de frites', ingredients: ['Frites', 'Sel'], price: 7, images: [] },
-    { id: 68, cat: 'Divers', name: 'Supplément Fromage', desc: 'Fromage en supplément', ingredients: ['Fromage'], price: 10, images: [] },
-    // SALADES
-    { id: 69, cat: 'Salades', name: 'Salade Niçoise', desc: 'Salade niçoise fraîche', ingredients: ['Thon', 'Oeuf', 'Tomate', 'Olives', 'Laitue'], price: 20, images: [] },
-    { id: 70, cat: 'Salades', name: 'Salade Rosa', desc: 'Salade rosa', ingredients: ['Laitue', 'Tomate', 'Concombre', 'Carotte', 'Vinaigrette'], price: 20, images: [] },
-    { id: 71, cat: 'Salades', name: 'Salade Poulet', desc: 'Salade au poulet grillé', ingredients: ['Poulet grillé', 'Laitue', 'Tomate', 'Maïs', 'Sauce'], price: 25, images: [] },
-    { id: 72, cat: 'Salades', name: 'Salade Panda', desc: 'Salade panda premium', ingredients: ['Mix salade', 'Garniture spéciale', 'Sauce chef'], price: 30, badge: 'Premium', images: [] },
-];
+let catEmojis = JSON.parse(localStorage.getItem('foody_cat_emojis'));
+if (!catEmojis || Object.keys(catEmojis).length === 0) {
+    catEmojis = window.defaultCatEmojis;
+    localStorage.setItem('foody_cat_emojis', JSON.stringify(catEmojis));
+}
 
-const defaultCatEmojis = { 'Burgers': '🍔', 'Sandwich Froid': '🥪', 'Sandwich Chaud': '🔥', 'Plats': '🍽️', 'Paninis': '🥖', 'Tacos': '🌮', 'Gratiné': '🧀', 'Divers': '🍟', 'Salades': '🥗' };
-
-let menu = JSON.parse(localStorage.getItem('foody_menu')) || defaultMenu;
-let catEmojis = JSON.parse(localStorage.getItem('foody_cat_emojis')) || defaultCatEmojis;
-let wifiData = JSON.parse(localStorage.getItem('foody_wifi')) || { ssid: 'Foody_Guest', pass: 'foody2026' };
-let socialLinks = JSON.parse(localStorage.getItem('foody_social')) || { instagram: '', facebook: '', tiktok: '', whatsapp: '212626081745' };
+// restaurantConfig is already loaded and merged in shared.js
+let restaurantConfig = window.restaurantConfig;
 
 // Default admin credentials (change these!)
-let promoId = localStorage.getItem('foody_promo_id') || null;
+let promoIds;
+try {
+    promoIds = JSON.parse(localStorage.getItem('foody_promo_ids'));
+    if (!Array.isArray(promoIds)) promoIds = [];
+} catch (e) {
+    promoIds = [];
+}
 
 // Credentials with fallback to defaults
 let adminAuth = JSON.parse(localStorage.getItem('foody_admin_creds')) || { user: 'admin', pass: 'foody2026' };
@@ -134,39 +61,53 @@ function adminLogout() {
 function refreshUI() {
     renderMenuTable();
     renderCatTable();
+    renderSuperCatTable();
     populateCatDropdown();
     initWifiForm();
-    initSocialForm();
+    initLandingPageForm();
+    initSuperCatForm();
     initSecurityForm();
+    initHoursForm();
+    initGalleryForm();
+    renderGalleryAdmin();
     updateStats();
 }
 
 function renderMenuTable() {
     const tbody = document.querySelector('#menuTable tbody');
     if (!tbody) return;
-    tbody.innerHTML = menu.map(item => {
-        // Fix image fallback logic
-        const images = (item.images && item.images.length > 0) ? item.images : (item.img ? [item.img] : []);
-        const firstImg = images.length > 0 ? images[0] : '';
-        return `
-        <tr>
-            <td>
-                <div style="width:50px; height:50px; background:#eee; border-radius:8px; overflow:hidden; border:1px solid #ddd; cursor:pointer" onclick="openImageModal(${item.id})">
-                    ${firstImg ? `<img src="${firstImg}" style="width:100%; height:100%; object-fit:cover" onerror="this.src='https://via.placeholder.com/50?text=Error'">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px">📷</div>'}
-                </div>
-                ${images.length > 0 ? `<small style="display:block;text-align:center;font-size:10px;color:var(--primary);cursor:pointer;margin-top:2px" onclick="openImageModal(${item.id})">${images.length} image(s)</small>` : ''}
-            </td>
-            <td><strong>${item.name}</strong><br><small style="color:#888">${item.desc}</small></td>
-            <td>${item.cat}</td>
-            <td>MAD ${item.price.toFixed(2)}</td>
-            <td><span class="promo-star action-btn ${promoId == item.id ? 'promo-active' : ''}" onclick="togglePromo(${item.id})">⭐</span></td>
-            <td>
-                <button class="action-btn" onclick="editItem(${item.id})" title="Modifier les détails">✏️</button>
-                <button class="action-btn" onclick="openImageModal(${item.id})" title="Gérer les images">🖼️</button>
-                <button class="action-btn" onclick="deleteItem(${item.id})">🗑️</button>
-            </td>
-        </tr>`;
-    }).join('');
+    try {
+        tbody.innerHTML = menu.map(item => {
+            // Fix image fallback logic
+            const images = (item.images && item.images.length > 0) ? item.images : (item.img ? [item.img] : []);
+            const firstImg = images.length > 0 ? images[0] : '';
+            const safePrice = Number(item.price) || 0;
+            const likeCount = (typeof window.getLikeCount === 'function') ? window.getLikeCount(item.id) : 0;
+            return `
+            <tr>
+                <td>
+                    <div style="width:50px; height:50px; background:#eee; border-radius:8px; overflow:hidden; border:1px solid #ddd; cursor:pointer" onclick="openImageModal(${item.id})">
+                        ${firstImg ? `<img src="${firstImg}" style="width:100%; height:100%; object-fit:cover" onerror="this.src='https://via.placeholder.com/50?text=Error'">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px">📷</div>'}
+                    </div>
+                    ${images.length > 0 ? `<small style="display:block;text-align:center;font-size:10px;color:var(--primary);cursor:pointer;margin-top:2px" onclick="openImageModal(${item.id})">${images.length} image(s)</small>` : ''}
+                </td>
+                <td><strong>${item.name || 'UnnamedItem'}</strong><br><small style="color:#888">${item.desc || ''}</small></td>
+                <td>${item.cat || 'Uncategorized'}</td>
+                <td>MAD ${safePrice.toFixed(2)}</td>
+                <td><span style="color:#e01e2f">❤️</span> ${likeCount}</td>
+                <td><span class="promo-star action-btn ${promoIds.includes(item.id) ? 'promo-active' : ''}" onclick="togglePromo(${item.id})">⭐</span></td>
+                <td><span class="promo-star action-btn ${item.featured ? 'promo-active' : ''}" onclick="toggleFeatured(${item.id})" style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">✨</span></td>
+                <td>
+                    <button class="action-btn" onclick="editItem(${item.id})" title="Modifier les détails">✏️</button>
+                    <button class="action-btn" onclick="openImageModal(${item.id})" title="Gérer les images">🖼️</button>
+                    <button class="action-btn" onclick="deleteItem(${item.id})">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('');
+    } catch (e) {
+        console.error('Render Table Error:', e);
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Erreur de chargement des produits. Veuillez cliquer sur 'Reset All Data'.</td></tr>`;
+    }
 }
 
 let editingItemId = null;
@@ -181,6 +122,13 @@ function editItem(id) {
     document.getElementById('itemDesc').value = item.desc;
     document.getElementById('itemIngredients').value = (item.ingredients || []).join(', ');
     document.getElementById('itemPrice').value = item.price;
+    document.getElementById('itemFeatured').checked = item.featured || false;
+
+    // Populate image URL field — only show URL images, not base64 blobs
+    const existingImages = item.images || (item.img ? [item.img] : []);
+    const urlImages = existingImages.filter(img => !img.startsWith('data:'));
+    const imgInput = document.getElementById('itemImg');
+    if (imgInput) imgInput.value = urlImages.join('\n');
 
     // Change form title and button
     document.querySelector('#menu h3').textContent = "Modifier le produit: " + item.name;
@@ -193,6 +141,7 @@ function editItem(id) {
 function resetFoodForm() {
     editingItemId = null;
     document.getElementById('foodForm').reset();
+    document.getElementById('itemFeatured').checked = false;
     document.querySelector('#menu h3').textContent = "Add New Food Item";
     document.querySelector('#foodForm .primary-btn').textContent = "➕ Save Product";
 }
@@ -203,13 +152,33 @@ function initForms() {
         const fileInput = document.getElementById('itemFile');
         const urlInput = document.getElementById('itemImg').value;
 
-        let images = urlInput.split(/[\n,]/).map(s => s.trim()).filter(s => s.length > 0);
+        // Parse URL images — split by NEWLINE only (not comma, which breaks base64)
+        let images = urlInput.split(/\n/).map(s => s.trim()).filter(s => s.length > 0 && !s.startsWith('data:'));
 
+        // Add file uploads (compressed)
         if (fileInput.files.length > 0) {
             for (let file of fileInput.files) {
-                const base64 = await toBase64(file);
-                images.push(base64);
+                try {
+                    const base64 = await compressImage(file);
+                    images.push(base64);
+                } catch (err) {
+                    console.error('Image compression failed:', err);
+                    showToast('⚠️ Image trop grande ou format non supporté');
+                }
             }
+        }
+
+        // When editing, keep existing base64 images that were already stored
+        if (editingItemId) {
+            const existingItem = menu.find(m => m.id == editingItemId);
+            if (existingItem && images.length === 0) {
+                // No new images provided — keep existing ones
+                images = existingItem.images || (existingItem.img ? [existingItem.img] : []);
+            } else if (existingItem && fileInput.files.length === 0) {
+                // Only URL changes, no file uploads — use the new URLs
+                // (images already has the URLs from above)
+            }
+            // If file uploads were added, those are already in images
         }
 
         const ingredients = document.getElementById('itemIngredients').value.split(',').map(s => s.trim()).filter(s => s.length > 0);
@@ -217,8 +186,6 @@ function initForms() {
         if (editingItemId) {
             const index = menu.findIndex(m => m.id == editingItemId);
             if (index !== -1) {
-                // Keep existing images if no new ones are added via form
-                const finalImages = images.length > 0 ? images : (menu[index].images || []);
                 menu[index] = {
                     ...menu[index],
                     name: document.getElementById('itemName').value,
@@ -226,8 +193,9 @@ function initForms() {
                     desc: document.getElementById('itemDesc').value,
                     ingredients: ingredients,
                     price: parseFloat(document.getElementById('itemPrice').value),
-                    images: finalImages,
-                    img: finalImages[0] || ''
+                    images: images,
+                    img: images[0] || '',
+                    featured: document.getElementById('itemFeatured').checked
                 };
             }
             showToast('Produit mis à jour avec succès !');
@@ -240,7 +208,8 @@ function initForms() {
                 ingredients: ingredients,
                 price: parseFloat(document.getElementById('itemPrice').value),
                 images: images,
-                img: images[0] || ''
+                img: images[0] || '',
+                featured: document.getElementById('itemFeatured').checked
             };
             menu.push(newItem);
             showToast('Produit ajouté avec succès !');
@@ -260,37 +229,108 @@ function initForms() {
 
     document.getElementById('wifiForm').onsubmit = (e) => {
         e.preventDefault();
-        wifiData.ssid = document.getElementById('wifiSSID').value;
-        wifiData.pass = document.getElementById('wifiPassInput').value;
+        restaurantConfig.wifi.name = document.getElementById('wifiSSID').value;
+        restaurantConfig.wifi.code = document.getElementById('wifiPassInput').value;
         saveAndRefresh();
         showToast('WiFi mis à jour !');
     };
 
-    document.getElementById('socialForm').onsubmit = (e) => {
+    document.getElementById('landingPageForm').onsubmit = (e) => {
         e.preventDefault();
-        socialLinks.instagram = document.getElementById('socialInsta').value;
-        socialLinks.facebook = document.getElementById('socialFb').value;
-        socialLinks.tiktok = document.getElementById('socialTiktok').value;
-        socialLinks.whatsapp = document.getElementById('socialWhatsapp').value.trim();
-        localStorage.setItem('foody_social', JSON.stringify(socialLinks));
-        initSocialForm();
-        showToast('Liens sociaux sauvegardés !');
+        restaurantConfig.location.address = document.getElementById('lpAddress').value;
+        restaurantConfig.location.url = document.getElementById('lpMapUrl').value;
+        restaurantConfig.phone = document.getElementById('lpPhone').value;
+        restaurantConfig.socials.instagram = document.getElementById('lpInsta').value;
+        restaurantConfig.socials.facebook = document.getElementById('lpFb').value;
+        restaurantConfig.socials.tiktok = document.getElementById('lpTiktok').value;
+        restaurantConfig.socials.tripadvisor = document.getElementById('lpTrip').value;
+        saveAndRefresh();
+        showToast('Landing Page info sauvegardée !');
+    };
+
+    document.getElementById('superCatForm').onsubmit = (e) => {
+        e.preventDefault();
+        const selectedCats = Array.from(document.querySelectorAll('.sc-cat-check:checked')).map(cb => cb.value);
+        const name = document.getElementById('scName').value;
+        const emoji = document.getElementById('scEmoji').value;
+        const desc = document.getElementById('scDesc').value;
+        const time = document.getElementById('scTime').value;
+
+        const id = name.toLowerCase().replace(/\s+/g, '_');
+        const existingIdx = restaurantConfig.superCategories.findIndex(sc => sc.id === id);
+
+        const newSC = { id, name, emoji, desc, time, cats: selectedCats };
+
+        if (existingIdx !== -1) {
+            restaurantConfig.superCategories[existingIdx] = newSC;
+        } else {
+            restaurantConfig.superCategories.push(newSC);
+        }
+
+        saveAndRefresh();
+        e.target.reset();
+        showToast('Super Catégorie sauvegardée !');
     };
 }
 
-function initSocialForm() {
-    document.getElementById('socialInsta').value = socialLinks.instagram;
-    document.getElementById('socialFb').value = socialLinks.facebook;
-    document.getElementById('socialTiktok').value = socialLinks.tiktok;
-    document.getElementById('socialWhatsapp').value = socialLinks.whatsapp || '';
+function initLandingPageForm() {
+    const config = restaurantConfig;
+    document.getElementById('lpAddress').value = config.location.address;
+    document.getElementById('lpMapUrl').value = config.location.url;
+    document.getElementById('lpPhone').value = config.phone;
+    document.getElementById('lpInsta').value = config.socials.instagram;
+    document.getElementById('lpFb').value = config.socials.facebook;
+    document.getElementById('lpTiktok').value = config.socials.tiktok;
+    document.getElementById('lpTrip').value = config.socials.tripadvisor || '';
+}
 
-    const preview = document.getElementById('socialPreview');
-    let chips = '';
-    if (socialLinks.instagram) chips += `<a href="${socialLinks.instagram}" target="_blank" class="social-chip"><span>📸</span> Instagram</a>`;
-    if (socialLinks.facebook) chips += `<a href="${socialLinks.facebook}" target="_blank" class="social-chip"><span>📘</span> Facebook</a>`;
-    if (socialLinks.tiktok) chips += `<a href="${socialLinks.tiktok}" target="_blank" class="social-chip"><span>🎵</span> TikTok</a>`;
-    if (socialLinks.whatsapp) chips += `<a href="https://wa.me/${socialLinks.whatsapp}" target="_blank" class="social-chip"><span>📞</span> WhatsApp</a>`;
-    preview.innerHTML = chips || '<p style="color:#888">No social links configured yet.</p>';
+function initSuperCatForm() {
+    const container = document.getElementById('scCatsList');
+    if (!container) return;
+    const cats = Object.keys(catEmojis);
+    container.innerHTML = cats.map(cat => `
+        <label style="display:flex; align-items:center; gap:5px; background:#f0f0f0; padding:5px 10px; border-radius:20px; font-size:0.8rem; cursor:pointer;">
+            <input type="checkbox" value="${cat}" class="sc-cat-check" style="width:auto; margin:0;">
+            ${cat}
+        </label>
+    `).join('');
+}
+
+function renderSuperCatTable() {
+    const tbody = document.querySelector('#superCatTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = restaurantConfig.superCategories.map(sc => `
+        <tr>
+            <td>${sc.emoji}</td>
+            <td><strong>${sc.name}</strong><br><small>${sc.time || ''}</small></td>
+            <td>${sc.cats.join(', ')}</td>
+            <td>
+                <button class="action-btn" onclick="editSuperCat('${sc.id}')">✏️</button>
+                <button class="action-btn" onclick="deleteSuperCat('${sc.id}')">🗑️</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function editSuperCat(id) {
+    const sc = restaurantConfig.superCategories.find(s => s.id === id);
+    if (!sc) return;
+    document.getElementById('scName').value = sc.name;
+    document.getElementById('scEmoji').value = sc.emoji;
+    document.getElementById('scDesc').value = sc.desc;
+    document.getElementById('scTime').value = sc.time || '';
+
+    const checks = document.querySelectorAll('.sc-cat-check');
+    checks.forEach(cb => cb.checked = sc.cats.includes(cb.value));
+
+    document.getElementById('supercategories').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteSuperCat(id) {
+    if (confirm('Supprimer cette super catégorie ?')) {
+        restaurantConfig.superCategories = restaurantConfig.superCategories.filter(s => s.id !== id);
+        saveAndRefresh();
+    }
 }
 
 function initSecurityForm() {
@@ -318,7 +358,7 @@ function initSecurityForm() {
 }
 
 // Smart image compressor — auto-resize & compress any image to fit storage
-function compressImage(file, maxWidth = 600, quality = 0.7) {
+function compressImage(file, maxWidth = 800, quality = 0.75) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = reject;
@@ -341,8 +381,25 @@ function compressImage(file, maxWidth = 600, quality = 0.7) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
 
-                // Output as compressed JPEG
-                resolve(canvas.toDataURL('image/jpeg', quality));
+                // Try progressively lower quality if result is too big
+                let result = canvas.toDataURL('image/jpeg', quality);
+
+                // If result > 200KB, reduce quality
+                if (result.length > 200000) {
+                    result = canvas.toDataURL('image/jpeg', 0.5);
+                }
+                // If still > 200KB, reduce dimensions too
+                if (result.length > 200000) {
+                    const smallCanvas = document.createElement('canvas');
+                    const sw = Math.min(w, 400);
+                    const sh = Math.round(h * sw / w);
+                    smallCanvas.width = sw;
+                    smallCanvas.height = sh;
+                    smallCanvas.getContext('2d').drawImage(img, 0, 0, sw, sh);
+                    result = smallCanvas.toDataURL('image/jpeg', 0.5);
+                }
+
+                resolve(result);
             };
             img.src = e.target.result;
         };
@@ -353,22 +410,89 @@ function compressImage(file, maxWidth = 600, quality = 0.7) {
 // Keep old name as alias so existing form code still works
 const toBase64 = (file) => compressImage(file);
 
-function deleteItem(id) { if (confirm('Supprimer cet article ?')) { menu = menu.filter(m => m.id != id); if (promoId == id) promoId = null; saveAndRefresh(); } }
-function togglePromo(id) { promoId = (promoId == id ? null : id); saveAndRefresh(); }
+function deleteItem(id) { if (confirm('Supprimer cet article ?')) { menu = menu.filter(m => m.id != id); promoIds = promoIds.filter(pid => pid != id); saveAndRefresh(); } }
+function togglePromo(id) {
+    if (promoIds.includes(id)) {
+        promoIds = promoIds.filter(pid => pid != id);
+    } else {
+        promoIds.push(id);
+    }
+    saveAndRefresh();
+}
+function toggleFeatured(id) {
+    const item = menu.find(m => m.id == id);
+    if (item) {
+        item.featured = !item.featured;
+        saveAndRefresh();
+    }
+}
+function forceSaveChanges() {
+    try {
+        // AUTO-COMMIT: If user is editing a food item, submit the form first
+        if (editingItemId) {
+            const foodForm = document.getElementById('foodForm');
+            if (foodForm) {
+                // Trigger form submission programmatically to commit the edit
+                foodForm.requestSubmit();
+                // requestSubmit triggers the onsubmit handler which calls saveAndRefresh(),
+                // so we just need the visual feedback here
+                const btn = document.getElementById('floatSaveBtn');
+                if (btn) {
+                    btn.classList.add('saved');
+                    btn.innerHTML = '<span style="font-size:1.3rem;">✅</span><span>Sauvegardé !</span>';
+                    setTimeout(() => {
+                        btn.classList.remove('saved');
+                        btn.innerHTML = '<span style="font-size:1.3rem;">💾</span><span>Sauvegarder</span>';
+                    }, 2500);
+                }
+                showToast('✅ Produit mis à jour et sauvegardé !');
+                return; // form onsubmit already called saveAndRefresh()
+            }
+        }
+
+        // Save all data
+        localStorage.setItem('foody_menu', JSON.stringify(menu));
+        localStorage.setItem('foody_cat_emojis', JSON.stringify(catEmojis));
+        localStorage.setItem('foody_config', JSON.stringify(restaurantConfig));
+        localStorage.setItem('foody_promo_ids', JSON.stringify(promoIds));
+
+        // Save hours if present
+        const hoursData = window._pendingHours;
+        if (hoursData) {
+            localStorage.setItem('foody_hours', JSON.stringify(hoursData));
+        }
+
+        refreshUI();
+
+        // Visual feedback on float button
+        const btn = document.getElementById('floatSaveBtn');
+        if (btn) {
+            btn.classList.add('saved');
+            btn.innerHTML = '<span style="font-size:1.3rem;">✅</span><span>Sauvegardé !</span>';
+            setTimeout(() => {
+                btn.classList.remove('saved');
+                btn.innerHTML = '<span style="font-size:1.3rem;">💾</span><span>Sauvegarder</span>';
+            }, 2500);
+        }
+
+        showToast('✅ Toutes les modifications ont été enregistrées !');
+    } catch (e) {
+        console.error('Save Error:', e);
+        alert('❌ Erreur de sauvegarde. L\'image est peut-être trop grande - essayez une URL à la place.');
+    }
+}
 function saveAndRefresh() {
     try {
         localStorage.setItem('foody_menu', JSON.stringify(menu));
         localStorage.setItem('foody_cat_emojis', JSON.stringify(catEmojis));
-        localStorage.setItem('foody_wifi', JSON.stringify(wifiData));
-        localStorage.setItem('foody_social', JSON.stringify(socialLinks));
-        if (promoId) localStorage.setItem('foody_promo_id', promoId); else localStorage.removeItem('foody_promo_id');
+        localStorage.setItem('foody_config', JSON.stringify(restaurantConfig));
+        localStorage.setItem('foody_promo_ids', JSON.stringify(promoIds));
         refreshUI();
     } catch (e) {
         console.error('Storage Error:', e);
         alert('❌ Erreur de sauvegarde : L\'image est probablement trop grande (Base64). Essayez une image plus petite ou un lien URL.');
     }
 }
-function resetDefaults() { if (confirm('Voulez-vous réinitialiser toutes les données ?')) { localStorage.clear(); sessionStorage.clear(); location.reload(); } }
 function showToast(msg) { const t = document.getElementById('adminToast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 function showSection(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -391,8 +515,13 @@ function toggleSidebar() {
 function populateCatDropdown() { document.getElementById('itemCat').innerHTML = Object.keys(catEmojis).map(c => `<option value="${c}">${c}</option>`).join(''); }
 function renderCatTable() { document.querySelector('#catTable tbody').innerHTML = Object.keys(catEmojis).map(cat => `<tr><td>${catEmojis[cat]}</td><td><strong>${cat}</strong></td><td>${menu.filter(m => m.cat === cat).length} items</td><td><button class="action-btn" onclick="deleteCat('${cat}')">🗑️</button></td></tr>`).join(''); }
 function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Supprimez d\'abord les produits de cette catégorie !'); delete catEmojis[cat]; saveAndRefresh(); }
-function initWifiForm() { document.getElementById('wifiSSID').value = wifiData.ssid; document.getElementById('wifiPassInput').value = wifiData.pass; document.getElementById('hintS').textContent = wifiData.ssid; document.getElementById('hintP').textContent = wifiData.pass; }
-function updateStats() { document.getElementById('stat-products').textContent = menu.length; document.getElementById('stat-cats').textContent = Object.keys(catEmojis).length; document.getElementById('stat-promo').textContent = promoId ? 'OUI' : 'NON'; }
+function initWifiForm() {
+    document.getElementById('wifiSSID').value = restaurantConfig.wifi.name;
+    document.getElementById('wifiPassInput').value = restaurantConfig.wifi.code;
+    document.getElementById('hintS').textContent = restaurantConfig.wifi.name;
+    document.getElementById('hintP').textContent = restaurantConfig.wifi.code;
+}
+function updateStats() { document.getElementById('stat-products').textContent = menu.length; document.getElementById('stat-cats').textContent = Object.keys(catEmojis).length; document.getElementById('stat-promo').textContent = promoIds.length; }
 
 // IMAGE MODAL LOGIC
 let currentEditingId = null;
@@ -482,4 +611,118 @@ function deleteModalImage(index) {
     saveAndRefresh();
     renderModalImages();
     showToast('Image supprimée');
+}
+
+function resetDefaults() {
+    if (confirm('Êtes-vous sûr de vouloir réinitialiser TOUTES les données du menu et de la configuration aux valeurs par défaut ? Cette action est irréversible.')) {
+        localStorage.removeItem('foody_menu');
+        localStorage.removeItem('foody_cat_emojis');
+        localStorage.removeItem('foody_config');
+        localStorage.removeItem('foody_super_cats');
+        localStorage.removeItem('foody_promo_ids');
+        localStorage.removeItem('foody_hours');
+        localStorage.removeItem('foody_hours_note');
+        location.reload();
+    }
+}
+
+// ═══════════════════════ HOURS MANAGEMENT ═══════════════════════
+const HOUR_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+function initHoursForm() {
+    const hours = JSON.parse(localStorage.getItem('foody_hours')) || window.defaultHours;
+    const note = localStorage.getItem('foody_hours_note') || window.defaultHoursNote || '';
+
+    // Populate inputs
+    HOUR_KEYS.forEach((key, i) => {
+        const h = hours[i];
+        const openEl = document.getElementById(`h_${key}_open`);
+        const closeEl = document.getElementById(`h_${key}_close`);
+        const hlEl = document.getElementById(`h_${key}_hl`);
+        if (openEl) openEl.value = h.open || '11:00';
+        if (closeEl) closeEl.value = h.close || '23:00';
+        if (hlEl) hlEl.checked = h.highlight || false;
+    });
+
+    const noteEl = document.getElementById('hoursNote');
+    if (noteEl) noteEl.value = note;
+
+    // Form submit
+    const form = document.getElementById('hoursForm');
+    if (form) {
+        form.onsubmit = function (e) {
+            e.preventDefault();
+            const updatedHours = window.defaultHours.map((def, i) => {
+                const key = HOUR_KEYS[i];
+                return {
+                    day: def.day,
+                    i18n: def.i18n,
+                    open: document.getElementById(`h_${key}_open`).value || def.open,
+                    close: document.getElementById(`h_${key}_close`).value || def.close,
+                    highlight: document.getElementById(`h_${key}_hl`).checked
+                };
+            });
+            const updatedNote = document.getElementById('hoursNote').value.trim();
+            localStorage.setItem('foody_hours', JSON.stringify(updatedHours));
+            localStorage.setItem('foody_hours_note', updatedNote);
+            showToast('✅ Horaires mis à jour !');
+        };
+    }
+}
+
+// ═══════════════════════ GALLERY MANAGEMENT ═══════════════════════
+
+function initGalleryForm() {
+    const form = document.getElementById('galleryForm');
+    if (!form) return;
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('galleryFileInput');
+        const urlInput = document.getElementById('galleryUrlInput');
+
+        if (!restaurantConfig.gallery) restaurantConfig.gallery = [];
+
+        // Handle URLs
+        if (urlInput.value.trim()) {
+            restaurantConfig.gallery.push(urlInput.value.trim());
+            urlInput.value = '';
+        }
+
+        // Handle Files
+        if (fileInput.files.length > 0) {
+            for (let file of fileInput.files) {
+                const base64 = await toBase64(file);
+                restaurantConfig.gallery.push(base64);
+            }
+            fileInput.value = '';
+        }
+
+        saveAndRefresh();
+        renderGalleryAdmin();
+        showToast('🖼️ Images ajoutées à la galerie !');
+    };
+}
+
+function renderGalleryAdmin() {
+    const grid = document.getElementById('galleryAdminGrid');
+    if (!grid) return;
+
+    const images = restaurantConfig.gallery || [];
+
+    grid.innerHTML = images.map((img, index) => `
+        <div style="position:relative; aspect-ratio:1.5; border-radius:12px; overflow:hidden; border:1px solid #ddd; background:#eee;">
+            <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+            <button onclick="deleteGalleryImage(${index})" style="position:absolute; top:8px; right:8px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; font-size:14px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);">✕</button>
+        </div>
+    `).join('') + (images.length === 0 ? '<p style="grid-column: 1/-1; color:#888; text-align:center; padding:40px; border:2px dashed #eee; border-radius:15px;">La galerie est vide.</p>' : '');
+}
+
+function deleteGalleryImage(index) {
+    if (confirm('Supprimer cette image de la galerie ?')) {
+        restaurantConfig.gallery.splice(index, 1);
+        saveAndRefresh();
+        renderGalleryAdmin();
+        showToast('Image supprimée');
+    }
 }
