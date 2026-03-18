@@ -95,6 +95,7 @@ Before publishing the menu:
 
 - normalize categories
 - use super-categories only when they improve navigation
+- review category names and super-category labels in FR / EN / AR
 - confirm prices
 - confirm promo flags
 - confirm featured flags

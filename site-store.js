@@ -9,6 +9,7 @@ const uploadsDir = process.env.UPLOADS_DIR || bundledUploadsDir;
 const FALLBACK_DATA = {
   menu: [],
   catEmojis: {},
+  categoryTranslations: {},
   wifi: {
     ssid: "",
     pass: ""
@@ -111,6 +112,23 @@ function sanitizeMenuTranslations(input) {
   };
 }
 
+function sanitizeEntityTranslationBucket(input) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    name: asString(source.name, 160).trim(),
+    desc: asString(source.desc, 2000).trim()
+  };
+}
+
+function sanitizeEntityTranslations(input) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    fr: sanitizeEntityTranslationBucket(source.fr),
+    en: sanitizeEntityTranslationBucket(source.en),
+    ar: sanitizeEntityTranslationBucket(source.ar)
+  };
+}
+
 function sanitizeMenuItem(item, index) {
   const source = item && typeof item === "object" ? item : {};
   const images = sanitizeImages(source.images, source.img);
@@ -157,6 +175,44 @@ function sanitizeWifi(input) {
     ssid: asString(source.ssid, 120) || "Restaurant WiFi",
     pass: asString(source.pass, 120) || "Ask the team"
   };
+}
+
+function sanitizeCategoryTranslations(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const out = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    const safeKey = asString(key, 120).trim();
+    if (!safeKey) continue;
+    out[safeKey] = sanitizeEntityTranslations(value);
+  }
+
+  return out;
+}
+
+function sanitizeSuperCategories(input) {
+  const source = Array.isArray(input) ? input : [];
+  return source
+    .map((entry, index) => {
+      const item = entry && typeof entry === "object" ? entry : {};
+      const name = asString(item.name, 160).trim();
+      const id = asString(item.id, 120).trim() || `super-category-${index + 1}`;
+
+      return {
+        id,
+        name,
+        desc: asString(item.desc, 240).trim(),
+        emoji: asString(item.emoji, 16).trim() || "🍽️",
+        time: asString(item.time, 64).trim(),
+        cats: Array.isArray(item.cats)
+          ? item.cats
+            .filter((value) => typeof value === "string" && value.trim())
+            .map((value) => value.trim().slice(0, 120))
+          : [],
+        translations: sanitizeEntityTranslations(item.translations)
+      };
+    })
+    .filter((entry) => entry.name);
 }
 
 function sanitizeSocial(input) {
@@ -305,6 +361,7 @@ function normalizeData(input) {
   // Sanitize known core fields
   result.menu = menu;
   result.catEmojis = sanitizeCatEmojis(source.catEmojis);
+  result.categoryTranslations = sanitizeCategoryTranslations(source.categoryTranslations);
   result.wifi = sanitizeWifi(source.wifi);
   result.social = sanitizeSocial(source.social);
   result.guestExperience = sanitizeGuestExperience(source.guestExperience);
@@ -314,6 +371,7 @@ function normalizeData(input) {
   result.contentTranslations = sanitizeContentTranslations(source.contentTranslations);
   result.hoursNote = sanitizeHoursNote(source.hoursNote);
   result.promoId = sanitizePromoId(source.promoId, menu);
+  result.superCategories = sanitizeSuperCategories(source.superCategories);
 
   // Sanitize promoIds array
   if (Array.isArray(source.promoIds)) {

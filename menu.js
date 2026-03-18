@@ -32,6 +32,7 @@ async function syncDataFromServer() {
         if (typeof window.mergeRestaurantConfig === 'function') {
             window.mergeRestaurantConfig({
                 superCategories: Array.isArray(data.superCategories) ? data.superCategories : window.restaurantConfig.superCategories,
+                categoryTranslations: data.categoryTranslations || window.restaurantConfig.categoryTranslations,
                 wifi: data.wifi ? { name: data.wifi.ssid, code: data.wifi.pass } : window.restaurantConfig.wifi,
                 socials: data.social || window.restaurantConfig.socials,
                 location: data.landing?.location || window.restaurantConfig.location,
@@ -568,7 +569,7 @@ function renderSuperCatPills() {
     if (!container) return;
     container.innerHTML = getSuperCategories().map((sc, i) => `
         <button class="super-cat-pill ${i === 0 ? 'active' : ''}" onclick="openSuperCatSheet()">
-            ${sc.emoji} ${sc.name}
+            ${sc.emoji} ${window.getLocalizedSuperCategoryName(sc, sc.name)}
         </button>
     `).join('');
 }
@@ -581,8 +582,8 @@ function renderSuperCatSheet() {
             <div class="super-cat-row-left">
                 <span class="super-cat-row-emoji">${sc.emoji}</span>
                 <div class="super-cat-row-info">
-                    <div class="super-cat-row-name">${sc.name}</div>
-                    <div class="super-cat-row-desc">${sc.desc}</div>
+                    <div class="super-cat-row-name">${window.getLocalizedSuperCategoryName(sc, sc.name)}</div>
+                    <div class="super-cat-row-desc">${window.getLocalizedSuperCategoryDescription(sc, sc.desc)}</div>
                 </div>
             </div>
             <span class="super-cat-row-arrow">›</span>
@@ -615,14 +616,14 @@ function selectSuperCategory(scId) {
 function showSubCategoryGrid(sc, addToStack = true) {
     if (addToStack) navigationStack.push(`subcats:${sc.id}`);
 
-    showMenuNavigationView(sc.name);
+    showMenuNavigationView(window.getLocalizedSuperCategoryName(sc, sc.name));
 
     const navWrapper = document.getElementById('catNavWrapper');
     const subCatTitle = document.getElementById('subCatTitle');
     const menuContent = document.getElementById('menuContent');
     const searchBox = document.getElementById('menuSearchBox');
 
-    if (subCatTitle) subCatTitle.textContent = sc.name;
+    if (subCatTitle) subCatTitle.textContent = window.getLocalizedSuperCategoryName(sc, sc.name);
 
     navWrapper.style.display = 'block';
     menuContent.style.display = 'none';
@@ -635,7 +636,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
     catNav.innerHTML = filteredCats.map(c => `
         <button class="menu-cat-btn menu-reveal-observe" data-cat="${c}" onclick="showCategoryItems('${c}')">
             <span class="cat-emoji">${catEmojis[c] || '🍴'}</span>
-            <span class="cat-name">${c}</span>
+            <span class="cat-name">${window.getLocalizedCategoryName(c, c)}</span>
         </button>
     `).join('');
 
@@ -652,7 +653,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
 function showCategoryItems(cat) {
     navigationStack.push(`items:${cat}`);
 
-    showMenuNavigationView(cat);
+    showMenuNavigationView(window.getLocalizedCategoryName(cat, cat));
 
     const navWrapper = document.getElementById('catNavWrapper');
     const menuContent = document.getElementById('menuContent');
@@ -688,7 +689,7 @@ function renderMenu() {
         const items = menu.filter(m => m.cat === cat && m.available !== false);
         return `
             <section class="menu-section menu-reveal-observe" id="cat-${cat.replace(/\s/g, '-')}">
-                <h2 class="menu-section-title">${catEmojis[cat] || '🍴'} ${cat}</h2>
+                <h2 class="menu-section-title">${catEmojis[cat] || '🍴'} ${window.getLocalizedCategoryName(cat, cat)}</h2>
                 <div class="menu-grid">
                     ${items.map(item => `
                         <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${item.id})">

@@ -89,6 +89,7 @@ function applySiteData(data) {
             phone: data?.landing?.phone || window.restaurantConfig?.phone,
             gallery: Array.isArray(data?.gallery) ? data.gallery : window.restaurantConfig?.gallery,
             superCategories: Array.isArray(data?.superCategories) ? data.superCategories : window.restaurantConfig?.superCategories,
+            categoryTranslations: data?.categoryTranslations || window.restaurantConfig?.categoryTranslations,
             _hours: Array.isArray(data?.hours) ? data.hours : window.restaurantConfig?._hours,
             _hoursNote: typeof data?.hoursNote === 'string' ? data.hoursNote : window.restaurantConfig?._hoursNote,
             branding: data?.branding || window.restaurantConfig?.branding,

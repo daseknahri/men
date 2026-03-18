@@ -18,6 +18,27 @@ function cloneStarterTranslations(input) {
     };
 }
 
+function cloneStarterTranslationMap(input) {
+    const source = input && typeof input === 'object' ? input : {};
+    const out = {};
+
+    Object.entries(source).forEach(([key, value]) => {
+        if (typeof key !== 'string' || !key.trim()) return;
+        out[key] = cloneStarterTranslations(value);
+    });
+
+    return out;
+}
+
+function cloneStarterSuperCategory(group) {
+    const source = group && typeof group === 'object' ? group : {};
+    return {
+        ...source,
+        cats: Array.isArray(source.cats) ? [...source.cats] : [],
+        translations: cloneStarterTranslations(source.translations)
+    };
+}
+
 function cloneStarterMenuItem(item) {
     return {
         ...item,
@@ -243,6 +264,33 @@ window.whiteLabelStarterSeed = {
         "Desserts": "🍰",
         "Boissons": "🥤"
     },
+    categoryTranslations: {
+        "EntrÃ©es": {
+            fr: { name: "EntrÃ©es" },
+            en: { name: "Starters" },
+            ar: { name: "المقبلات" }
+        },
+        "Plats": {
+            fr: { name: "Plats" },
+            en: { name: "Mains" },
+            ar: { name: "الأطباق الرئيسية" }
+        },
+        "Signatures": {
+            fr: { name: "Signatures" },
+            en: { name: "Signatures" },
+            ar: { name: "الأطباق المميزة" }
+        },
+        "Desserts": {
+            fr: { name: "Desserts" },
+            en: { name: "Desserts" },
+            ar: { name: "الحلويات" }
+        },
+        "Boissons": {
+            fr: { name: "Boissons" },
+            en: { name: "Drinks" },
+            ar: { name: "المشروبات" }
+        }
+    },
     superCategories: [
         {
             id: "cuisine",
@@ -278,10 +326,39 @@ window.whiteLabelStarterSeed = {
 // The white-label starter pack is the active runtime default.
 window.defaultMenu = window.whiteLabelStarterSeed.menu.map(cloneStarterMenuItem);
 window.defaultCatEmojis = { ...window.whiteLabelStarterSeed.catEmojis };
-window.defaultSuperCategories = window.whiteLabelStarterSeed.superCategories.map((group) => ({
-    ...group,
-    cats: Array.isArray(group.cats) ? [...group.cats] : []
-}));
+window.defaultCategoryTranslations = cloneStarterTranslationMap(window.whiteLabelStarterSeed.categoryTranslations);
+window.defaultSuperCategories = window.whiteLabelStarterSeed.superCategories.map(cloneStarterSuperCategory);
+
+const starterCategoryKeys = Object.keys(window.defaultCatEmojis);
+if (!window.defaultCategoryTranslations[starterCategoryKeys[0]]) {
+    window.defaultCategoryTranslations = {
+        [starterCategoryKeys[0] || 'Starters']: {
+            fr: { name: starterCategoryKeys[0] || 'Entrées' },
+            en: { name: 'Starters' },
+            ar: { name: 'المقبلات' }
+        },
+        [starterCategoryKeys[1] || 'Mains']: {
+            fr: { name: starterCategoryKeys[1] || 'Plats' },
+            en: { name: 'Mains' },
+            ar: { name: 'الأطباق الرئيسية' }
+        },
+        [starterCategoryKeys[2] || 'Signatures']: {
+            fr: { name: starterCategoryKeys[2] || 'Signatures' },
+            en: { name: 'Signatures' },
+            ar: { name: 'الأطباق المميزة' }
+        },
+        [starterCategoryKeys[3] || 'Desserts']: {
+            fr: { name: starterCategoryKeys[3] || 'Desserts' },
+            en: { name: 'Desserts' },
+            ar: { name: 'الحلويات' }
+        },
+        [starterCategoryKeys[4] || 'Drinks']: {
+            fr: { name: starterCategoryKeys[4] || 'Boissons' },
+            en: { name: 'Drinks' },
+            ar: { name: 'المشروبات' }
+        }
+    };
+}
 
 window.defaultBranding = {
     "presetId": "core",
@@ -1005,6 +1082,7 @@ window.defaultConfig = {
         "tripadvisor": "",
         "whatsapp": ""
     },
+    "categoryTranslations": window.defaultCategoryTranslations,
     "superCategories": window.defaultSuperCategories,
     "wifi": {
         "name": "",
@@ -1043,6 +1121,7 @@ window.defaultConfig = {
         location: { ...window.defaultConfig.location },
         socials: { ...window.defaultConfig.socials },
         wifi: { ...window.defaultConfig.wifi },
+        categoryTranslations: cloneStarterTranslationMap(window.defaultCategoryTranslations),
         superCategories: [...window.defaultSuperCategories],
         gallery: [],
         guestExperience: normalizeGuestExperience(window.defaultConfig.guestExperience),
@@ -1075,6 +1154,45 @@ function normalizeContentTranslations(input) {
     return out;
 }
 
+function normalizeEntityTranslations(input) {
+    const source = input && typeof input === 'object' ? input : {};
+    return {
+        fr: {
+            name: typeof source.fr?.name === 'string' ? source.fr.name.trim() : '',
+            desc: typeof source.fr?.desc === 'string' ? source.fr.desc.trim() : ''
+        },
+        en: {
+            name: typeof source.en?.name === 'string' ? source.en.name.trim() : '',
+            desc: typeof source.en?.desc === 'string' ? source.en.desc.trim() : ''
+        },
+        ar: {
+            name: typeof source.ar?.name === 'string' ? source.ar.name.trim() : '',
+            desc: typeof source.ar?.desc === 'string' ? source.ar.desc.trim() : ''
+        }
+    };
+}
+
+function normalizeCategoryTranslations(input) {
+    const source = input && typeof input === 'object' ? input : {};
+    const out = {};
+
+    Object.entries(source).forEach(([key, value]) => {
+        if (typeof key !== 'string' || !key.trim()) return;
+        out[key.trim()] = normalizeEntityTranslations(value);
+    });
+
+    return out;
+}
+
+function normalizeSuperCategories(input) {
+    const source = Array.isArray(input) ? input : [];
+    return source.map((group) => ({
+        ...(group && typeof group === 'object' ? group : {}),
+        cats: Array.isArray(group?.cats) ? group.cats.filter(Boolean) : [],
+        translations: normalizeEntityTranslations(group?.translations)
+    }));
+}
+
 window.mergeRestaurantConfig = function (patch) {
     const source = patch && typeof patch === 'object' ? patch : {};
     const current = window.restaurantConfig || {};
@@ -1085,6 +1203,11 @@ window.mergeRestaurantConfig = function (patch) {
     next.location = { ...window.defaultConfig.location, ...(current.location || {}), ...(source.location || {}) };
     next.socials = { ...window.defaultConfig.socials, ...(current.socials || {}), ...(source.socials || {}) };
     next.wifi = { ...window.defaultConfig.wifi, ...(current.wifi || {}), ...(source.wifi || {}) };
+    next.categoryTranslations = {
+        ...normalizeCategoryTranslations(window.defaultConfig.categoryTranslations),
+        ...normalizeCategoryTranslations(current.categoryTranslations),
+        ...normalizeCategoryTranslations(source.categoryTranslations)
+    };
     next.guestExperience = normalizeGuestExperience(source.guestExperience || current.guestExperience || window.defaultConfig.guestExperience);
     next.sectionVisibility = normalizeSectionVisibility(source.sectionVisibility || current.sectionVisibility || window.defaultConfig.sectionVisibility);
     next.sectionOrder = normalizeSectionOrder(source.sectionOrder || current.sectionOrder || window.defaultConfig.sectionOrder);
@@ -1099,11 +1222,11 @@ window.mergeRestaurantConfig = function (patch) {
         next.gallery = Array.isArray(current.gallery) ? current.gallery : [];
     }
 
-    if (!Array.isArray(next.superCategories)) {
-        next.superCategories = Array.isArray(current.superCategories)
-            ? current.superCategories
-            : window.defaultSuperCategories;
-    }
+    next.superCategories = normalizeSuperCategories(
+        Array.isArray(source.superCategories)
+            ? source.superCategories
+            : (Array.isArray(current.superCategories) ? current.superCategories : window.defaultSuperCategories)
+    );
 
     window.restaurantConfig = next;
 
@@ -1163,6 +1286,46 @@ window.getLocalizedMenuField = function (item, field, fallback = '') {
     }
 
     return fallback;
+};
+
+window.getLocalizedCategoryName = function (categoryKey, fallback = '') {
+    const rawKey = typeof categoryKey === 'string' ? categoryKey : '';
+    const translations = window.restaurantConfig?.categoryTranslations?.[rawKey];
+    const lang = window.currentLang || document.documentElement.lang || 'fr';
+    const translated = translations?.[lang]?.name;
+
+    if (typeof translated === 'string' && translated.trim()) {
+        return translated.trim();
+    }
+    if (rawKey.trim()) {
+        return rawKey.trim();
+    }
+    return fallback;
+};
+
+window.getLocalizedSuperCategoryField = function (superCategory, field, fallback = '') {
+    if (!superCategory || typeof superCategory !== 'object') return fallback;
+    const lang = window.currentLang || document.documentElement.lang || 'fr';
+    const translated = superCategory.translations?.[lang]?.[field];
+
+    if (typeof translated === 'string' && translated.trim()) {
+        return translated.trim();
+    }
+
+    const baseValue = superCategory[field];
+    if (typeof baseValue === 'string' && baseValue.trim()) {
+        return baseValue.trim();
+    }
+
+    return fallback;
+};
+
+window.getLocalizedSuperCategoryName = function (superCategory, fallback = '') {
+    return window.getLocalizedSuperCategoryField(superCategory, 'name', fallback);
+};
+
+window.getLocalizedSuperCategoryDescription = function (superCategory, fallback = '') {
+    return window.getLocalizedSuperCategoryField(superCategory, 'desc', fallback);
 };
 
 window.getLocalizedMenuName = function (item) {

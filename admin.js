@@ -1,5 +1,6 @@
 let menu = [];
 let catEmojis = window.defaultCatEmojis || {};
+let categoryTranslations = window.defaultCategoryTranslations || {};
 let restaurantConfig = window.restaurantConfig || window.defaultConfig || {};
 let promoIds = [];
 let adminAuth = { user: 'admin', pass: '' };
@@ -506,6 +507,85 @@ function renderMenuTranslationBadges(item) {
     }).join('');
 }
 
+function normalizeEntityTranslations(input) {
+    const source = input && typeof input === 'object' ? input : {};
+    return {
+        fr: {
+            name: typeof source.fr?.name === 'string' ? source.fr.name.trim() : '',
+            desc: typeof source.fr?.desc === 'string' ? source.fr.desc.trim() : ''
+        },
+        en: {
+            name: typeof source.en?.name === 'string' ? source.en.name.trim() : '',
+            desc: typeof source.en?.desc === 'string' ? source.en.desc.trim() : ''
+        },
+        ar: {
+            name: typeof source.ar?.name === 'string' ? source.ar.name.trim() : '',
+            desc: typeof source.ar?.desc === 'string' ? source.ar.desc.trim() : ''
+        }
+    };
+}
+
+function getCategoryTranslations(catKey) {
+    return normalizeEntityTranslations(categoryTranslations?.[catKey]);
+}
+
+function setCategoryTranslationFields(catKey = '') {
+    const translations = getCategoryTranslations(catKey);
+    const baseName = typeof catKey === 'string' ? catKey.trim() : '';
+    const fieldMap = {
+        fr: 'catNameFr',
+        en: 'catNameEn',
+        ar: 'catNameAr'
+    };
+
+    Object.entries(fieldMap).forEach(([lang, fieldId]) => {
+        const input = document.getElementById(fieldId);
+        if (input) {
+            input.value = translations[lang].name || (lang === 'fr' ? baseName : '');
+        }
+    });
+}
+
+function buildCategoryTranslations(baseName) {
+    const safeBaseName = typeof baseName === 'string' ? baseName.trim() : '';
+    const next = normalizeEntityTranslations(categoryTranslations?.[safeBaseName]);
+
+    ['fr', 'en', 'ar'].forEach((lang) => {
+        const input = document.getElementById(`catName${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
+        next[lang].name = input ? input.value.trim() : '';
+        next[lang].desc = '';
+    });
+
+    if (!next.fr.name && safeBaseName) {
+        next.fr.name = safeBaseName;
+    }
+
+    return next;
+}
+
+function setSuperCategoryTranslationFields(input) {
+    const translations = normalizeEntityTranslations(input);
+    ['fr', 'en', 'ar'].forEach((lang) => {
+        const nameInput = document.getElementById(`scName${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
+        const descInput = document.getElementById(`scDesc${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
+        if (nameInput) nameInput.value = translations[lang].name || '';
+        if (descInput) descInput.value = translations[lang].desc || '';
+    });
+}
+
+function buildSuperCategoryTranslations(name, desc) {
+    const next = normalizeEntityTranslations();
+    ['fr', 'en', 'ar'].forEach((lang) => {
+        const nameInput = document.getElementById(`scName${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
+        const descInput = document.getElementById(`scDesc${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
+        next[lang].name = nameInput ? nameInput.value.trim() : '';
+        next[lang].desc = descInput ? descInput.value.trim() : '';
+    });
+    if (!next.fr.name && name) next.fr.name = name;
+    if (!next.fr.desc && desc) next.fr.desc = desc;
+    return next;
+}
+
 // Load all data from server API
 async function loadDataFromServer() {
     try {
@@ -520,6 +600,9 @@ async function loadDataFromServer() {
         if (data.catEmojis && Object.keys(data.catEmojis).length > 0) {
             catEmojis = data.catEmojis;
         }
+        categoryTranslations = data.categoryTranslations && typeof data.categoryTranslations === 'object'
+            ? data.categoryTranslations
+            : (window.defaultCategoryTranslations || {});
 
         // Populate config from server data
         if (typeof window.mergeRestaurantConfig === 'function') {
@@ -530,6 +613,7 @@ async function loadDataFromServer() {
                 guestExperience: data.guestExperience || restaurantConfig.guestExperience,
                 sectionVisibility: data.sectionVisibility || restaurantConfig.sectionVisibility,
                 sectionOrder: data.sectionOrder || restaurantConfig.sectionOrder,
+                categoryTranslations: data.categoryTranslations || restaurantConfig.categoryTranslations,
                 location: data.landing?.location || restaurantConfig.location,
                 phone: data.landing?.phone || restaurantConfig.phone,
                 _hours: Array.isArray(data.hours) ? data.hours : restaurantConfig._hours,
@@ -539,6 +623,7 @@ async function loadDataFromServer() {
                 contentTranslations: data.contentTranslations || restaurantConfig.contentTranslations
             });
             restaurantConfig = window.restaurantConfig;
+            categoryTranslations = restaurantConfig.categoryTranslations || categoryTranslations;
         }
         if (data.promoId !== undefined) {
             promoIds = data.promoId ? [data.promoId] : [];
@@ -685,6 +770,8 @@ function refreshUI() {
     initWifiForm();
     initLandingPageForm();
     initSuperCatForm();
+    setCategoryTranslationFields();
+    setSuperCategoryTranslationFields();
     initSecurityForm();
     initHoursForm();
     initGalleryForm();
@@ -1450,9 +1537,16 @@ function initForms() {
 
     document.getElementById('catForm').onsubmit = (e) => {
         e.preventDefault();
-        catEmojis[document.getElementById('catName').value] = document.getElementById('catEmoji').value;
+        const categoryName = document.getElementById('catName').value.trim();
+        if (!categoryName) {
+            showToast('Category name is required.');
+            return;
+        }
+        catEmojis[categoryName] = document.getElementById('catEmoji').value;
+        categoryTranslations[categoryName] = buildCategoryTranslations(categoryName);
         saveAndRefresh();
         e.target.reset();
+        setCategoryTranslationFields();
         showToast('Catégorie ajoutée !');
     };
 
@@ -1558,15 +1652,16 @@ function initForms() {
     document.getElementById('superCatForm').onsubmit = (e) => {
         e.preventDefault();
         const selectedCats = Array.from(document.querySelectorAll('.sc-cat-check:checked')).map(cb => cb.value);
-        const name = document.getElementById('scName').value;
+        const name = document.getElementById('scName').value.trim();
         const emoji = document.getElementById('scEmoji').value;
-        const desc = document.getElementById('scDesc').value;
+        const desc = document.getElementById('scDesc').value.trim();
         const time = document.getElementById('scTime').value;
+        const translations = buildSuperCategoryTranslations(name, desc);
 
         const id = name.toLowerCase().replace(/\s+/g, '_');
         const existingIdx = restaurantConfig.superCategories.findIndex(sc => sc.id === id);
 
-        const newSC = { id, name, emoji, desc, time, cats: selectedCats };
+        const newSC = { id, name, emoji, desc, time, cats: selectedCats, translations };
 
         if (existingIdx !== -1) {
             restaurantConfig.superCategories[existingIdx] = newSC;
@@ -2175,7 +2270,7 @@ function initSuperCatForm() {
     container.innerHTML = cats.map(cat => `
             <label style="display:flex; align-items:center; gap:5px; background:#f0f0f0; padding:5px 10px; border-radius:20px; font-size:0.8rem; cursor:pointer;">
                 <input type="checkbox" value="${cat}" class="sc-cat-check" style="width:auto; margin:0;">
-                    ${cat}
+                    ${escapeHtml(window.getLocalizedCategoryName(cat, cat))}
                 </label>
         `).join('');
 }
@@ -2203,6 +2298,7 @@ function editSuperCat(id) {
     document.getElementById('scEmoji').value = sc.emoji;
     document.getElementById('scDesc').value = sc.desc;
     document.getElementById('scTime').value = sc.time || '';
+    setSuperCategoryTranslationFields(sc.translations);
 
     const checks = document.querySelectorAll('.sc-cat-check');
     checks.forEach(cb => cb.checked = sc.cats.includes(cb.value));
@@ -2475,6 +2571,7 @@ async function saveAndRefreshLegacy() {
     const payload = {
         menu: cleanMenu,
         catEmojis: catEmojis,
+        categoryTranslations: categoryTranslations,
         wifi: { ssid: restaurantConfig.wifi?.name || '', pass: restaurantConfig.wifi?.code || '' },
         social: restaurantConfig.socials || {},
         guestExperience: restaurantConfig.guestExperience || window.defaultConfig?.guestExperience || { paymentMethods: [], facilities: [] },
@@ -2729,6 +2826,7 @@ async function saveAndRefresh() {
     const payload = {
         menu: cleanMenu,
         catEmojis: catEmojis,
+        categoryTranslations: categoryTranslations,
         wifi: { ssid: restaurantConfig.wifi?.name || '', pass: restaurantConfig.wifi?.code || '' },
         social: restaurantConfig.socials || {},
         guestExperience: restaurantConfig.guestExperience || window.defaultConfig?.guestExperience || { paymentMethods: [], facilities: [] },
@@ -2812,13 +2910,13 @@ function toggleSidebar() {
 }
 function populateCatDropdown() {
     const el = document.getElementById('itemCat');
-    if (el) el.innerHTML = Object.keys(catEmojis).map(c => `<option value="${c}">${c}</option>`).join('');
+    if (el) el.innerHTML = Object.keys(catEmojis).map(c => `<option value="${c}">${window.getLocalizedCategoryName(c, c)}</option>`).join('');
 }
 function renderCatTable() {
     const el = document.querySelector('#catTable tbody');
     if (el) el.innerHTML = Object.keys(catEmojis).map(cat => `<tr><td>${catEmojis[cat]}</td><td><strong>${cat}</strong></td><td>${menu.filter(m => m.cat === cat).length} items</td><td><button class="action-btn" onclick="deleteCat('${cat}')">🗑️</button></td></tr>`).join('');
 }
-function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Supprimez d\'abord les produits de cette catégorie !'); delete catEmojis[cat]; saveAndRefresh(); }
+function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Supprimez d\'abord les produits de cette catégorie !'); delete catEmojis[cat]; delete categoryTranslations[cat]; saveAndRefresh(); }
 function initWifiForm() {
     const fields = {
         'wifiSSID': restaurantConfig.wifi.name,
