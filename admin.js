@@ -57,7 +57,10 @@ async function loadDataFromServer() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if we already have a valid session
+    await checkSession();
+
     // Allow Enter key on login
     document.getElementById('loginPass').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') performAdminLogin();
@@ -66,6 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') document.getElementById('loginPass').focus();
     });
 });
+
+async function checkSession() {
+    try {
+        const res = await fetch('/api/admin/session', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.ok && data.authenticated) {
+            console.log('[ADMIN] Session valid. Auto-logging in...');
+            showDashboard();
+        }
+    } catch (e) {
+        console.error('[ADMIN] Session check error:', e);
+    }
+}
 
 async function performAdminLogin() {
     console.log('[LOGIN] performAdminLogin triggered');
@@ -584,6 +601,11 @@ async function uploadImageToServer(file) {
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            alert('⚠️ Session expirée. Veuillez vous reconnecter.');
+            location.reload();
+            return;
+        }
         throw new Error('Upload failed: ' + response.statusText);
     }
 
@@ -674,6 +696,11 @@ async function saveAndRefresh() {
             body: JSON.stringify(payload)
         });
         if (!res.ok) {
+            if (res.status === 401) {
+                alert('⚠️ Session expirée. Veuillez vous reconnecter.');
+                location.reload();
+                return;
+            }
             const err = await res.json().catch(() => ({}));
             throw new Error(err.error || 'Server save failed');
         }

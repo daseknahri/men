@@ -42,40 +42,76 @@ function parseCookies(cookieHeader) {
   return out;
 }
 
-function createSessionManager() {
-  const sessions = new Map();
+function createSessionManager(persistenceFile = null) {
+  let sessions = new Map();
 
-  function clearExpired() {
-    const now = Date.now();
-    for (const [token, expiresAt] of sessions.entries()) {
-      if (expiresAt <= now) {
-        sessions.delete(token);
+  function loadSessions() {
+    if (persistenceFile && fs.existsSync(persistenceFile)) {
+      try {
+        const raw = fs.readFileSync(persistenceFile, "utf8");
+        const data = JSON.parse(raw);
+        sessions = new Map(Object.entries(data));
+        console.log(`[AUTH] Loaded ${sessions.size} sessions from ${persistenceFile}`);
+      } catch (e) {
+        console.error("Error loading sessions:", e);
       }
     }
   }
+
+  function saveSessions() {
+    if (persistenceFile) {
+      try {
+        const obj = Object.fromEntries(sessions);
+        fs.writeFileSync(persistenceFile, JSON.stringify(obj), "utf8");
+      } catch (e) {
+        console.error("Error saving sessions:", e);
+      }
+    }
+  }
+
+  function clearExpired() {
+    const now = Date.now();
+    let changed = false;
+    for (const [token, expiresAt] of sessions.entries()) {
+      if (expiresAt <= now) {
+        sessions.delete(token);
+        changed = true;
+      }
+    }
+    if (changed) saveSessions();
+  }
+
+  // Initial load
+  loadSessions();
 
   function create() {
     clearExpired();
     const token = crypto.randomBytes(32).toString("hex");
     sessions.set(token, Date.now() + SESSION_TTL_MS);
+    saveSessions();
     return token;
   }
 
   function isValid(token) {
-    clearExpired();
     if (!token) return false;
     const expiresAt = sessions.get(token);
     if (!expiresAt) return false;
     if (expiresAt <= Date.now()) {
       sessions.delete(token);
+      saveSessions();
       return false;
     }
+    // Optional: Refresh TTL on use
     sessions.set(token, Date.now() + SESSION_TTL_MS);
+    saveSessions();
     return true;
   }
 
   function remove(token) {
-    if (token) sessions.delete(token);
+    if (token) {
+      sessions.delete(token);
+      saveSessions();
+    }
   }
 
   return { create, isValid, remove };
@@ -88,7 +124,13 @@ function getSessionToken(req) {
 }
 
 function setSessionCookie(res, token) {
-  const secure = booleanFromEnv(process.env.COOKIE_SECURE, process.env.NODE_ENV === "production");
+  // Be smart about Secure: only if NODE_ENV is production AND it's not localhost
+  const isProd = process.env.NODE_ENV === "production";
+  const envSecure = booleanFromEnv(process.env.COOKIE_SECURE, null);
+
+  let secure = isProd;
+  if (envSecure !== null) secure = envSecure;
+
   const attributes = [
     `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
     "Path=/",
@@ -105,7 +147,12 @@ function setSessionCookie(res, token) {
 }
 
 function clearSessionCookie(res) {
-  const secure = booleanFromEnv(process.env.COOKIE_SECURE, process.env.NODE_ENV === "production");
+  const isProd = process.env.NODE_ENV === "production";
+  const envSecure = booleanFromEnv(process.env.COOKIE_SECURE, null);
+
+  let secure = isProd;
+  if (envSecure !== null) secure = envSecure;
+
   const attributes = [
     `${SESSION_COOKIE}=`,
     "Path=/",

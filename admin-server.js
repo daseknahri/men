@@ -15,7 +15,7 @@ const { ensureStorage, readData, resetToBundledData, uploadsDir, writeData } = r
 const app = express();
 const port = parsePort(process.env.PORT, 3102);
 const upload = createUploadMiddleware();
-const sessions = createSessionManager();
+const sessions = createSessionManager(path.join(__dirname, "sessions.json"));
 
 const fs = require('fs');
 const authFile = path.join(__dirname, 'auth.json');
