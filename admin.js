@@ -557,8 +557,6 @@ async function loadDataFromServer() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const strayPasswordRule = document.querySelector('#menu #adminPasswordRule');
-    if (strayPasswordRule) strayPasswordRule.remove();
     const websiteHomeLink = document.querySelector('.back-btn');
     if (websiteHomeLink) websiteHomeLink.setAttribute('href', '/');
 
@@ -2219,50 +2217,6 @@ function deleteSuperCat(id) {
     }
 }
 
-function initSecurityFormLegacy() {
-    const form = document.getElementById('securityForm');
-    if (!form) return; // FIX: Don't crash if not on security tab or element missing
-
-    // Note: We can no longer auto-populate the password for security reasons,
-    // but we can populate the current logged-in username if needed.
-    const newUserInput = document.getElementById('adminNewUser');
-    if (newUserInput && adminAuth.user) newUserInput.value = adminAuth.user;
-
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const newUsername = document.getElementById('adminNewUser').value.trim();
-        const newPassword = document.getElementById('adminNewPass').value;
-        const confirmPassword = document.getElementById('adminConfirmPass').value;
-
-        if (newPassword && newPassword !== confirmPassword) {
-            return alert('❌ Les mots de passe ne correspondent pas !');
-        }
-
-        try {
-            const res = await fetch('/api/admin/credentials', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ newUsername, newPassword, confirmPassword })
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.ok) {
-                adminAuth.user = newUsername; // Update local memory
-                showToast('🔒 ' + (data.message || 'Identifiants mis à jour avec succès !'));
-                document.getElementById('adminNewPass').value = '';
-                document.getElementById('adminConfirmPass').value = '';
-            } else {
-                alert('❌ Erreur: ' + (data.error || 'Impossible de mettre à jour les identifiants.'));
-            }
-        } catch (err) {
-            console.error('Credentials update error:', err);
-            alert('❌ Erreur de connexion au serveur.');
-        }
-    };
-}
-
 async function uploadImageToServer(file) {
     const formData = new FormData();
     formData.append('image', file, file.name);
@@ -2597,9 +2551,17 @@ async function loadSecurityStatus() {
         notes.push(`Password rule: minimum ${data.minPasswordLength || 8} characters.`);
         notes.push('When credentials change, older admin sessions are closed automatically.');
 
+        const hasRisk = Boolean(
+            data.usesDefaultCredentials ||
+            data.isLegacyPlainText ||
+            data.credentialSource === 'default'
+        );
+        statusCard.classList.toggle('is-risk', hasRisk);
         statusCard.innerHTML = `
-            <strong style="display:block; margin-bottom:8px;">Security status</strong>
-            <div style="font-size:0.95rem; line-height:1.6;">${notes.join('<br>')}</div>
+            <div class="security-status-title">Security Status</div>
+            <ul class="security-status-list">
+                ${notes.map(note => `<li>${note}</li>`).join('')}
+            </ul>
         `;
         statusCard.style.display = '';
         renderLaunchReadinessCard();
@@ -2708,6 +2670,13 @@ function initSecurityForm() {
     };
 }
 
+function getFloatingSaveButtonMarkup(saved = false) {
+    if (saved) {
+        return '<span class="floating-action-icon">OK</span><span>Saved</span>';
+    }
+    return '<span class="floating-action-icon">SV</span><span>Save Changes</span>';
+}
+
 async function forceSaveChanges() {
     try {
         let saved = false;
@@ -2729,10 +2698,10 @@ async function forceSaveChanges() {
         const btn = document.getElementById('floatSaveBtn');
         if (btn) {
             btn.classList.add('saved');
-            btn.innerHTML = '<span style="font-size:1.3rem;">OK</span><span>Saved</span>';
+            btn.innerHTML = getFloatingSaveButtonMarkup(true);
             setTimeout(() => {
                 btn.classList.remove('saved');
-                btn.innerHTML = '<span style="font-size:1.3rem;">Save</span><span>Save</span>';
+                btn.innerHTML = getFloatingSaveButtonMarkup(false);
             }, 2500);
         }
     } catch (e) {

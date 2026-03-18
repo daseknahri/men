@@ -1156,6 +1156,8 @@
         }
 
         .tool-card {
+            position: relative;
+            overflow: hidden;
             border: 1px solid var(--border);
             border-radius: 20px;
             background: #fafbfc;
@@ -1164,10 +1166,50 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
 
+        .tool-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, rgba(255, 141, 8, 0.8), rgba(224, 30, 47, 0.34), rgba(59, 130, 246, 0.24));
+            opacity: 0.55;
+        }
+
         .tool-card:hover {
             transform: translateY(-2px);
             border-color: rgba(255, 141, 8, 0.18);
             box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+        }
+
+        .tool-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card--accent {
+            background: linear-gradient(180deg, #fffdf9 0%, #fff8ef 100%);
+            border-color: rgba(255, 141, 8, 0.2);
+        }
+
+        .tool-card--accent::before {
+            opacity: 1;
+        }
+
+        .tool-card-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            margin: 0 0 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 141, 8, 0.12);
+            color: #9a3412;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .tool-card h4 {
@@ -1377,6 +1419,199 @@
             align-items: center;
         }
 
+        .security-layout {
+            display: grid;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .security-main {
+            display: grid;
+            gap: 18px;
+        }
+
+        .security-status-card {
+            display: none;
+            border-radius: 20px;
+            padding: 18px 20px;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+            background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+            color: #1e3a8a;
+            box-shadow: 0 16px 34px rgba(37, 99, 235, 0.08);
+        }
+
+        .security-status-card.is-risk {
+            border-color: rgba(245, 158, 11, 0.25);
+            background: linear-gradient(180deg, #fff9ec 0%, #fff3d8 100%);
+            color: #92400e;
+            box-shadow: 0 16px 34px rgba(245, 158, 11, 0.12);
+        }
+
+        .security-status-title {
+            margin: 0 0 10px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .security-status-list {
+            margin: 0;
+            padding-left: 18px;
+            display: grid;
+            gap: 7px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .security-form {
+            background: #fff;
+            padding: 26px;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+        }
+
+        .security-form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .security-help {
+            display: block;
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .security-submit {
+            width: 100%;
+            justify-content: center;
+            padding: 14px 16px;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 14px 30px rgba(16, 185, 129, 0.22);
+        }
+
+        .security-submit:hover {
+            box-shadow: 0 18px 34px rgba(16, 185, 129, 0.28);
+        }
+
+        .security-side {
+            display: grid;
+            gap: 16px;
+        }
+
+        .security-side-card {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: #fafbfc;
+            padding: 18px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+        }
+
+        .security-side-card h4 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .security-side-card p {
+            margin: 0;
+            color: var(--text2);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .security-rule-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .security-rule-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: var(--text2);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .security-rule-dot {
+            flex-shrink: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 0.4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 0 4px rgba(255, 141, 8, 0.12);
+        }
+
+        .floating-action {
+            position: fixed;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease, background 0.22s ease;
+        }
+
+        .floating-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .floating-action-icon {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .floating-action--cache {
+            bottom: 100px;
+            background: rgba(31, 41, 55, 0.96);
+            color: #fff;
+            padding: 11px 18px;
+            font-size: 0.84rem;
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
+            opacity: 0.92;
+        }
+
+        .floating-action--save {
+            bottom: 30px;
+            background: linear-gradient(135deg, #ff8d08, #e01e2f);
+            color: #fff;
+            padding: 16px 24px;
+            font-size: 1rem;
+            box-shadow: 0 12px 30px rgba(230, 57, 70, 0.36);
+            animation: pulseSave 2s infinite;
+        }
+
+        @media (min-width: 1180px) {
+            .tool-card--wide {
+                grid-column: span 2;
+            }
+
+            .security-layout {
+                grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+            }
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             body {
@@ -1494,6 +1729,18 @@
 
             .primary-btn {
                 width: 100%;
+            }
+
+            .floating-action {
+                right: 20px;
+            }
+
+            .floating-action--cache {
+                bottom: 88px;
+            }
+
+            .floating-action--save {
+                bottom: 20px;
             }
         }
 
@@ -1672,10 +1919,9 @@
         <div class="header">
             <div>
                 <h2 id="section-title">Menu Management</h2>
-                <div id="adminSaveStatus" class="admin-save-status">
-                </div>
+                <div id="adminSaveStatus" class="admin-save-status"></div>
             </div>
-            <a href="/" class="back-btn">← Website Home</a>
+            <a href="/" class="back-btn">&larr; Website Home</a>
         </div>
 
         <!-- MENU SECTION -->
@@ -1691,7 +1937,6 @@
                         <label>Category</label>
                         <select id="itemCat" required></select>
                     </div>
-                    <small id="adminPasswordRule" class="helper-note">Minimum 8 caractÃ¨res.</small>
                 </div>
                 <div class="form-group">
                     <label>Default Description</label>
@@ -2111,7 +2356,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="primary-btn">💾 Save Branding</button>
+                <button type="submit" class="primary-btn">Save Branding</button>
             </form>
         </div>
 
@@ -2358,12 +2603,13 @@
 
         <!-- DATA TOOLS SECTION -->
         <div id="data-tools" class="section">
-            <h3>Backup & Import</h3>
+            <h3>Seller Tools</h3>
             <p class="copy-muted">
-                Export the current restaurant setup as a JSON backup, then import it later to restore or clone a project on another instance.
+                Review launch readiness, prepare handoff material, manage starter presets, and move restaurant data safely between instances.
             </p>
             <div class="tool-grid">
-                <div class="tool-card">
+                <div class="tool-card tool-card--accent tool-card--wide">
+                    <div class="tool-card-eyebrow">Audit</div>
                     <h4>Launch Readiness</h4>
                     <p>Review the current restaurant instance before handoff. This quick audit highlights missing branding, contact data, menu completeness, gallery coverage, and security issues.</p>
                     <div id="launchReadinessSummary" class="readiness-summary">
@@ -2375,6 +2621,7 @@
                     <div id="launchReadinessNote" class="readiness-note" style="display:none;"></div>
                 </div>
                 <div class="tool-card">
+                    <div class="tool-card-eyebrow">Delivery</div>
                     <h4>Handoff Summary</h4>
                     <p>Generate a concise operational summary for this restaurant instance before delivery or internal review.</p>
                     <div class="tool-actions">
@@ -2385,6 +2632,7 @@
                     <textarea id="handoffSummaryOutput" class="summary-output" readonly placeholder="Generate a summary to review the current restaurant setup."></textarea>
                 </div>
                 <div class="tool-card">
+                    <div class="tool-card-eyebrow">Media</div>
                     <h4>Menu Image Suggestions</h4>
                     <p>Assign local library placeholders to menu items that still have no image. Use this as a fast internal delivery step before real client photos or future AI generation.</p>
                     <div class="tool-actions">
@@ -2393,7 +2641,8 @@
                     </div>
                     <textarea id="menuImageSuggestionOutput" class="summary-output" readonly placeholder="Run the suggestion tool to assign local library images to items without visuals."></textarea>
                 </div>
-                <div class="tool-card">
+                <div class="tool-card tool-card--accent tool-card--wide">
+                    <div class="tool-card-eyebrow">Starter</div>
                     <h4>Quick Launch Preset</h4>
                     <p>Apply a strong starting point for a fast-food, cafe, or traditional restaurant before you fine-tune the final content.</p>
                     <div class="form-group">
@@ -2425,25 +2674,28 @@
                         <input type="text" id="quickStartWhatsApp" placeholder="+212 6..." />
                     </div>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()">✨ Apply Quick Launch Setup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()">Apply Quick Launch Setup</button>
                     </div>
                 </div>
                 <div class="tool-card">
+                    <div class="tool-card-eyebrow">Backup</div>
                     <h4>Export Current Restaurant</h4>
                     <p>Download the complete normalized website data including menu, branding, hours, translations, visibility, and section order.</p>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()">⬇️ Export Backup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()">Export Backup</button>
                     </div>
                 </div>
                 <div class="tool-card">
+                    <div class="tool-card-eyebrow">Restore</div>
                     <h4>Import Restaurant Backup</h4>
                     <p>Upload a previously exported JSON backup to restore or clone a restaurant setup quickly.</p>
                     <div class="tool-actions">
                         <input type="file" id="dataImportFile" accept="application/json,.json" />
-                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()">⬆️ Import Backup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()">Import Backup</button>
                     </div>
                 </div>
                 <div class="tool-card">
+                    <div class="tool-card-eyebrow">Reset</div>
                     <h4>Starter Reset</h4>
                     <p>Reset this instance back to the bundled starter template when you want to begin a fresh restaurant setup.</p>
                     <div class="tool-actions">
@@ -2456,41 +2708,49 @@
         <!-- SECURITY SECTION -->
         <div id="security" class="section">
             <h3>Admin Security</h3>
-            <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Modifiez votre identifiant et mot de passe de
-                connexion. Enregistré de manière persistante sur le serveur (auth.json).</p>
+            <p class="copy-muted">Update the admin login used for this restaurant. Credential changes are stored in persisted server storage and survive redeploys.</p>
 
-            <div id="securityStatusCard"
-                style="display:none; background:#fff8e7; border:1px solid #f6c66f; border-radius:15px; padding:18px 20px; max-width:500px; margin-bottom:18px; color:#7a4b00;">
+            <div class="security-layout">
+                <div class="security-main">
+                    <div id="securityStatusCard" class="security-status-card"></div>
+
+                    <form id="securityForm" class="security-form">
+                        <div class="form-group">
+                            <label for="adminNewUser">Admin Username</label>
+                            <input type="text" id="adminNewUser" required placeholder="admin" />
+                            <small class="security-help">Minimum 3 characters. This becomes the next admin login for this restaurant.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminNewPass">New Password</label>
+                            <input type="password" id="adminNewPass" placeholder="********" />
+                            <small class="security-help">Minimum 8 characters. Leave blank only if you want to keep the current password.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminConfirmPass">Confirm New Password</label>
+                            <input type="password" id="adminConfirmPass" placeholder="********" />
+                        </div>
+
+                        <button type="submit" class="primary-btn security-submit">Save Credentials</button>
+                    </form>
+                </div>
+
+                <div class="security-side">
+                    <div class="security-side-card">
+                        <h4>What happens on save</h4>
+                        <ul class="security-rule-list">
+                            <li><span class="security-rule-dot"></span><span>Older admin sessions are closed automatically after credentials change.</span></li>
+                            <li><span class="security-rule-dot"></span><span>If the instance still relies on env credentials, saving here creates the local persisted auth file for this restaurant.</span></li>
+                            <li><span class="security-rule-dot"></span><span>Credential changes are stored at the configured persisted auth path, not only inside the running container.</span></li>
+                        </ul>
+                    </div>
+                    <div class="security-side-card">
+                        <h4>Handoff policy</h4>
+                        <p>Do not deliver the website while default credentials remain active. Confirm the warning disappears in Launch Readiness and test a fresh login before handoff.</p>
+                    </div>
+                </div>
             </div>
-
-            <form id="securityForm"
-                style="background:#fff; padding:30px; border-radius:15px; border:1px solid #ddd; max-width:500px;">
-                <div class="form-group" style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">Nouvel Identifiant (Nom
-                        d'utilisateur)</label>
-                    <input type="text" id="adminNewUser" required placeholder="admin"
-                        style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;" />
-                    <small style="display:block; margin-top:8px; color:#777;">Minimum 8 caractÃ¨res.</small>
-                </div>
-
-                <div class="form-group" style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">Nouveau Mot de passe</label>
-                    <input type="password" id="adminNewPass" placeholder="••••••••"
-                        style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;" />
-                </div>
-
-                <div class="form-group" style="margin-bottom:30px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">Confirmez le nouveau mot de
-                        passe</label>
-                    <input type="password" id="adminConfirmPass" placeholder="••••••••"
-                        style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;" />
-                </div>
-
-                <button type="submit" class="primary-btn"
-                    style="width:100%; padding:14px; font-size:1.1rem; background: linear-gradient(135deg, #10b981, #059669); color:white; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 10px rgba(16, 185, 129, 0.3);">
-                    🔐 Sauvegarder les identifiants
-                </button>
-            </form>
         </div>
 
     </main>
@@ -2498,52 +2758,14 @@
     <div id="adminToast" class="toast"></div>
 
     <!-- CLEAR CACHE BUTTON -->
-    <button onclick="clearImageCache()" title="Libérer de l'espace en supprimant les images stockées localement" style="
-        position: fixed;
-        bottom: 100px;
-        right: 30px;
-        z-index: 9999;
-        background: #444;
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 10px 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        opacity: 0.85;
-        transition: all 0.2s;
-    " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
-        <span>🗑️</span><span>Vider Cache Images</span>
+    <button class="floating-action floating-action--cache" onclick="clearImageCache()" title="Clear local image cache">
+        <span class="floating-action-icon">CC</span><span>Clear Image Cache</span>
     </button>
 
     <!-- FLOATING SAVE BUTTON -->
-    <button id="floatSaveBtn" onclick="forceSaveChanges()" title="Enregistrer les modifications" style="
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        z-index: 9999;
-        background: linear-gradient(135deg, #ff8d08, #e01e2f);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 16px 28px;
-        font-size: 1rem;
-        font-weight: 800;
-        cursor: pointer;
-        box-shadow: 0 6px 25px rgba(230, 57, 70, 0.5);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.3s ease;
-        animation: pulseSave 2s infinite;
-    ">
-        <span style="font-size:1.3rem;">💾</span>
-        <span>Sauvegarder</span>
+    <button id="floatSaveBtn" class="floating-action floating-action--save" onclick="forceSaveChanges()" title="Save changes">
+        <span class="floating-action-icon">SV</span>
+        <span>Save Changes</span>
     </button>
 
     <style>
@@ -2551,19 +2773,19 @@
 
             0%,
             100% {
-                box-shadow: 0 6px 25px rgba(230, 57, 70, 0.5);
+                box-shadow: 0 12px 30px rgba(230, 57, 70, 0.36);
                 transform: scale(1);
             }
 
             50% {
-                box-shadow: 0 6px 40px rgba(230, 57, 70, 0.8), 0 0 0 8px rgba(230, 57, 70, 0.15);
-                transform: scale(1.03);
+                box-shadow: 0 18px 36px rgba(230, 57, 70, 0.44), 0 0 0 6px rgba(230, 57, 70, 0.11);
+                transform: translateY(-1px) scale(1.015);
             }
         }
 
         #floatSaveBtn:hover {
-            transform: scale(1.07) !important;
-            box-shadow: 0 8px 35px rgba(230, 57, 70, 0.7) !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 18px 38px rgba(230, 57, 70, 0.48) !important;
         }
 
         #floatSaveBtn.saved {

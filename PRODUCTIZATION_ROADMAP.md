@@ -21,6 +21,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 - The core readiness rows now include direct actions too, so contact data, hours, menu, gallery, branding, and security issues can all be opened from the audit itself
 - The public design now has a stronger polish layer too: homepage sections have better rhythm and reveal motion, and the menu shell/cards/promos have improved spacing and gentler staged motion
 - The latest public refinement pass tightened homepage spacing further and moved the menu landing/navigation/item motion to a rerender-safe observer pattern, so staged reveals still work after dynamic menu/category refreshes
+- The admin seller surfaces now have a cleaner desktop pass too: `Seller Tools` has stronger hierarchy, `Admin Security` now uses the shared card system instead of one-off inline layout, the floating admin actions are cleaner, and the stray broken helper text/legacy security path have been removed
 - The deployment workflow now has a concrete Coolify configure-and-deploy path, including a shared env template and a single `npm run predeploy` gate before pushing live changes
 - The repo is now also prepared for a separate product deployment target, with a dedicated `matsco.ibnbatoutaweb.com` Coolify env template using 4xxx ports so live QA can happen in an isolated project
 - The admin boot path no longer collides with `shared.js` on section-order constants, which fixes the live `Identifier 'SECTION_ORDER_KEYS' has already been declared` error on the admin page
@@ -346,8 +347,8 @@ Long term:
 
 ## Immediate Next Recommended Slices
 
-1. Expand the new local image library and replace the remaining placeholder media with a stronger launch-quality content/media set
-2. Create the isolated Coolify preview project for `matsco.ibnbatoutaweb.com`, deploy with the prepared 4xxx-port env template, and browser-QA the refreshed homepage/menu on the live instance
+1. Browser-QA the refreshed public site and admin on the live Coolify deployment, focusing on desktop spacing, motion restraint, and the rewritten seller-facing surfaces
+2. Expand the new local image library and replace the remaining placeholder media with a stronger launch-quality content/media set
 3. Start shaping the private launcher/onboarding flow around `IMPORTER_PAYLOAD_SPEC.md`
 4. Keep refining the seller handoff tooling so media blockers, warnings, and final delivery gates are easy to scan and resolve quickly
 5. Define the exact seller packages, what is customized manually, and what stays admin-editable after delivery
