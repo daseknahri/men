@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foody – Admin Panel</title>
+    <title>Restaurant - Admin Panel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -200,21 +200,198 @@
             margin-top: 20px;
         }
 
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .inline-check-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .inline-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 25px;
+        }
+
+        .inline-check label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .check-input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .multi-price-group {
+            display: none;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .file-input-spaced {
+            margin-bottom: 10px;
+        }
+
+        .secondary-btn {
+            background: #666;
+        }
+
+        .helper-note {
+            display: block;
+            margin-top: 8px;
+            color: #777;
+        }
+
+        .hours-form {
+            margin-top: 20px;
+        }
+
+        .hours-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .hours-admin-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 1fr 80px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .hours-admin-row.is-header {
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .form-grid-name-emoji {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 15px;
+        }
+
+        .panel-soft {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        .chip-select-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-height: 40px;
+        }
+
+        .landing-copy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .section-divider {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section-divider-title {
+            margin: 0 0 8px;
+        }
+
+        .section-divider-copy {
+            margin: 0 0 18px;
+            color: #6b7280;
+        }
+
+        .hint-chip-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            color: #6b7280;
+        }
+
+        .hint-chip {
+            padding: 6px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            background: #f9fafb;
+        }
+
+        .hint-chip.is-fr {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .hint-chip.is-en {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .hint-chip.is-ar {
+            background: #f5f3ff;
+            border-color: #ddd6fe;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .copy-muted {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-auto {
+            width: auto;
+        }
+
         .primary-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #ff7b00);
             color: #fff;
             border: none;
             padding: 12px 30px;
             border-radius: 50px;
             cursor: pointer;
             font-weight: 700;
-            transition: all 0.2s;
+            letter-spacing: 0.01em;
+            box-shadow: 0 10px 24px rgba(255, 141, 8, 0.22);
+            transition: all 0.2s ease;
         }
 
         .primary-btn:hover {
-            background: #ff7b00;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 141, 8, 0.3);
+            box-shadow: 0 14px 28px rgba(255, 141, 8, 0.28);
         }
 
         /* Table */
@@ -356,7 +533,7 @@
         }
 
         .login-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #ff7b00);
             color: #fff;
             border: none;
             padding: 14px 40px;
@@ -365,12 +542,14 @@
             font-size: 1.1rem;
             cursor: pointer;
             width: 100%;
-            transition: all 0.2s;
+            letter-spacing: 0.01em;
+            box-shadow: 0 14px 32px rgba(255, 141, 8, 0.24);
+            transition: all 0.2s ease;
         }
 
         .login-btn:hover {
-            background: #ff7b00;
             transform: translateY(-2px);
+            box-shadow: 0 18px 36px rgba(255, 141, 8, 0.3);
         }
 
         /* Social link preview */
@@ -394,6 +573,808 @@
 
         .social-chip span {
             font-size: 1.2rem;
+        }
+
+        .translation-hint {
+            margin: 0 0 12px;
+            color: var(--text2);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .translation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .translation-card {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            background: #fafbfc;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .translation-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 141, 8, 0.2);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        .translation-card h4 {
+            margin: 0 0 12px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .translation-card label {
+            font-size: 0.78rem;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .translation-card input {
+            margin-bottom: 12px;
+        }
+
+        .translation-card textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+
+        .translation-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0 4px;
+        }
+
+        .translation-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text2);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .translation-badge.is-filled {
+            background: #ecfdf3;
+            border-color: #98e2b3;
+            color: #157347;
+        }
+
+        .item-copy-meta {
+            margin: 6px 0 4px;
+        }
+
+        .branding-media-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .brand-asset-card,
+        .brand-preview-panel {
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: #fafbfc;
+            padding: 18px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .brand-asset-card:hover,
+        .brand-preview-panel:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 141, 8, 0.18);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+        }
+
+        .brand-asset-card h4,
+        .brand-preview-panel h4 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .brand-asset-card p,
+        .brand-preview-panel p {
+            margin: 0 0 14px;
+            color: var(--text2);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        .brand-asset-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .brand-secondary-btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .brand-secondary-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+            border-color: rgba(255, 141, 8, 0.22);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .brand-preview-card {
+            overflow: hidden;
+            border-radius: 20px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: #fff;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+        }
+
+        .brand-preview-hero {
+            min-height: 180px;
+            padding: 18px;
+            display: flex;
+            align-items: flex-end;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 45%, var(--primary) 100%);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .brand-preview-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.58));
+        }
+
+        .brand-preview-copy {
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            max-width: 320px;
+        }
+
+        .brand-preview-kicker {
+            margin: 0 0 8px;
+            font-size: 0.76rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0.82;
+        }
+
+        .brand-preview-title {
+            margin: 0;
+            font-size: 1.6rem;
+            line-height: 1.15;
+        }
+
+        .brand-preview-text {
+            margin: 8px 0 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .brand-preview-body {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .brand-preview-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            background: rgba(226, 27, 27, 0.14);
+            color: var(--primary);
+            background-size: cover;
+            background-position: center;
+            font-size: 1.35rem;
+            font-weight: 800;
+            overflow: hidden;
+        }
+
+        .brand-preview-name {
+            margin: 0;
+            font-size: 1.06rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .brand-preview-tagline {
+            margin: 6px 0 0;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+
+        .brand-preview-swatches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 0 18px 18px;
+        }
+
+        .brand-preview-swatch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 10px;
+            background: #f3f4f6;
+            color: var(--text2);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .brand-preview-swatch-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: #d1d5db;
+        }
+
+        .brand-preview-surfaces {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            padding: 0 18px 18px;
+        }
+
+        .brand-preview-surface {
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        }
+
+        .brand-surface-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.82);
+            background: rgba(15, 23, 42, 0.18);
+        }
+
+        .brand-surface-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-weight: 700;
+            backdrop-filter: blur(12px);
+        }
+
+        .brand-surface-caption {
+            opacity: 0.82;
+        }
+
+        .brand-home-surface {
+            background: #111318;
+        }
+
+        .brand-home-surface-body {
+            min-height: 220px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-end;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .brand-home-surface-overlay {
+            width: 100%;
+            border-radius: 20px;
+            padding: 18px;
+            color: #fff;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.72));
+        }
+
+        .brand-home-surface-kicker {
+            margin: 0 0 8px;
+            font-size: 0.74rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            opacity: 0.86;
+        }
+
+        .brand-home-surface-title {
+            margin: 0;
+            font-size: 1.3rem;
+            line-height: 1.12;
+            font-weight: 800;
+        }
+
+        .brand-home-surface-text {
+            margin: 10px 0 0;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.84);
+        }
+
+        .brand-home-surface-footer {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand-home-surface-meta {
+            font-size: 0.8rem;
+            opacity: 0.82;
+        }
+
+        .brand-home-surface-cta {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+            color: #fff;
+            cursor: default;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
+        }
+
+        .brand-menu-surface {
+            background: #111318;
+        }
+
+        .brand-menu-surface-body {
+            padding: 16px;
+        }
+
+        .brand-menu-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .brand-menu-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .brand-menu-chip.is-active {
+            color: #fff;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+        }
+
+        .brand-menu-card-preview {
+            display: grid;
+            grid-template-columns: 96px minmax(0, 1fr);
+            gap: 14px;
+            padding: 14px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .brand-menu-card-media {
+            min-height: 96px;
+            border-radius: 16px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .brand-menu-card-kicker {
+            margin: 0 0 6px;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.78;
+        }
+
+        .brand-menu-card-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .brand-menu-card-text {
+            margin: 8px 0 12px;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .brand-menu-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand-menu-card-price {
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+
+        .brand-menu-card-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .selection-card {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            background: #fafbfc;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .selection-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 141, 8, 0.18);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        .selection-card h4 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .selection-card p {
+            margin: 0 0 12px;
+            color: var(--text2);
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+
+        .selection-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .selection-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            font-size: 0.92rem;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .selection-option:hover {
+            border-color: rgba(255, 141, 8, 0.22);
+            background: #fffdf8;
+            transform: translateY(-1px);
+        }
+
+        .selection-option input {
+            width: auto;
+            margin: 0;
+        }
+
+        .section-order-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .section-order-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .section-order-copy {
+            display: grid;
+            gap: 2px;
+        }
+
+        .section-order-copy span {
+            color: var(--text2);
+            font-size: 0.82rem;
+        }
+
+        .section-order-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .section-order-btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .section-order-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .tool-card {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: #fafbfc;
+            padding: 18px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 141, 8, 0.18);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+        }
+
+        .tool-card h4 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .tool-card p {
+            margin: 0 0 14px;
+            color: var(--text2);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        .readiness-summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .readiness-summary-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .readiness-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .readiness-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            border-radius: 14px;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+        }
+
+        .readiness-item strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.92rem;
+        }
+
+        .readiness-item small {
+            color: var(--text2);
+            line-height: 1.45;
+        }
+
+        .readiness-item-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .readiness-action {
+            margin-top: 8px;
+            border: 0;
+            border-radius: 999px;
+            padding: 7px 12px;
+            font: 700 0.76rem/1 'Outfit', sans-serif;
+            background: rgba(37, 99, 235, 0.12);
+            color: #1d4ed8;
+            cursor: pointer;
+            transition: transform 0.16s ease, background-color 0.16s ease;
+        }
+
+        .readiness-action:hover {
+            background: rgba(37, 99, 235, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .readiness-badge {
+            flex-shrink: 0;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .readiness-item.is-ok {
+            border-color: rgba(16, 185, 129, 0.18);
+            background: #f0fdf4;
+        }
+
+        .readiness-item.is-ok .readiness-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .readiness-item.is-warn {
+            border-color: rgba(245, 158, 11, 0.2);
+            background: #fffbeb;
+        }
+
+        .readiness-item.is-warn .readiness-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .readiness-item.is-block {
+            border-color: rgba(220, 38, 38, 0.16);
+            background: #fef2f2;
+        }
+
+        .readiness-item.is-block .readiness-badge {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .readiness-section-title {
+            margin: 16px 0 10px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text2);
+        }
+
+        .readiness-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 12px;
+        }
+
+        .readiness-metric {
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .readiness-metric.is-block {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .readiness-metric.is-warn {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .readiness-metric.is-managed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .readiness-metric.is-muted {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .readiness-note {
+            margin-top: 12px;
+            border-radius: 14px;
+            padding: 12px 14px;
+            border: 1px solid rgba(59, 130, 246, 0.14);
+            background: #eff6ff;
+            color: #1e3a8a;
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+        .readiness-note strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #1d4ed8;
+        }
+
+        .summary-output {
+            width: 100%;
+            min-height: 220px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: #fff;
+            padding: 14px 16px;
+            font: 500 0.88rem/1.5 'Outfit', sans-serif;
+            color: var(--text);
+            resize: vertical;
+        }
+
+        .tool-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
         }
 
         /* Responsive Styles */
@@ -466,6 +1447,31 @@
 
             .form-grid {
                 grid-template-columns: 1fr !important;
+            }
+
+            .translation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .branding-media-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-preview-body {
+                align-items: flex-start;
+            }
+
+            .brand-preview-surfaces {
+                grid-template-columns: 1fr;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-order-item {
+                align-items: flex-start;
+                flex-direction: column;
             }
 
             .table-container {
@@ -559,16 +1565,72 @@
             color: white;
             box-shadow: 0 4px 10px rgba(255, 141, 8, 0.3);
         }
+
+        .category-filter-count {
+            opacity: 0.75;
+            font-size: 0.8em;
+        }
+
+        .admin-save-status {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #f5f5f5;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .admin-save-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .sidebar-actions {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-save-btn {
+            background: linear-gradient(135deg, #ff8d08, #e01e2f);
+            color: #fff;
+            font-weight: 800;
+            font-size: 1rem;
+            border-radius: 12px;
+            padding: 14px 20px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+            transition: all 0.3s;
+        }
+
+        .sidebar-save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(230, 57, 70, 0.45);
+        }
+
+        .sidebar-logout-btn {
+            color: #e01e2f;
+            width: 100%;
+        }
     </style>
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- LOGIN SCREEN -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
-            <h1>🍔 Foody Admin</h1>
-            <p>Connectez-vous pour gérer votre restaurant</p>
+            <h1 id="adminLoginTitleText">🍽️ Restaurant Admin</h1>
+            <p id="adminLoginSubtitleText">Connectez-vous pour gérer votre restaurant</p>
             <input type="text" id="loginUser" placeholder="Nom d'utilisateur" />
             <input type="password" id="loginPass" placeholder="Mot de passe" />
             <div class="login-error" id="loginError" style="display:none"></div>
@@ -578,7 +1640,7 @@
 
     <!-- MOBILE HEADER -->
     <div class="mobile-header">
-        <span style="font-family:'Bebas Neue'; font-size:1.5rem; color:var(--primary);">🍔 FOODY ADMIN</span>
+        <span id="mobileAdminTitleText" style="font-family:'Bebas Neue'; font-size:1.5rem; color:var(--primary);">🍽️ RESTAURANT ADMIN</span>
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
@@ -586,69 +1648,101 @@
     <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <div class="sidebar" id="adminSidebar" style="display:none">
-        <h1>🍔 Foody Admin</h1>
+        <h1 id="adminSidebarTitleText">🍽️ Restaurant Admin</h1>
         <button class="nav-btn active" onclick="showSection('menu', this)">🍴 Menu Items</button>
         <button class="nav-btn" onclick="showSection('categories', this)">📂 Categories</button>
+        <button class="nav-btn" onclick="showSection('branding', this)">🎨 Branding</button>
         <button class="nav-btn" onclick="showSection('landing', this)">🏠 Landing Page</button>
         <button class="nav-btn" onclick="showSection('supercategories', this)">📂 Super Categories</button>
         <button class="nav-btn" onclick="showSection('hours', this)">🕐 Horaires</button>
-        <button class="nav-btn" onclick="showSection('wifi', this)">📶 Guest WiFi</button>
+        <button class="nav-btn" onclick="showSection('wifi', this)">📶 WiFi</button>
+        <button class="nav-btn" onclick="showSection('data-tools', this)">🧰 Data Tools</button>
         <button class="nav-btn" onclick="showSection('security', this)">🛡️ Security</button>
         <button class="nav-btn" onclick="showSection('stats', this)">📊 Statistics</button>
         <button class="nav-btn" onclick="showSection('gallery', this)">🖼️ Galerie</button>
-        <div style="margin-top:auto; padding-top:20px; display:flex; flex-direction:column; gap:10px;">
-            <button class="nav-btn"
-                style="background: linear-gradient(135deg,#ff8d08,#e01e2f); color:#fff; font-weight:800; font-size:1rem; border-radius:12px; padding:14px 20px; border:none; cursor:pointer; box-shadow:0 4px 15px rgba(230,57,70,0.4); transition:all 0.3s;"
-                onclick="forceSaveChanges()">
+        <div class="sidebar-actions">
+            <button class="nav-btn sidebar-save-btn" onclick="forceSaveChanges()">
                 💾 Enregistrer les modifications
             </button>
-            <button class="nav-btn" style="color:#e01e2f; width:100%;" onclick="adminLogout()">🚪 Déconnexion</button>
+            <button class="nav-btn sidebar-logout-btn" onclick="adminLogout()">🚪 Déconnexion</button>
         </div>
     </div>
 
     <main class="main" id="adminMain" style="display:none">
         <div class="header">
-            <h2 id="section-title">Menu Management</h2>
-            <a href="https://foody.ibnbatoutaweb.com/" class="back-btn">← Website Home</a>
+            <div>
+                <h2 id="section-title">Menu Management</h2>
+                <div id="adminSaveStatus" class="admin-save-status">
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Website Home</a>
         </div>
 
         <!-- MENU SECTION -->
         <div id="menu" class="section active">
             <h3>Add New Food Item</h3>
             <form id="foodForm">
-                <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-grid form-grid-2">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="itemName" placeholder="e.g. Double Cheeseburger" required />
+                        <label>Default Name</label>
+                        <input type="text" id="itemName" placeholder="e.g. Signature Plate" required />
                     </div>
                     <div class="form-group">
                         <label>Category</label>
                         <select id="itemCat" required></select>
                     </div>
+                    <small id="adminPasswordRule" class="helper-note">Minimum 8 caractÃ¨res.</small>
                 </div>
                 <div class="form-group">
-                    <label>Short Description</label>
-                    <input type="text" id="itemDesc" placeholder="e.g. Delicious & Hot" required />
+                    <label>Default Description</label>
+                    <input type="text" id="itemDesc" placeholder="Used as the fallback when a translation is missing" required />
+                </div>
+                <div class="form-group">
+                    <label>Localized Names & Descriptions</label>
+                    <p class="translation-hint">These fields power the French, English, and Arabic menu experience today and give the future AI importer a clean target schema.</p>
+                    <div class="translation-grid">
+                        <div class="translation-card">
+                            <h4>French</h4>
+                            <label for="itemNameFr">Name (FR)</label>
+                            <input type="text" id="itemNameFr" placeholder="Nom du plat en francais" />
+                            <label for="itemDescFr">Description (FR)</label>
+                            <textarea id="itemDescFr" placeholder="Description en francais" rows="3"></textarea>
+                        </div>
+                        <div class="translation-card">
+                            <h4>English</h4>
+                            <label for="itemNameEn">Name (EN)</label>
+                            <input type="text" id="itemNameEn" placeholder="Dish name in English" />
+                            <label for="itemDescEn">Description (EN)</label>
+                            <textarea id="itemDescEn" placeholder="Dish description in English" rows="3"></textarea>
+                        </div>
+                        <div class="translation-card">
+                            <h4>Arabic</h4>
+                            <label for="itemNameAr">Name (AR)</label>
+                            <input type="text" id="itemNameAr" placeholder="Dish name in Arabic" />
+                            <label for="itemDescAr">Description (AR)</label>
+                            <textarea id="itemDescAr" placeholder="Dish description in Arabic" rows="3"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Ingredients (Separate by commas)</label>
                     <textarea id="itemIngredients" placeholder="Tomato, Lettuce, Special Sauce..." rows="2"></textarea>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group" style="display:flex; align-items:center; gap:10px; padding-top:25px;">
+                <div class="inline-check-grid">
+                    <div class="form-group inline-check">
                         <input type="checkbox" id="itemHasSizes" onchange="toggleSizesUI()"
-                            style="width:20px; height:20px; cursor:pointer;" />
-                        <label style="margin-bottom:0; cursor:pointer;" for="itemHasSizes">📏 Item has Multiple
+                            class="check-input" />
+                        <label for="itemHasSizes">📏 Item has Multiple
                             Sizes</label>
                     </div>
-                    <div class="form-group" style="display:flex; align-items:center; gap:10px; padding-top:25px;">
-                        <input type="checkbox" id="itemFeatured" style="width:20px; height:20px; cursor:pointer;" />
-                        <label style="margin-bottom:0; cursor:pointer;" for="itemFeatured">✨ Featured Item</label>
+                    <div class="form-group inline-check">
+                        <input type="checkbox" id="itemFeatured" class="check-input" />
+                        <label for="itemFeatured">✨ Featured Item</label>
                     </div>
-                    <div class="form-group" style="display:flex; align-items:center; gap:10px; padding-top:25px;">
-                        <input type="checkbox" id="itemAvailable" style="width:20px; height:20px; cursor:pointer;"
+                    <div class="form-group inline-check">
+                        <input type="checkbox" id="itemAvailable" class="check-input"
                             checked />
-                        <label style="margin-bottom:0; cursor:pointer;" for="itemAvailable">✅ En Stock /
+                        <label for="itemAvailable">✅ En Stock /
                             Disponible</label>
                     </div>
                 </div>
@@ -658,8 +1752,7 @@
                     <input type="number" id="itemPrice" placeholder="0.00" step="0.01" />
                 </div>
 
-                <div id="multiPriceGroup"
-                    style="display:none; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom:20px; background:#f9f9f9; padding:15px; border-radius:12px; border:1px solid #eee;">
+                <div id="multiPriceGroup" class="multi-price-group">
                     <div class="form-group">
                         <label>Small Price</label>
                         <input type="number" id="itemPriceSmall" placeholder="0.00" step="0.01" />
@@ -676,12 +1769,12 @@
 
                 <div class="form-group">
                     <label>Gallery (URLs or Upload)</label>
-                    <input type="file" id="itemFile" accept="image/*" multiple style="margin-bottom:10px" />
+                    <input type="file" id="itemFile" accept="image/*" multiple class="file-input-spaced" />
                     <textarea id="itemImg" placeholder="Or paste URLs here (comma separated)..." rows="2"></textarea>
                 </div>
                 <div class="btn-row">
                     <button type="submit" class="primary-btn">➕ Save Product</button>
-                    <button type="button" class="primary-btn" style="background:#666" onclick="resetDefaults()">🔄 Reset
+                    <button type="button" class="primary-btn secondary-btn" onclick="resetDefaults()">🔄 Reset
                         All Data</button>
                 </div>
             </form>
@@ -815,6 +1908,213 @@
             </div>
         </div>
 
+        <!-- BRANDING SECTION -->
+        <div id="branding" class="section">
+            <h3>Brand & Theme System</h3>
+            <p>Configure the reusable identity that should follow this restaurant across the public website and menu.
+            </p>
+            <form id="brandingForm">
+                <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Preset</label>
+                        <select id="brandPresetId">
+                            <option value="core">Core / White Label</option>
+                            <option value="fast_food">Fast Food / Street Food</option>
+                            <option value="cafe">Cafe / Brunch</option>
+                            <option value="traditional">Traditional / Family Restaurant</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Restaurant Name</label>
+                        <input type="text" id="brandRestaurantName" placeholder="e.g. Atlas Restaurant" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Short Brand Name</label>
+                        <input type="text" id="brandShortName" placeholder="e.g. Atlas" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Tagline</label>
+                        <input type="text" id="brandTagline" placeholder="e.g. Local cuisine, brunch & coffee" />
+                    </div>
+                    <div class="form-group">
+                        <label>Logo Mark</label>
+                        <input type="text" id="brandLogoMark" placeholder="e.g. A" />
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Color</label>
+                        <input type="color" id="brandPrimaryColor" value="#e21b1b" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary Color</label>
+                        <input type="color" id="brandSecondaryColor" value="#ff8d08" />
+                    </div>
+                    <div class="form-group">
+                        <label>Accent Color</label>
+                        <input type="color" id="brandAccentColor" value="#ffd700" />
+                    </div>
+                    <div class="form-group">
+                        <label>Surface Color</label>
+                        <input type="color" id="brandSurfaceColor" value="#fff8f0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Muted Surface</label>
+                        <input type="color" id="brandSurfaceMuted" value="#f4ebdd" />
+                    </div>
+                    <div class="form-group">
+                        <label>Text Color</label>
+                        <input type="color" id="brandTextColor" value="#261a16" />
+                    </div>
+                    <div class="form-group">
+                        <label>Muted Text</label>
+                        <input type="color" id="brandTextMuted" value="#75655c" />
+                    </div>
+                    <div class="form-group">
+                        <label>Menu Background</label>
+                        <input type="color" id="brandMenuBackground" value="#111318" />
+                    </div>
+                    <div class="form-group">
+                        <label>Menu Surface</label>
+                        <input type="color" id="brandMenuSurface" value="#1b1f26" />
+                    </div>
+                    <div class="form-group">
+                        <label>Logo Image URL</label>
+                        <input type="text" id="brandLogoImage" placeholder="/uploads/logo.png or https://..." />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hero Image URL</label>
+                    <input type="text" id="brandHeroImage" placeholder="/uploads/cover.jpg or https://..." />
+                </div>
+                <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Hero Slide 2 URL</label>
+                        <input type="text" id="brandHeroSlide2" placeholder="/uploads/cover-2.jpg or https://..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Hero Slide 3 URL</label>
+                        <input type="text" id="brandHeroSlide3" placeholder="/uploads/cover-3.jpg or https://..." />
+                    </div>
+                </div>
+                <div class="branding-media-grid">
+                    <div class="brand-asset-card">
+                        <h4>Logo Upload</h4>
+                        <p>Use upload for faster delivery, while still keeping the URL field available when needed.</p>
+                        <div class="brand-asset-tools">
+                            <input type="file" id="brandLogoFile" accept="image/*"
+                                onchange="handleBrandAssetUpload('brandLogoImage', this)" />
+                            <button type="button" class="brand-secondary-btn"
+                                onclick="clearBrandAsset('brandLogoImage')">Clear logo</button>
+                        </div>
+                    </div>
+                    <div class="brand-asset-card">
+                        <h4>Hero Upload</h4>
+                        <p>Upload the cover image here and the URL field will be filled automatically.</p>
+                        <div class="brand-asset-tools">
+                            <input type="file" id="brandHeroFile" accept="image/*"
+                                onchange="handleBrandAssetUpload('brandHeroImage', this)" />
+                            <button type="button" class="brand-secondary-btn"
+                                onclick="clearBrandAsset('brandHeroImage')">Clear hero</button>
+                        </div>
+                    </div>
+                    <div class="brand-asset-card">
+                        <h4>Hero Slide 2 Upload</h4>
+                        <p>Use a second visual for the homepage slider if the client gives you more than one strong image.</p>
+                        <div class="brand-asset-tools">
+                            <input type="file" id="brandHeroSlide2File" accept="image/*"
+                                onchange="handleBrandAssetUpload('brandHeroSlide2', this)" />
+                            <button type="button" class="brand-secondary-btn"
+                                onclick="clearBrandAsset('brandHeroSlide2')">Clear slide 2</button>
+                        </div>
+                    </div>
+                    <div class="brand-asset-card">
+                        <h4>Hero Slide 3 Upload</h4>
+                        <p>Add a third branded visual so the homepage slider feels fully finished instead of repeated.</p>
+                        <div class="brand-asset-tools">
+                            <input type="file" id="brandHeroSlide3File" accept="image/*"
+                                onchange="handleBrandAssetUpload('brandHeroSlide3', this)" />
+                            <button type="button" class="brand-secondary-btn"
+                                onclick="clearBrandAsset('brandHeroSlide3')">Clear slide 3</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="brand-preview-panel" style="margin-top: 18px;">
+                    <h4>Live Brand Preview</h4>
+                    <p>This preview helps you validate the colors, logo fallback, and hero feel before publishing.</p>
+                    <div class="brand-preview-card">
+                        <div class="brand-preview-hero" id="brandHeroPreview">
+                            <div class="brand-preview-copy">
+                                <p class="brand-preview-kicker">Brand Preview</p>
+                                <h5 class="brand-preview-title" id="brandPreviewTitle">Your restaurant website</h5>
+                                <p class="brand-preview-text" id="brandPreviewHeroText">Logo, colors, and cover image
+                                    will update here as you edit.</p>
+                            </div>
+                        </div>
+                        <div class="brand-preview-body">
+                            <div class="brand-preview-logo" id="brandLogoPreview">BR</div>
+                            <div>
+                                <p class="brand-preview-name" id="brandPreviewName">Restaurant Name</p>
+                                <p class="brand-preview-tagline" id="brandPreviewTagline">Tagline and identity summary
+                                    preview</p>
+                            </div>
+                        </div>
+                        <div class="brand-preview-swatches">
+                            <span class="brand-preview-swatch"><span class="brand-preview-swatch-dot"
+                                    id="brandSwatchPrimary"></span>Primary</span>
+                            <span class="brand-preview-swatch"><span class="brand-preview-swatch-dot"
+                                    id="brandSwatchSecondary"></span>Secondary</span>
+                            <span class="brand-preview-swatch"><span class="brand-preview-swatch-dot"
+                                    id="brandSwatchAccent"></span>Accent</span>
+                        </div>
+                        <div class="brand-preview-surfaces">
+                            <div class="brand-preview-surface brand-home-surface">
+                                <div class="brand-surface-header">
+                                    <span class="brand-surface-badge" id="brandPreviewPresetLabel">Core / White Label</span>
+                                    <span class="brand-surface-caption">Homepage hero</span>
+                                </div>
+                                <div class="brand-home-surface-body" id="brandHomepageMock">
+                                    <div class="brand-home-surface-overlay">
+                                        <p class="brand-home-surface-kicker">Homepage</p>
+                                        <h5 class="brand-home-surface-title" id="brandHomepageMockTitle">Restaurant website</h5>
+                                        <p class="brand-home-surface-text" id="brandHomepageMockText">Hero media, copy tone, and CTA contrast preview.</p>
+                                        <div class="brand-home-surface-footer">
+                                            <span class="brand-home-surface-meta" id="brandHomepageMockMeta">Warm service and local identity</span>
+                                            <button type="button" class="brand-home-surface-cta" id="brandHomepageMockCta">Order Online</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="brand-preview-surface brand-menu-surface" id="brandMenuMockShell">
+                                <div class="brand-surface-header">
+                                    <span class="brand-surface-badge">Menu shell</span>
+                                    <span class="brand-surface-caption">Categories + card</span>
+                                </div>
+                                <div class="brand-menu-surface-body">
+                                    <div class="brand-menu-chip-row">
+                                        <span class="brand-menu-chip is-active" id="brandMenuChipPrimary">Maison</span>
+                                        <span class="brand-menu-chip" id="brandMenuChipSecondary">Desserts</span>
+                                        <span class="brand-menu-chip" id="brandMenuChipTertiary">Boissons</span>
+                                    </div>
+                                    <div class="brand-menu-card-preview" id="brandMenuCardPreview">
+                                        <div class="brand-menu-card-media" id="brandMenuCardMedia"></div>
+                                        <div>
+                                            <p class="brand-menu-card-kicker" id="brandMenuCardKicker">Featured item</p>
+                                            <h5 class="brand-menu-card-title" id="brandMenuCardTitle">Signature Plate</h5>
+                                            <p class="brand-menu-card-text" id="brandMenuCardText">Surface, card mood, and accent color preview for the menu experience.</p>
+                                            <div class="brand-menu-card-footer">
+                                                <span class="brand-menu-card-price" id="brandMenuCardPrice">MAD 58</span>
+                                                <span class="brand-menu-card-tag" id="brandMenuCardTag">Featured</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="primary-btn">💾 Save Branding</button>
+            </form>
+        </div>
+
         <!-- LANDING PAGE SECTION -->
         <div id="landing" class="section">
             <h3>Landing Page Configuration</h3>
@@ -824,7 +2124,7 @@
                     style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:20px;">
                     <div class="info-group">
                         <label>📍 Address</label>
-                        <input type="text" id="lpAddress" placeholder="e.g. Tanger, Maroc" required />
+                        <input type="text" id="lpAddress" placeholder="e.g. Avenue Hassan II, Casablanca" required />
                     </div>
                     <div class="info-group">
                         <label>🗺️ Map URL (Google Maps)</label>
@@ -836,7 +2136,7 @@
                     </div>
                     <div class="info-group">
                         <label>📸 Instagram Username</label>
-                        <input type="text" id="lpInsta" placeholder="@foody.tanger" />
+                        <input type="text" id="lpInsta" placeholder="@restaurant.officiel" />
                     </div>
                     <div class="info-group">
                         <label>📘 Facebook URL</label>
@@ -851,7 +2151,74 @@
                         <input type="url" id="lpTrip" placeholder="https://tripadvisor.com/..." />
                     </div>
                 </div>
-                <button type="submit" class="primary-btn" style="margin-top:20px">💾 Save Landing Info</button>
+                <div class="section-divider">
+                    <h4 class="section-divider-title">Payments & Facilities</h4>
+                    <p class="section-divider-copy">
+                        This is informational only for the public site. Use it to show what the restaurant accepts and what guests can expect on-site.
+                    </p>
+                    <div class="selection-grid">
+                        <div class="selection-card">
+                            <h4>Accepted Payments</h4>
+                            <p>Choose the payment methods you want to display on the homepage.</p>
+                            <div class="selection-options">
+                                <label class="selection-option"><input type="checkbox" id="lpPayCash" /> Cash</label>
+                                <label class="selection-option"><input type="checkbox" id="lpPayTpe" /> TPE / Card terminal</label>
+                            </div>
+                        </div>
+                        <div class="selection-card">
+                            <h4>Guest Facilities</h4>
+                            <p>Pick the facilities or service details the restaurant offers to customers.</p>
+                            <div class="selection-options">
+                                <label class="selection-option"><input type="checkbox" id="lpFacilityWifi" /> WiFi</label>
+                                <label class="selection-option"><input type="checkbox" id="lpFacilityAccessible" /> Accessible entrance</label>
+                                <label class="selection-option"><input type="checkbox" id="lpFacilityParking" /> Parking</label>
+                                <label class="selection-option"><input type="checkbox" id="lpFacilityTerrace" /> Terrace seating</label>
+                                <label class="selection-option"><input type="checkbox" id="lpFacilityFamily" /> Family-friendly area</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-divider">
+                    <h4 class="section-divider-title">Section Visibility</h4>
+                    <p class="section-divider-copy">
+                        Turn homepage sections on or off depending on what this restaurant wants to show publicly.
+                    </p>
+                    <div class="selection-grid">
+                        <div class="selection-card" style="grid-column: 1 / -1;">
+                            <div class="selection-options" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));">
+                                <label class="selection-option"><input type="checkbox" id="lpSectionAbout" /> About section</label>
+                                <label class="selection-option"><input type="checkbox" id="lpSectionPayments" /> Payment & facilities section</label>
+                                <label class="selection-option"><input type="checkbox" id="lpSectionEvents" /> Events section</label>
+                                <label class="selection-option"><input type="checkbox" id="lpSectionGallery" /> Gallery section</label>
+                                <label class="selection-option"><input type="checkbox" id="lpSectionHours" /> Hours section</label>
+                                <label class="selection-option"><input type="checkbox" id="lpSectionContact" /> Contact section</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-divider">
+                    <h4 class="section-divider-title">Section Order</h4>
+                    <p class="section-divider-copy">
+                        Reorder the visible homepage sections to match each restaurant's priority. Hero and footer stay fixed.
+                    </p>
+                    <div class="selection-card" style="grid-column: 1 / -1;">
+                        <div class="section-order-list" id="landingSectionOrderList"></div>
+                    </div>
+                </div>
+                <div class="section-divider">
+                    <h4 class="section-divider-title">Homepage Copy Overrides</h4>
+                    <p class="section-divider-copy">
+                        Edit the public homepage text in French, English, and Arabic. This is also the same structure we can later fill automatically with AI from restaurant files.
+                    </p>
+                    <div class="hint-chip-row">
+                        <span class="hint-chip is-fr">FR</span>
+                        <span class="hint-chip is-en">EN</span>
+                        <span class="hint-chip is-ar">AR</span>
+                        <span class="hint-chip">Hero and title fields can keep &lt;span&gt;...&lt;/span&gt;</span>
+                    </div>
+                    <div id="landingContentGrid" class="landing-copy-grid"></div>
+                </div>
+                <button type="submit" class="primary-btn mt-20">💾 Save Landing & Content</button>
             </form>
         </div>
 
@@ -860,9 +2227,8 @@
             <h3>Super Categories (Meal Periods)</h3>
             <p>Group your food categories into logical meal times (e.g. Breakfast, Lunch, Dinner).</p>
 
-            <form id="superCatForm"
-                style="background:#f9f9f9; padding:20px; border-radius:15px; margin-bottom:30px; border:1px solid #eee;">
-                <div class="form-grid" style="display:grid; grid-template-columns: 1fr 100px; gap:15px;">
+            <form id="superCatForm" class="panel-soft">
+                <div class="form-grid form-grid-name-emoji">
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" id="scName" placeholder="e.g. Petit-Déjeuner" required />
@@ -882,8 +2248,7 @@
                 </div>
                 <div class="form-group">
                     <label>Included Categories</label>
-                    <div id="scCatsList"
-                        style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px; padding:10px; background:#fff; border:1px solid #ddd; border-radius:8px; min-height:40px;">
+                    <div id="scCatsList" class="chip-select-list">
                         <!-- Checkboxes will be rendered here -->
                     </div>
                 </div>
@@ -907,60 +2272,52 @@
         <div id="hours" class="section">
             <h3>🕐 Horaires d'Ouverture</h3>
             <p>Modifiez les horaires affichés sur votre site. Les changements seront visibles immédiatement.</p>
-            <form id="hoursForm" style="margin-top:20px;">
-                <div style="display:grid; gap:12px;">
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center; padding:10px; background:#f9f9f9; border-radius:10px;">
+            <form id="hoursForm" class="hours-form">
+                <div class="hours-grid">
+                    <div class="hours-admin-row is-header">
                         <strong>Jour</strong><strong>Ouverture</strong><strong>Fermeture</strong><strong>Weekend</strong>
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Lundi</label>
                         <input type="time" id="h_mon_open" />
                         <input type="time" id="h_mon_close" />
-                        <input type="checkbox" id="h_mon_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_mon_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Mardi</label>
                         <input type="time" id="h_tue_open" />
                         <input type="time" id="h_tue_close" />
-                        <input type="checkbox" id="h_tue_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_tue_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Mercredi</label>
                         <input type="time" id="h_wed_open" />
                         <input type="time" id="h_wed_close" />
-                        <input type="checkbox" id="h_wed_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_wed_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Jeudi</label>
                         <input type="time" id="h_thu_open" />
                         <input type="time" id="h_thu_close" />
-                        <input type="checkbox" id="h_thu_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_thu_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Vendredi</label>
                         <input type="time" id="h_fri_open" />
                         <input type="time" id="h_fri_close" />
-                        <input type="checkbox" id="h_fri_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_fri_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Samedi</label>
                         <input type="time" id="h_sat_open" />
                         <input type="time" id="h_sat_close" />
-                        <input type="checkbox" id="h_sat_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_sat_hl" class="check-input" />
                     </div>
-                    <div class="hours-admin-row"
-                        style="display:grid; grid-template-columns: 120px 1fr 1fr 80px; gap:10px; align-items:center;">
+                    <div class="hours-admin-row">
                         <label>Dimanche</label>
                         <input type="time" id="h_sun_open" />
                         <input type="time" id="h_sun_close" />
-                        <input type="checkbox" id="h_sun_hl" style="width:20px;height:20px;" />
+                        <input type="checkbox" id="h_sun_hl" class="check-input" />
                     </div>
                 </div>
                 <div class="form-group" style="margin-top:20px;">
@@ -975,28 +2332,123 @@
         <!-- GALLERY SECTION -->
         <div id="gallery" class="section">
             <h3>Gestion de la Galerie</h3>
-            <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Ajoutez des photos pour la galerie de votre
+            <p class="copy-muted">Ajoutez des photos pour la galerie de votre
                 site. Vous pouvez uploader plusieurs fichiers ou utiliser des URLs.</p>
 
-            <form id="galleryForm"
-                style="background:#f9f9f9; padding:20px; border-radius:15px; border:1px solid #ddd; margin-bottom:30px;">
+            <form id="galleryForm" class="panel-soft">
                 <div class="form-group">
                     <label>Ajouter des images (Uploader des fichiers)</label>
-                    <input type="file" id="galleryFileInput" accept="image/*" multiple style="margin-bottom:10px" />
+                    <input type="file" id="galleryFileInput" accept="image/*" multiple class="file-input-spaced" />
                 </div>
                 <div class="form-group">
                     <label>Ou ajouter par URL d'image existante</label>
                     <input type="text" id="galleryUrlInput" placeholder="https://..." />
                 </div>
-                <button type="submit" class="primary-btn" style="width:auto; padding:10px 30px;">➕ Ajouter à la
+                <button type="submit" class="primary-btn btn-auto" style="padding:10px 30px;">➕ Ajouter à la
                     galerie</button>
             </form>
 
             <div class="table-container">
                 <h3>Images Actuelles dans la Galerie</h3>
-                <div id="galleryAdminGrid"
-                    style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top:20px;">
+                <div id="galleryAdminGrid" class="gallery-grid">
                     <!-- Les images seront générées ici par admin.js -->
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA TOOLS SECTION -->
+        <div id="data-tools" class="section">
+            <h3>Backup & Import</h3>
+            <p class="copy-muted">
+                Export the current restaurant setup as a JSON backup, then import it later to restore or clone a project on another instance.
+            </p>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>Launch Readiness</h4>
+                    <p>Review the current restaurant instance before handoff. This quick audit highlights missing branding, contact data, menu completeness, gallery coverage, and security issues.</p>
+                    <div id="launchReadinessSummary" class="readiness-summary">
+                        <span class="readiness-summary-dot"></span>
+                        <span>Audit loading...</span>
+                    </div>
+                    <div id="launchReadinessList" class="readiness-list"></div>
+                    <div id="launchReadinessMedia" class="readiness-list"></div>
+                    <div id="launchReadinessNote" class="readiness-note" style="display:none;"></div>
+                </div>
+                <div class="tool-card">
+                    <h4>Handoff Summary</h4>
+                    <p>Generate a concise operational summary for this restaurant instance before delivery or internal review.</p>
+                    <div class="tool-actions">
+                        <button type="button" class="primary-btn btn-auto" onclick="generateHandoffSummary()">Generate Summary</button>
+                        <button type="button" class="brand-secondary-btn" onclick="copyHandoffSummary()">Copy Summary</button>
+                        <button type="button" class="brand-secondary-btn" onclick="downloadHandoffSummary()">Download Summary</button>
+                    </div>
+                    <textarea id="handoffSummaryOutput" class="summary-output" readonly placeholder="Generate a summary to review the current restaurant setup."></textarea>
+                </div>
+                <div class="tool-card">
+                    <h4>Menu Image Suggestions</h4>
+                    <p>Assign local library placeholders to menu items that still have no image. Use this as a fast internal delivery step before real client photos or future AI generation.</p>
+                    <div class="tool-actions">
+                        <button type="button" class="primary-btn btn-auto" onclick="suggestMissingMenuImages()">Assign Missing Images</button>
+                        <button type="button" class="brand-secondary-btn" onclick="copyMenuImageSuggestionSummary()">Copy Summary</button>
+                    </div>
+                    <textarea id="menuImageSuggestionOutput" class="summary-output" readonly placeholder="Run the suggestion tool to assign local library images to items without visuals."></textarea>
+                </div>
+                <div class="tool-card">
+                    <h4>Quick Launch Preset</h4>
+                    <p>Apply a strong starting point for a fast-food, cafe, or traditional restaurant before you fine-tune the final content.</p>
+                    <div class="form-group">
+                        <label>Preset</label>
+                        <select id="quickStartPreset">
+                            <option value="fast_food">Fast Food / Street Food</option>
+                            <option value="cafe">Cafe / Brunch</option>
+                            <option value="traditional">Traditional / Family Restaurant</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Restaurant Name</label>
+                        <input type="text" id="quickStartRestaurantName" placeholder="e.g. Atlas Restaurant" />
+                    </div>
+                    <div class="form-group">
+                        <label>Short Brand Name</label>
+                        <input type="text" id="quickStartShortName" placeholder="e.g. Atlas" />
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="quickStartAddress" placeholder="e.g. Avenue Hassan II, Casablanca" />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="quickStartPhone" placeholder="+212 6..." />
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp (optional)</label>
+                        <input type="text" id="quickStartWhatsApp" placeholder="+212 6..." />
+                    </div>
+                    <div class="tool-actions">
+                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()">✨ Apply Quick Launch Setup</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h4>Export Current Restaurant</h4>
+                    <p>Download the complete normalized website data including menu, branding, hours, translations, visibility, and section order.</p>
+                    <div class="tool-actions">
+                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()">⬇️ Export Backup</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h4>Import Restaurant Backup</h4>
+                    <p>Upload a previously exported JSON backup to restore or clone a restaurant setup quickly.</p>
+                    <div class="tool-actions">
+                        <input type="file" id="dataImportFile" accept="application/json,.json" />
+                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()">⬆️ Import Backup</button>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h4>Starter Reset</h4>
+                    <p>Reset this instance back to the bundled starter template when you want to begin a fresh restaurant setup.</p>
+                    <div class="tool-actions">
+                        <button type="button" class="brand-secondary-btn" onclick="resetDefaults()">Reset To Starter</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1007,6 +2459,10 @@
             <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Modifiez votre identifiant et mot de passe de
                 connexion. Enregistré de manière persistante sur le serveur (auth.json).</p>
 
+            <div id="securityStatusCard"
+                style="display:none; background:#fff8e7; border:1px solid #f6c66f; border-radius:15px; padding:18px 20px; max-width:500px; margin-bottom:18px; color:#7a4b00;">
+            </div>
+
             <form id="securityForm"
                 style="background:#fff; padding:30px; border-radius:15px; border:1px solid #ddd; max-width:500px;">
                 <div class="form-group" style="margin-bottom:20px;">
@@ -1014,11 +2470,11 @@
                         d'utilisateur)</label>
                     <input type="text" id="adminNewUser" required placeholder="admin"
                         style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;" />
+                    <small style="display:block; margin-top:8px; color:#777;">Minimum 8 caractÃ¨res.</small>
                 </div>
 
                 <div class="form-group" style="margin-bottom:20px;">
-                    <label style="font-weight:600; display:block; margin-bottom:8px;">Nouveau Mot de passe (Laissez vide
-                        pour conserver l'actuel)</label>
+                    <label style="font-weight:600; display:block; margin-bottom:8px;">Nouveau Mot de passe</label>
                     <input type="password" id="adminNewPass" placeholder="••••••••"
                         style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc;" />
                 </div>

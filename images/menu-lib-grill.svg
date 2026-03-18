@@ -1,0 +1,19 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#F8F2EC"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <ellipse cx="600" cy="408" rx="282" ry="196" fill="#2D2323" stroke="#544242" stroke-width="18"/>
+  <path d="M408 388H792" stroke="#B98A52" stroke-width="16" stroke-linecap="round"/>
+  <path d="M430 436H770" stroke="#B98A52" stroke-width="16" stroke-linecap="round"/>
+  <path d="M452 484H748" stroke="#B98A52" stroke-width="16" stroke-linecap="round"/>
+  <path d="M470 308C525 286 589 280 642 290C703 301 756 334 781 380C738 417 679 445 613 450C548 455 491 438 448 403C444 369 451 336 470 308Z" fill="#A44930"/>
+  <circle cx="465" cy="272" r="28" fill="#F4C35C"/>
+  <circle cx="525" cy="246" r="22" fill="#F08F4C"/>
+  <circle cx="575" cy="224" r="18" fill="#F7D79A"/>
+  <text x="600" y="666" text-anchor="middle" fill="#5A3425" font-family="Georgia, serif" font-size="54">Grill &amp; Meat Plates</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="90" x2="1080" y2="710" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1DECD"/>
+      <stop offset="1" stop-color="#DFC0A4"/>
+    </linearGradient>
+  </defs>
+</svg>

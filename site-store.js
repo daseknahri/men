@@ -10,14 +10,52 @@ const FALLBACK_DATA = {
   menu: [],
   catEmojis: {},
   wifi: {
-    ssid: "Foody_Guest",
-    pass: "foody2026"
+    ssid: "Restaurant WiFi",
+    pass: "Ask the team"
   },
   social: {
     instagram: "",
     facebook: "",
     tiktok: "",
-    whatsapp: "212626081745"
+    tripadvisor: "",
+    whatsapp: ""
+  },
+  guestExperience: {
+    paymentMethods: ["cash", "tpe"],
+    facilities: ["wifi"]
+  },
+  sectionVisibility: {
+    about: true,
+    payments: true,
+    events: true,
+    gallery: true,
+    hours: true,
+    contact: true
+  },
+  sectionOrder: ["about", "payments", "events", "gallery", "hours", "contact"],
+  branding: {
+    presetId: "core",
+    restaurantName: "Restaurant",
+    shortName: "Restaurant",
+    tagline: "Local cuisine, warm service, and a polished online presence.",
+    logoMark: "🍽️",
+    primaryColor: "#E21B1B",
+    secondaryColor: "#FF8D08",
+    accentColor: "#FFD700",
+    surfaceColor: "#FFF8F0",
+    surfaceMuted: "#F4EBDD",
+    textColor: "#261A16",
+    textMuted: "#75655C",
+    menuBackground: "#111318",
+    menuSurface: "#1B1F26",
+    heroImage: "images/hero-default.svg",
+    heroSlides: ["images/hero-default.svg", "images/hero-cafe.svg", "images/hero-traditional.svg"],
+    logoImage: ""
+  },
+  contentTranslations: {
+    fr: {},
+    en: {},
+    ar: {}
   },
   promoId: null
 };
@@ -56,6 +94,23 @@ function sanitizeImages(images, fallbackImage) {
   return out;
 }
 
+function sanitizeMenuTranslationBucket(input) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    name: asString(source.name, 160).trim(),
+    desc: asString(source.desc, 2000).trim()
+  };
+}
+
+function sanitizeMenuTranslations(input) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    fr: sanitizeMenuTranslationBucket(source.fr),
+    en: sanitizeMenuTranslationBucket(source.en),
+    ar: sanitizeMenuTranslationBucket(source.ar)
+  };
+}
+
 function sanitizeMenuItem(item, index) {
   const source = item && typeof item === "object" ? item : {};
   const images = sanitizeImages(source.images, source.img);
@@ -80,6 +135,7 @@ function sanitizeMenuItem(item, index) {
   result.badge = asString(source.badge, 64);
   result.images = images;
   result.img = images[0] || "";
+  result.translations = sanitizeMenuTranslations(source.translations);
 
   return result;
 }
@@ -98,8 +154,8 @@ function sanitizeCatEmojis(input) {
 function sanitizeWifi(input) {
   const source = input && typeof input === "object" ? input : {};
   return {
-    ssid: asString(source.ssid, 120) || "Foody_Guest",
-    pass: asString(source.pass, 120) || "foody2026"
+    ssid: asString(source.ssid, 120) || "Restaurant WiFi",
+    pass: asString(source.pass, 120) || "Ask the team"
   };
 }
 
@@ -109,7 +165,120 @@ function sanitizeSocial(input) {
     instagram: asString(source.instagram, 2048),
     facebook: asString(source.facebook, 2048),
     tiktok: asString(source.tiktok, 2048),
-    whatsapp: asString(source.whatsapp, 64) || "212626081745"
+    tripadvisor: asString(source.tripadvisor, 2048),
+    whatsapp: asString(source.whatsapp, 64)
+  };
+}
+
+const PAYMENT_METHOD_IDS = ["cash", "tpe"];
+const FACILITY_IDS = ["wifi", "accessible", "parking", "terrace", "family"];
+const SECTION_VISIBILITY_KEYS = ["about", "payments", "events", "gallery", "hours", "contact"];
+const SECTION_ORDER_KEYS = ["about", "payments", "events", "gallery", "hours", "contact"];
+
+function sanitizeGuestExperience(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const paymentMethods = Array.isArray(source.paymentMethods) ? source.paymentMethods : [];
+  const facilities = Array.isArray(source.facilities) ? source.facilities : [];
+
+  return {
+    paymentMethods: PAYMENT_METHOD_IDS.filter((id) => paymentMethods.includes(id)),
+    facilities: FACILITY_IDS.filter((id) => facilities.includes(id))
+  };
+}
+
+function sanitizeSectionVisibility(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const out = { ...FALLBACK_DATA.sectionVisibility };
+
+  SECTION_VISIBILITY_KEYS.forEach((key) => {
+    if (typeof source[key] === "boolean") {
+      out[key] = source[key];
+    }
+  });
+
+  return out;
+}
+
+function sanitizeSectionOrder(input) {
+  const source = Array.isArray(input) ? input : [];
+  const out = [];
+
+  source.forEach((value) => {
+    if (typeof value !== "string") return;
+    const safeValue = value.trim();
+    if (!SECTION_ORDER_KEYS.includes(safeValue)) return;
+    if (out.includes(safeValue)) return;
+    out.push(safeValue);
+  });
+
+  SECTION_ORDER_KEYS.forEach((key) => {
+    if (!out.includes(key)) {
+      out.push(key);
+    }
+  });
+
+  return out;
+}
+
+function sanitizeColor(value, fallback) {
+  const raw = asString(value, 16).trim();
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(raw) ? raw : fallback;
+}
+
+function sanitizeBranding(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const heroImage = asString(source.heroImage, 8192) || FALLBACK_DATA.branding.heroImage;
+  const heroSlides = Array.isArray(source.heroSlides)
+    ? source.heroSlides
+      .filter((value) => typeof value === "string" && value.trim())
+      .map((value) => value.trim().slice(0, 8192))
+      .slice(0, 3)
+    : [];
+  return {
+    presetId: asString(source.presetId, 40).trim() || FALLBACK_DATA.branding.presetId,
+    restaurantName: asString(source.restaurantName, 160) || FALLBACK_DATA.branding.restaurantName,
+    shortName: asString(source.shortName, 80) || FALLBACK_DATA.branding.shortName,
+    tagline: asString(source.tagline, 160) || FALLBACK_DATA.branding.tagline,
+    logoMark: asString(source.logoMark, 12) || FALLBACK_DATA.branding.logoMark,
+    primaryColor: sanitizeColor(source.primaryColor, FALLBACK_DATA.branding.primaryColor),
+    secondaryColor: sanitizeColor(source.secondaryColor, FALLBACK_DATA.branding.secondaryColor),
+    accentColor: sanitizeColor(source.accentColor, FALLBACK_DATA.branding.accentColor),
+    surfaceColor: sanitizeColor(source.surfaceColor, FALLBACK_DATA.branding.surfaceColor),
+    surfaceMuted: sanitizeColor(source.surfaceMuted, FALLBACK_DATA.branding.surfaceMuted),
+    textColor: sanitizeColor(source.textColor, FALLBACK_DATA.branding.textColor),
+    textMuted: sanitizeColor(source.textMuted, FALLBACK_DATA.branding.textMuted),
+    menuBackground: sanitizeColor(source.menuBackground, FALLBACK_DATA.branding.menuBackground),
+    menuSurface: sanitizeColor(source.menuSurface, FALLBACK_DATA.branding.menuSurface),
+    heroImage,
+    heroSlides: [
+      heroImage,
+      heroSlides[1] || FALLBACK_DATA.branding.heroSlides[1] || heroImage,
+      heroSlides[2] || FALLBACK_DATA.branding.heroSlides[2] || heroSlides[1] || FALLBACK_DATA.branding.heroSlides[1] || heroImage
+    ],
+    logoImage: asString(source.logoImage, 8192) || FALLBACK_DATA.branding.logoImage
+  };
+}
+
+function sanitizeTranslationBucket(input) {
+  const source = input && typeof input === "object" ? input : {};
+  const out = {};
+
+  Object.entries(source).forEach(([key, value]) => {
+    const safeKey = asString(key, 120).trim();
+    const safeValue = asString(value, 4000).trim();
+    if (!safeKey || !safeValue) return;
+    out[safeKey] = safeValue;
+  });
+
+  return out;
+}
+
+function sanitizeContentTranslations(input) {
+  const source = input && typeof input === "object" ? input : {};
+  return {
+    fr: sanitizeTranslationBucket(source.fr),
+    en: sanitizeTranslationBucket(source.en),
+    ar: sanitizeTranslationBucket(source.ar)
   };
 }
 
@@ -119,6 +288,10 @@ function sanitizePromoId(input, menu) {
   }
   const match = menu.find((item) => String(item.id) === String(input));
   return match ? match.id : null;
+}
+
+function sanitizeHoursNote(input) {
+  return asString(input, 240);
 }
 
 function normalizeData(input) {
@@ -134,6 +307,12 @@ function normalizeData(input) {
   result.catEmojis = sanitizeCatEmojis(source.catEmojis);
   result.wifi = sanitizeWifi(source.wifi);
   result.social = sanitizeSocial(source.social);
+  result.guestExperience = sanitizeGuestExperience(source.guestExperience);
+  result.sectionVisibility = sanitizeSectionVisibility(source.sectionVisibility);
+  result.sectionOrder = sanitizeSectionOrder(source.sectionOrder);
+  result.branding = sanitizeBranding(source.branding);
+  result.contentTranslations = sanitizeContentTranslations(source.contentTranslations);
+  result.hoursNote = sanitizeHoursNote(source.hoursNote);
   result.promoId = sanitizePromoId(source.promoId, menu);
 
   // Sanitize promoIds array

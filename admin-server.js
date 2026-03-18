@@ -1,4 +1,6 @@
+const crypto = require("crypto");
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 
 const {
@@ -12,43 +14,188 @@ const {
 } = require("./server-common");
 const { ensureStorage, readData, resetToBundledData, uploadsDir, writeData } = require("./site-store");
 
+const DEFAULT_ADMIN_USER = "admin";
+const DEFAULT_ADMIN_PASS = "foody2026";
+const HASH_ITERATIONS = 120000;
+const HASH_KEY_LENGTH = 64;
+const HASH_DIGEST = "sha512";
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_LOCK_MS = 15 * 60 * 1000;
+
 const app = express();
 const port = parsePort(process.env.PORT, 3102);
 const upload = createUploadMiddleware();
 const sessions = createSessionManager(path.join(__dirname, "sessions.json"));
+const dataRoot = process.env.DATA_FILE
+  ? path.dirname(process.env.DATA_FILE)
+  : __dirname;
+const authFile = process.env.AUTH_FILE || path.join(dataRoot, "auth.json");
+const loginAttempts = new Map();
 
-const fs = require('fs');
-const authFile = path.join(__dirname, 'auth.json');
+function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
+  const passwordHash = crypto
+    .pbkdf2Sync(password, salt, HASH_ITERATIONS, HASH_KEY_LENGTH, HASH_DIGEST)
+    .toString("hex");
 
-// --- CREDENTIAL MANAGEMENT ---
-function getAdminCredentials() {
-  if (fs.existsSync(authFile)) {
-    try {
-      return JSON.parse(fs.readFileSync(authFile, 'utf8'));
-    } catch (e) {
-      console.error("Error reading auth.json:", e);
-    }
-  }
-
-  // Fallback to env vars or default
   return {
-    user: process.env.ADMIN_USER || "admin",
-    pass: process.env.ADMIN_PASS || "foody2026"
+    passwordHash,
+    passwordSalt: salt,
+    passwordIterations: HASH_ITERATIONS,
+    passwordKeyLength: HASH_KEY_LENGTH,
+    passwordDigest: HASH_DIGEST
   };
 }
 
-function saveAdminCredentials(user, pass) {
+function verifyPassword(password, credentials) {
+  if (!credentials || typeof password !== "string") return false;
+
+  if (credentials.passwordHash && credentials.passwordSalt) {
+    const iterations = Number(credentials.passwordIterations) || HASH_ITERATIONS;
+    const keyLength = Number(credentials.passwordKeyLength) || HASH_KEY_LENGTH;
+    const digest = credentials.passwordDigest || HASH_DIGEST;
+    const candidateHash = crypto
+      .pbkdf2Sync(password, credentials.passwordSalt, iterations, keyLength, digest)
+      .toString("hex");
+
+    try {
+      return crypto.timingSafeEqual(
+        Buffer.from(candidateHash, "hex"),
+        Buffer.from(credentials.passwordHash, "hex")
+      );
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  if (typeof credentials.pass === "string") {
+    return password === credentials.pass;
+  }
+
+  return false;
+}
+
+function buildCredentialMeta(raw, source) {
+  const user = typeof raw?.user === "string" && raw.user.trim()
+    ? raw.user.trim()
+    : DEFAULT_ADMIN_USER;
+  const hasHash = typeof raw?.passwordHash === "string" && typeof raw?.passwordSalt === "string";
+  const legacyPass = typeof raw?.pass === "string" ? raw.pass : "";
+  const usesDefaultCredentials = user === DEFAULT_ADMIN_USER
+    && (hasHash ? verifyPassword(DEFAULT_ADMIN_PASS, raw) : legacyPass === DEFAULT_ADMIN_PASS);
+
+  return {
+    ...raw,
+    user,
+    source,
+    isLegacyPlainText: !hasHash && typeof raw?.pass === "string",
+    usesDefaultCredentials
+  };
+}
+
+function getAdminCredentials() {
+  if (fs.existsSync(authFile)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(authFile, "utf8"));
+      return buildCredentialMeta(parsed, "file");
+    } catch (error) {
+      console.error("Error reading auth.json:", error);
+    }
+  }
+
+  const fallbackUser = process.env.ADMIN_USER || DEFAULT_ADMIN_USER;
+  const fallbackPass = process.env.ADMIN_PASS || DEFAULT_ADMIN_PASS;
+  return buildCredentialMeta(
+    { user: fallbackUser, pass: fallbackPass },
+    process.env.ADMIN_USER || process.env.ADMIN_PASS ? "env" : "default"
+  );
+}
+
+function saveAdminCredentials(user, password) {
   try {
-    fs.writeFileSync(authFile, JSON.stringify({ user, pass }));
+    const hashed = hashPassword(password);
+    fs.mkdirSync(path.dirname(authFile), { recursive: true });
+    fs.writeFileSync(
+      authFile,
+      JSON.stringify(
+        {
+          user,
+          ...hashed,
+          passwordUpdatedAt: new Date().toISOString()
+        },
+        null,
+        2
+      )
+    );
     return true;
-  } catch (e) {
-    console.error("Error saving auth.json:", e);
+  } catch (error) {
+    console.error("Error saving auth.json:", error);
     return false;
   }
 }
 
+function migrateLegacyCredentialsIfNeeded(credentials, password) {
+  if (credentials?.source === "file" && credentials.isLegacyPlainText && typeof password === "string" && password) {
+    const migrated = saveAdminCredentials(credentials.user, password);
+    if (migrated) {
+      currentCreds = getAdminCredentials();
+      console.log("[AUTH] Migrated legacy plain-text credentials to hashed storage.");
+    }
+  }
+}
+
+function getRateLimitKey(req, username) {
+  const requestIp = typeof req.ip === "string" && req.ip ? req.ip : "";
+  const forwarded = typeof req.headers["x-forwarded-for"] === "string" ? req.headers["x-forwarded-for"] : "";
+  const ip = requestIp || forwarded || "unknown";
+  return `${String(username || "").trim().toLowerCase()}::${ip}`;
+}
+
+function getRateLimitState(key) {
+  const now = Date.now();
+  const state = loginAttempts.get(key);
+
+  if (!state) {
+    return { count: 0, firstAttemptAt: now, lockedUntil: 0 };
+  }
+
+  if (state.lockedUntil && state.lockedUntil > now) {
+    return state;
+  }
+
+  if (now - state.firstAttemptAt > LOGIN_WINDOW_MS) {
+    const resetState = { count: 0, firstAttemptAt: now, lockedUntil: 0 };
+    loginAttempts.set(key, resetState);
+    return resetState;
+  }
+
+  return state;
+}
+
+function registerFailedLogin(key) {
+  const now = Date.now();
+  const currentState = getRateLimitState(key);
+  const nextState = {
+    count: currentState.count + 1,
+    firstAttemptAt: currentState.count === 0 ? now : currentState.firstAttemptAt,
+    lockedUntil: 0
+  };
+
+  if (nextState.count >= MAX_LOGIN_ATTEMPTS) {
+    nextState.lockedUntil = now + LOGIN_LOCK_MS;
+  }
+
+  loginAttempts.set(key, nextState);
+  return nextState;
+}
+
+function clearFailedLogins(key) {
+  loginAttempts.delete(key);
+}
+
 let currentCreds = getAdminCredentials();
-if (currentCreds.user === 'admin' && currentCreds.pass === 'foody2026') {
+if (currentCreds.usesDefaultCredentials) {
   console.warn("Using default fallback credentials (admin / foody2026). Consider changing them in the Security tab.");
 }
 
@@ -70,53 +217,111 @@ app.get("/health", (_req, res) => {
 });
 
 app.post("/api/admin/login", (req, res) => {
-  console.log(`[AUTH] Login request received. Body:`, JSON.stringify(req.body));
+  console.log("[AUTH] Login request received.");
   const username = typeof req.body?.username === "string" ? req.body.username : "";
   const password = typeof req.body?.password === "string" ? req.body.password : "";
+  const rateLimitKey = getRateLimitKey(req, username);
+  const rateLimitState = getRateLimitState(rateLimitKey);
 
-  // Always check against latest stored credentials
+  if (rateLimitState.lockedUntil && rateLimitState.lockedUntil > Date.now()) {
+    const retryAfterSec = Math.max(1, Math.ceil((rateLimitState.lockedUntil - Date.now()) / 1000));
+    res.status(429).json({ ok: false, error: "too_many_attempts", retryAfterSec });
+    return;
+  }
+
   currentCreds = getAdminCredentials();
 
-  if (username !== currentCreds.user || password !== currentCreds.pass) {
+  if (username !== currentCreds.user || !verifyPassword(password, currentCreds)) {
+    const failedState = registerFailedLogin(rateLimitKey);
     console.warn(`[AUTH] Invalid credentials for: "${username}" password_length: ${password.length}`);
+
+    if (failedState.lockedUntil && failedState.lockedUntil > Date.now()) {
+      const retryAfterSec = Math.max(1, Math.ceil((failedState.lockedUntil - Date.now()) / 1000));
+      res.status(429).json({ ok: false, error: "too_many_attempts", retryAfterSec });
+      return;
+    }
+
     res.status(401).json({ ok: false, error: "invalid_credentials" });
     return;
   }
+
+  clearFailedLogins(rateLimitKey);
+  migrateLegacyCredentialsIfNeeded(currentCreds, password);
 
   const token = sessions.create();
   setSessionCookie(res, token);
   res.json({ ok: true, user: currentCreds.user });
 });
 
-// Credentials Update Endpoint
 app.post("/api/admin/credentials", requireAuth, (req, res) => {
-  const { newUsername, newPassword, confirmPassword } = req.body;
+  currentCreds = getAdminCredentials();
+
+  const newUsername = typeof req.body?.newUsername === "string" ? req.body.newUsername.trim() : "";
+  const newPassword = typeof req.body?.newPassword === "string" ? req.body.newPassword : "";
+  const confirmPassword = typeof req.body?.confirmPassword === "string" ? req.body.confirmPassword : "";
 
   if (!newUsername) {
-    return res.status(400).json({ ok: false, error: "Nom d'utilisateur requis." });
+    res.status(400).json({ ok: false, error: "Nom d'utilisateur requis." });
+    return;
   }
 
-  // Update logic: If new password is provided, use it. Otherwise keep old password.
-  let passToSave = currentCreds.pass;
+  if (newUsername.length < 3) {
+    res.status(400).json({ ok: false, error: "Le nom d'utilisateur doit contenir au moins 3 caractères." });
+    return;
+  }
+
+  let passwordToSave = "";
   if (newPassword) {
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ ok: false, error: "Les mots de passe ne correspondent pas." });
+      res.status(400).json({ ok: false, error: "Les mots de passe ne correspondent pas." });
+      return;
     }
-    passToSave = newPassword;
+
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      res.status(400).json({ ok: false, error: `Le mot de passe doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.` });
+      return;
+    }
+
+    passwordToSave = newPassword;
+  } else if (currentCreds.isLegacyPlainText && typeof currentCreds.pass === "string") {
+    passwordToSave = currentCreds.pass;
+  } else {
+    res.status(400).json({ ok: false, error: "Saisissez un nouveau mot de passe pour finaliser cette mise à jour." });
+    return;
   }
 
-  const saved = saveAdminCredentials(newUsername, passToSave);
-  if (saved) {
-    currentCreds = { user: newUsername, pass: passToSave };
-    res.json({ ok: true, message: "Identifiants sauvegardés avec succès." });
-  } else {
+  const saved = saveAdminCredentials(newUsername, passwordToSave);
+  if (!saved) {
     res.status(500).json({ ok: false, error: "Erreur lors de la sauvegarde côté serveur." });
+    return;
   }
+
+  currentCreds = getAdminCredentials();
+  sessions.clearAll();
+  const token = sessions.create();
+  setSessionCookie(res, token);
+  res.json({
+    ok: true,
+    user: currentCreds.user,
+    message: "Identifiants sauvegardés avec succès. Les anciennes sessions ont été fermées."
+  });
 });
 
 app.get("/api/admin/session", (req, res) => {
   const token = getSessionToken(req);
   res.json({ ok: true, authenticated: sessions.isValid(token) });
+});
+
+app.get("/api/admin/security-status", requireAuth, (_req, res) => {
+  currentCreds = getAdminCredentials();
+  res.json({
+    ok: true,
+    user: currentCreds.user,
+    usesDefaultCredentials: currentCreds.usesDefaultCredentials,
+    isLegacyPlainText: currentCreds.isLegacyPlainText,
+    credentialSource: currentCreds.source,
+    minPasswordLength: MIN_PASSWORD_LENGTH
+  });
 });
 
 app.post("/api/admin/logout", (req, res) => {
@@ -132,6 +337,25 @@ app.get("/api/data", requireAuth, (_req, res) => {
 app.post("/api/data", requireAuth, (req, res) => {
   const saved = writeData(req.body);
   res.json({ ok: true, data: saved });
+});
+
+app.get("/api/data/export", requireAuth, (_req, res) => {
+  const data = readData();
+  const stamp = new Date().toISOString().slice(0, 10);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="restaurant-backup-${stamp}.json"`);
+  res.send(JSON.stringify(data, null, 2));
+});
+
+app.post("/api/data/import", requireAuth, (req, res) => {
+  try {
+    const payload = req.body?.data && typeof req.body.data === "object" ? req.body.data : req.body;
+    const saved = writeData(payload);
+    res.json({ ok: true, data: saved });
+  } catch (error) {
+    console.error("IMPORT ERROR:", error);
+    res.status(400).json({ ok: false, error: "invalid_import_payload" });
+  }
 });
 
 app.post("/api/data/reset", requireAuth, (_req, res) => {
@@ -191,7 +415,7 @@ app.use((error, _req, res, _next) => {
 });
 
 const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`Foody admin server running on 0.0.0.0:${port}`);
+  console.log(`Restaurant admin server running on 0.0.0.0:${port}`);
 });
 
 module.exports = { app, server };

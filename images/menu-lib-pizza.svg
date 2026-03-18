@@ -1,0 +1,20 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#FFF1E8"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <circle cx="600" cy="370" r="220" fill="#F0BF73"/>
+  <circle cx="600" cy="370" r="188" fill="#F9DE9B"/>
+  <circle cx="600" cy="370" r="160" fill="#D84A43"/>
+  <circle cx="505" cy="308" r="26" fill="#F4F1E7"/>
+  <circle cx="677" cy="315" r="26" fill="#F4F1E7"/>
+  <circle cx="712" cy="430" r="26" fill="#F4F1E7"/>
+  <circle cx="530" cy="465" r="26" fill="#F4F1E7"/>
+  <circle cx="612" cy="515" r="26" fill="#F4F1E7"/>
+  <path d="M600 370 L795 214 A220 220 0 0 1 724 559 Z" fill="#FFE8A8" stroke="#D39B49" stroke-width="16"/>
+  <text x="600" y="666" text-anchor="middle" fill="#78311D" font-family="Georgia, serif" font-size="54">Pizza &amp; Oven Specials</text>
+  <defs>
+    <linearGradient id="bg" x1="140" y1="100" x2="1040" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE0CB"/>
+      <stop offset="1" stop-color="#F7C49E"/>
+    </linearGradient>
+  </defs>
+</svg>

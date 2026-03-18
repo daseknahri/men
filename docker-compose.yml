@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: website-production
-    image: foody-website:latest
+    image: restaurant-template-website:latest
     restart: unless-stopped
     command: node website-server.js
     environment:
@@ -23,14 +23,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-    # In Coolify, assign this service domain as: https://foody.ibnbatoutaweb.com:3002
+    # In Coolify, assign this service domain as: https://restaurant.example.com:3002
 
   admin:
     build:
       context: .
       dockerfile: Dockerfile
       target: admin-production
-    image: foody-admin:latest
+    image: restaurant-template-admin:latest
     restart: unless-stopped
     command: node admin-server.js
     environment:
@@ -38,6 +38,7 @@ services:
       - PORT=${ADMIN_PORT:-3102}
       - DATA_FILE=/app/data/data.json
       - UPLOADS_DIR=/app/uploads
+      - AUTH_FILE=/app/data/auth.json
       - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASS=${ADMIN_PASS:-change-me-now}
       - COOKIE_SECURE=${COOKIE_SECURE:-true}
@@ -52,7 +53,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-    # In Coolify, assign this service domain as: https://admin.foody.ibnbatoutaweb.com:3102
+    # In Coolify, assign this service domain as: https://admin.restaurant.example.com:3102
 
 volumes:
   app_data:

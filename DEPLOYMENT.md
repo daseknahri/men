@@ -1,16 +1,192 @@
-# Deployment Notes
+# Deployment Guide
 
-See [README.md](./README.md) for the full deployment workflow.
+Use this file for production deployment and redeployment decisions.
 
-Recommended production domains for this app:
+This project is already live on Coolify, so every rollout should be:
 
-- website: `foody.ibnbatoutaweb.com`
-- admin: `admin.foody.ibnbatoutaweb.com`
+- deploy-safe
+- reversible
+- validated before release
 
-Recommended Coolify process:
+Read [README.md](./README.md) first for the product overview and [SELLER_HANDOFF_CHECKLIST.md](./SELLER_HANDOFF_CHECKLIST.md) for client-delivery workflow.
 
-1. Deploy with generated domains first.
-2. Verify both generated HTTPS URLs work.
-3. Switch website to `https://foody.ibnbatoutaweb.com:3002`.
-4. Switch admin to `https://admin.foody.ibnbatoutaweb.com:3102`.
-5. Enable GitHub auto-deploy with `COOLIFY_WEBHOOK_PROD` and `COOLIFY_TOKEN_PROD`.
+## Deployment Model
+
+Current recommended model:
+
+- one website service for the public site
+- one admin service for the protected admin
+- one restaurant instance per deployment
+
+Typical domain pattern:
+
+- website: `restaurant.example.com`
+- admin: `admin.restaurant.example.com`
+
+## Current Target Deployment
+
+Prepared live-preview target:
+
+- website: `matsco.ibnbatoutaweb.com`
+- admin: `admin.matsco.ibnbatoutaweb.com`
+- website port: `4002`
+- admin port: `4102`
+
+If the admin subdomain DNS record is not created yet, deploy the admin first on its generated Coolify domain and only switch to `admin.matsco.ibnbatoutaweb.com` after the DNS record exists.
+
+## Required Environment Variables
+
+Set these in Coolify. You can start from [`coolify.env.example`](./coolify.env.example) or the prepared target file [`coolify.matsco.env.example`](./coolify.matsco.env.example):
+
+- `WEBSITE_PORT=3002`
+- `ADMIN_PORT=3102`
+- `PRODUCT_DOMAIN=<public-domain>`
+- `ADMIN_DOMAIN=<admin-domain>`
+- `ADMIN_USER=<admin-username>`
+- `ADMIN_PASS=<strong-password>`
+- `COOKIE_SECURE=true`
+- `DATA_FILE=/app/data/data.json`
+- `UPLOADS_DIR=/app/uploads`
+- `AUTH_FILE=/app/data/auth.json`
+
+Recommended production rule:
+
+- never leave `ADMIN_PASS` on the fallback default
+- keep `AUTH_FILE` inside the persisted `/app/data` volume so Security-tab password changes survive redeploys
+
+## Configure In Coolify
+
+Use this order when creating or updating the live project:
+
+1. Create a new Coolify application from this repo.
+2. Use the repository root `docker-compose.yml`.
+3. Create or confirm two services:
+   - `website`
+   - `admin`
+4. Set the environment variables from [`coolify.env.example`](./coolify.env.example), replacing the domain and credential placeholders with the real client values.
+5. Confirm both services keep the persisted volumes:
+   - `/app/data`
+   - `/app/uploads`
+6. Start with generated Coolify domains first, before switching DNS to the final client domains.
+7. Keep the public site and admin on separate domains/subdomains when possible.
+
+For the current `matsco` target, use:
+
+- website service domain: `matsco.ibnbatoutaweb.com`
+- admin service domain: `admin.matsco.ibnbatoutaweb.com`
+- website service port env: `4002`
+- admin service port env: `4102`
+
+Minimum env review before clicking deploy:
+
+- `ADMIN_PASS` is strong and not the fallback value
+- `COOKIE_SECURE=true`
+- `DATA_FILE=/app/data/data.json`
+- `UPLOADS_DIR=/app/uploads`
+- `AUTH_FILE=/app/data/auth.json`
+
+## Deploy To See It Live
+
+Use this sequence whenever you want a live preview or release candidate in Coolify:
+
+1. Run locally:
+   ```bash
+   npm run predeploy
+   ```
+2. Push the branch/commit you want to test.
+3. In Coolify, trigger `Deploy`.
+4. Wait for both services to become healthy.
+5. Open the generated website domain and admin domain.
+6. Confirm the live instance matches the current restaurant data and media.
+7. Only after that, continue with DNS/custom-domain changes or client handoff.
+
+## Pre-Deploy Checklist
+
+Before pushing or deploying:
+
+1. Run:
+   ```bash
+   npm run predeploy
+   ```
+2. Confirm no intentional work-in-progress admin credentials remain.
+3. Confirm the active restaurant data is the intended one.
+4. Confirm uploads referenced by branding/menu/gallery exist.
+5. Export a backup from admin if the instance already contains important live data.
+
+## Coolify Workflow
+
+Recommended order:
+
+1. Deploy the services with generated Coolify domains first.
+2. Confirm both services boot correctly.
+3. Confirm HTTPS works on both generated domains.
+4. Confirm admin login works.
+5. Confirm public homepage and menu load with restaurant data.
+6. Only then switch to final custom domains.
+
+Do not change custom DNS and deployment settings at the same time if you can avoid it.
+
+## Post-Deploy Validation
+
+After each deployment, verify:
+
+- public homepage loads
+- menu landing loads
+- menu navigation works
+- gallery opens
+- public contact actions behave correctly
+- admin login works
+- admin save works
+- uploads still resolve
+- security panel does not show unexpected warnings
+
+Minimum command validation:
+
+```bash
+npm run check
+npm run smoke
+```
+
+Minimum manual browser validation:
+
+- homepage
+- menu page
+- one menu item detail view
+- one admin save action
+- one uploaded image display
+
+## Security Requirements
+
+Before considering a deployment ready:
+
+- change default credentials
+- verify the security panel warning is gone
+- verify `AUTH_FILE` points to persisted storage and not the container root filesystem
+- keep `COOKIE_SECURE=true` in production
+- keep admin on a separate domain/subdomain when possible
+- avoid exposing internal automation or AI credentials anywhere in the client-facing admin
+
+## Backup And Rollback
+
+Before risky deployment or content migration work:
+
+1. export a JSON backup from admin
+2. copy or preserve the live `data.json`
+3. preserve the current uploads directory
+
+Rollback priority:
+
+1. restore the previous application image/version in Coolify
+2. restore the matching `data.json`
+3. restore the matching uploads set
+
+## Common Operational Notes
+
+- Some remaining inline attributes in `menu.html` are intentional visibility hooks driven by JS.
+- The smoke check will warn if fallback admin credentials are still in use.
+- After the client changes credentials in the Security tab, the saved auth file becomes the active source of truth and overrides the original env credentials.
+- The product is not yet a multi-tenant SaaS; treat each deployment as a client instance.
+
+## Recommended Next Operational Improvement
+
+The next deployment-related improvement should be a clearer importer/onboarding contract plus a repeatable content/media quality review before client launch, not more infrastructure complexity yet.

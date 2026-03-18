@@ -1,0 +1,17 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#FFF2F5"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <path d="M470 540C470 460 528 390 600 390C672 390 730 460 730 540H470Z" fill="#D06B66"/>
+  <path d="M500 372C500 305 545 256 600 256C655 256 700 305 700 372V390H500V372Z" fill="#F5E6D4"/>
+  <circle cx="600" cy="240" r="46" fill="#FFF5F0"/>
+  <circle cx="600" cy="212" r="16" fill="#E86C78"/>
+  <circle cx="546" cy="320" r="18" fill="#EFA5B2"/>
+  <circle cx="652" cy="327" r="18" fill="#EFA5B2"/>
+  <text x="600" y="664" text-anchor="middle" fill="#743546" font-family="Georgia, serif" font-size="54">Desserts &amp; Sweet Treats</text>
+  <defs>
+    <linearGradient id="bg" x1="150" y1="110" x2="1050" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE0E8"/>
+      <stop offset="1" stop-color="#F7C5D2"/>
+    </linearGradient>
+  </defs>
+</svg>

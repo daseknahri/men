@@ -4,22 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Menu | Foody Tangier</title>
+    <title>Menu | Restaurant</title>
     <link rel="stylesheet" href="style.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap"
         rel="stylesheet">
     <style>
-        :root {
-            --menu-bg: #0f1115;
-            --card-bg: #1a1d23;
-            --text-muted: #8e9297;
-            --primary: #e63946;
-        }
-
         /* ===== FEATURED SLIDER IN MENU ===== */
         .featured-section {
-            margin: 0 0 24px;
+            margin: 0 0 40px;
             padding: 0;
         }
 
@@ -36,9 +29,9 @@
 
         .featured-slider {
             display: flex;
-            gap: 12px;
+            gap: 18px;
             overflow-x: auto;
-            padding: 5px 5px 15px;
+            padding: 10px 6px 24px;
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-snap-type: x mandatory;
@@ -49,16 +42,16 @@
         }
 
         .featured-card {
-            flex: 0 0 150px;
-            background: #1a1d23;
-            border-radius: 16px;
+            flex: 0 0 170px;
+            background: linear-gradient(180deg, rgba(40, 44, 54, 0.98) 0%, rgba(24, 27, 34, 0.98) 100%);
+            border-radius: 24px;
             overflow: hidden;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 22px 42px rgba(0, 0, 0, 0.34);
             cursor: pointer;
             scroll-snap-align: start;
-            transition: transform 0.25s ease, border-color 0.25s;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .featured-card:active {
@@ -66,14 +59,16 @@
         }
 
         .featured-card:hover {
-            border-color: rgba(230, 57, 70, 0.5);
+            transform: translateY(-4px);
+            border-color: rgba(255, 177, 84, 0.38);
+            box-shadow: 0 26px 48px rgba(0, 0, 0, 0.42);
         }
 
         .featured-img-wrap {
             width: 100%;
-            height: 110px;
+            height: 118px;
             overflow: hidden;
-            background: #252932;
+            background: var(--menu-surface-2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,23 +86,24 @@
         }
 
         .featured-info {
-            padding: 10px 10px 38px;
+            padding: 16px 16px 52px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.12) 100%);
         }
 
         .featured-name {
             color: #fff;
             font-weight: 600;
-            font-size: 0.85rem;
-            line-height: 1.3;
+            font-size: 0.88rem;
+            line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .featured-price {
-            color: #ffd700;
+            color: #ffd978;
             font-weight: 800;
             font-size: 0.85rem;
         }
@@ -118,7 +114,7 @@
             right: 10px;
             width: 30px;
             height: 30px;
-            background: #e63946;
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -129,8 +125,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 3px 10px rgba(230, 57, 70, 0.4);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 12px 22px rgba(230, 57, 70, 0.28);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+        }
+
+        .featured-add-btn:hover {
+            box-shadow: 0 16px 26px rgba(230, 57, 70, 0.34);
         }
 
         .featured-add-btn:active {
@@ -146,45 +146,53 @@
         }
 
         .menu-header {
-            padding: 40px 20px 20px;
+            padding: 58px 20px 34px;
             text-align: center;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+            background:
+                radial-gradient(circle at top, rgba(255, 159, 67, 0.18), transparent 48%),
+                linear-gradient(180deg, rgba(10, 11, 15, 0.94) 0%, rgba(10, 11, 15, 0.18) 100%);
+            animation: menuFadeLift 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
         .menu-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            letter-spacing: -1px;
+            font-size: 2.65rem;
+            margin-bottom: 7px;
+            letter-spacing: -1.2px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
         }
 
         .menu-header p {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.98rem;
+            line-height: 1.65;
+            max-width: 520px;
+            margin: 0 auto;
         }
 
         .menu-container {
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
-            padding: 0 15px;
+            padding: 0 18px;
         }
 
         .cat-nav-wrapper {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(15, 17, 21, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 10px 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 17, 21, 0.84);
+            backdrop-filter: blur(16px);
+            padding: 18px 0 18px;
+            margin-bottom: 34px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
         }
 
         .cat-nav-scroll {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             overflow-x: auto;
-            padding: 5px 15px;
+            padding: 8px 16px;
             scrollbar-width: none;
         }
 
@@ -194,100 +202,183 @@
 
         .menu-cat-btn {
             white-space: nowrap;
-            background: #252932;
-            border: none;
+            background: linear-gradient(180deg, rgba(43, 47, 57, 0.96) 0%, rgba(27, 30, 37, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            padding: 11px 18px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        .menu-cat-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 177, 84, 0.24);
+            box-shadow: 0 14px 26px rgba(0, 0, 0, 0.24);
         }
 
         .menu-cat-btn.active {
-            background: var(--primary);
-            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
+            border-color: rgba(255, 210, 138, 0.42);
+            box-shadow: 0 14px 28px rgba(230, 57, 70, 0.28);
+        }
+
+        body.menu-page[data-theme-preset='fast_food'] .menu-header {
+            background:
+                radial-gradient(circle at top, rgba(255, 159, 67, 0.24), transparent 48%),
+                linear-gradient(180deg, rgba(32, 10, 10, 0.96) 0%, rgba(18, 12, 13, 0.42) 100%);
+        }
+
+        body.menu-page[data-theme-preset='fast_food'] .menu-cat-btn.active,
+        body.menu-page[data-theme-preset='fast_food'] .featured-add-btn,
+        body.menu-page[data-theme-preset='fast_food'] .menu-item-add {
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
+        }
+
+        body.menu-page[data-theme-preset='cafe'] .menu-header {
+            background:
+                radial-gradient(circle at top, rgba(212, 154, 99, 0.2), transparent 48%),
+                linear-gradient(180deg, rgba(39, 28, 22, 0.94) 0%, rgba(24, 20, 17, 0.4) 100%);
+        }
+
+        body.menu-page[data-theme-preset='cafe'] .menu-cat-btn {
+            background: linear-gradient(180deg, rgba(69, 54, 44, 0.96) 0%, rgba(43, 33, 27, 0.96) 100%);
+            border-color: rgba(243, 208, 139, 0.12);
+        }
+
+        body.menu-page[data-theme-preset='cafe'] .menu-cat-btn.active,
+        body.menu-page[data-theme-preset='cafe'] .featured-add-btn,
+        body.menu-page[data-theme-preset='cafe'] .menu-item-add {
+            background: linear-gradient(135deg, #8b5e3c 0%, #d49a63 100%);
+            box-shadow: 0 14px 28px rgba(139, 94, 60, 0.28);
+        }
+
+        body.menu-page[data-theme-preset='cafe'] .menu-item-card,
+        body.menu-page[data-theme-preset='cafe'] .featured-card {
+            border-color: rgba(243, 208, 139, 0.12);
+        }
+
+        body.menu-page[data-theme-preset='traditional'] .menu-header {
+            background:
+                radial-gradient(circle at top, rgba(200, 135, 63, 0.2), transparent 48%),
+                linear-gradient(180deg, rgba(35, 18, 18, 0.95) 0%, rgba(23, 17, 18, 0.44) 100%);
+        }
+
+        body.menu-page[data-theme-preset='traditional'] .menu-cat-btn {
+            background: linear-gradient(180deg, rgba(63, 35, 32, 0.96) 0%, rgba(37, 25, 26, 0.96) 100%);
+            border-color: rgba(200, 135, 63, 0.14);
+        }
+
+        body.menu-page[data-theme-preset='traditional'] .menu-cat-btn.active,
+        body.menu-page[data-theme-preset='traditional'] .featured-add-btn,
+        body.menu-page[data-theme-preset='traditional'] .menu-item-add {
+            background: linear-gradient(135deg, #a63d32 0%, #c8873f 100%);
+            box-shadow: 0 14px 28px rgba(166, 61, 50, 0.28);
+        }
+
+        body.menu-page[data-theme-preset='traditional'] .menu-item-card,
+        body.menu-page[data-theme-preset='traditional'] .featured-card {
+            border-color: rgba(200, 135, 63, 0.14);
         }
 
         .menu-section {
-            margin-bottom: 40px;
+            margin-bottom: 62px;
         }
 
         .menu-section-title {
-            font-size: 1.2rem;
+            font-size: 1.28rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 10px;
+            letter-spacing: -0.2px;
+        }
+
+        .menu-section-title.subcat-title {
+            padding: 0 16px 12px;
+            margin-top: 4px;
         }
 
         .menu-section-title::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(90deg, rgba(255, 177, 84, 0.26), rgba(255, 255, 255, 0.04));
         }
 
         .menu-grid {
             display: grid;
-            gap: 15px;
+            gap: 20px;
         }
 
         .menu-item-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 15px;
+            background: linear-gradient(180deg, rgba(37, 41, 50, 0.98) 0%, rgba(23, 26, 32, 0.98) 100%);
+            border-radius: 24px;
+            padding: 20px;
             display: flex;
-            gap: 15px;
+            gap: 20px;
             position: relative;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
         }
 
         .menu-item-card:active {
             transform: scale(0.98);
         }
 
+        .menu-item-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 177, 84, 0.24);
+            box-shadow: 0 24px 42px rgba(0, 0, 0, 0.32);
+        }
+
         .menu-item-info {
             flex: 1;
+            padding-right: 28px;
         }
 
         .menu-item-name {
             font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 4px;
+            font-size: 1.08rem;
+            margin-bottom: 6px;
+            line-height: 1.3;
         }
 
         .menu-item-desc {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            line-height: 1.4;
+            font-size: 0.88rem;
+            line-height: 1.62;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .menu-item-price {
-            margin-top: 10px;
+            margin-top: 14px;
             font-weight: 600;
             color: var(--primary);
-            font-size: 0.95rem;
+            font-size: 0.98rem;
         }
 
         .menu-item-img {
-            width: 85px;
-            height: 85px;
+            width: 102px;
+            height: 102px;
             background: #252932;
-            border-radius: 12px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 22px rgba(0, 0, 0, 0.22);
+            flex-shrink: 0;
         }
 
         .menu-item-img img {
@@ -298,37 +389,111 @@
 
         .menu-item-add {
             position: absolute;
-            bottom: 12px;
-            right: 12px;
-            width: 38px;
-            height: 38px;
+            bottom: 14px;
+            right: 14px;
+            width: 42px;
+            height: 42px;
             z-index: 5;
-            background: var(--primary);
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
             border: none;
-            border-radius: 10px;
+            border-radius: 16px;
             color: #fff;
             font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(230, 57, 70, 0.2);
+            box-shadow: 0 14px 24px rgba(230, 57, 70, 0.24);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .menu-item-add:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 26px rgba(230, 57, 70, 0.3);
         }
 
         /* Search Bar overlay-ish */
         .menu-search-box {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             position: relative;
+        }
+
+        @keyframes menuFadeLift {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes menuRevealIn {
+            from {
+                opacity: 0;
+                transform: translateY(26px) scale(0.985);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .menu-reveal-observe {
+            opacity: 0;
+        }
+
+        .menu-reveal-observe.is-visible {
+            animation: menuRevealIn 0.74s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: var(--menu-reveal-delay, 0ms);
+        }
+
+        .featured-card:nth-child(1),
+        .menu-item-card:nth-child(1),
+        .promo-card-vibrant:nth-child(1) {
+            animation-delay: 0.06s;
+        }
+
+        .featured-card:nth-child(2),
+        .menu-item-card:nth-child(2),
+        .promo-card-vibrant:nth-child(2) {
+            animation-delay: 0.12s;
+        }
+
+        .featured-card:nth-child(3),
+        .menu-item-card:nth-child(3),
+        .promo-card-vibrant:nth-child(3) {
+            animation-delay: 0.18s;
+        }
+
+        .featured-card:nth-child(4),
+        .menu-item-card:nth-child(4),
+        .promo-card-vibrant:nth-child(4) {
+            animation-delay: 0.24s;
         }
 
         .menu-search-box input {
             width: 100%;
-            background: #1a1d23;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 12px 15px 12px 40px;
+            background: linear-gradient(180deg, rgba(39, 43, 53, 0.98) 0%, rgba(24, 27, 34, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 20px;
+            padding: 14px 16px 14px 46px;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             box-sizing: border-box;
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .menu-search-box input:focus {
+            outline: none;
+            border-color: rgba(255, 177, 84, 0.34);
+            box-shadow: 0 20px 38px rgba(0, 0, 0, 0.26);
+            transform: translateY(-1px);
         }
 
         .menu-search-box::before {
@@ -347,14 +512,15 @@
             bottom: 20px;
             left: 15px;
             right: 15px;
-            background: var(--primary);
-            height: 56px;
-            border-radius: 16px;
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
+            min-height: 58px;
+            border-radius: 20px;
             z-index: 4000;
             display: none;
             align-items: center;
             padding: 0 20px;
-            box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
+            border: 1px solid rgba(255, 233, 201, 0.28);
+            box-shadow: 0 20px 40px rgba(230, 57, 70, 0.3);
             cursor: pointer;
             animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
@@ -373,12 +539,13 @@
 
         /* ═══════════════════════ VIBRANT PROMO CAROUSEL ═══════════════════════ */
         .promo-section-vibrant {
-            margin: 20px 0 !important;
+            margin: 38px 0 !important;
             padding: 0 !important;
             overflow: visible !important;
             width: 100% !important;
             display: block !important;
             z-index: 10 !important;
+            position: relative !important;
         }
 
         @media (min-width: 1024px) {
@@ -388,7 +555,7 @@
                 left: 50% !important;
                 margin-left: -50vw !important;
                 padding: 20px 0 !important;
-                background: linear-gradient(90deg, transparent, rgba(230, 57, 70, 0.05), transparent) !important;
+                background: linear-gradient(90deg, transparent, rgba(255, 159, 67, 0.08), transparent) !important;
                 z-index: 50 !important;
             }
         }
@@ -397,12 +564,12 @@
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            gap: 12px !important;
+            gap: 16px !important;
             overflow-x: auto !important;
             overflow-y: visible !important;
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
-            padding: 10px !important;
+            padding: 12px !important;
             scroll-behavior: smooth !important;
             -webkit-overflow-scrolling: touch !important;
         }
@@ -412,12 +579,12 @@
         }
 
         .promo-card-vibrant {
-            min-width: 180px !important;
-            flex: 0 0 180px !important;
-            background: rgba(25, 29, 35, 0.95) !important;
+            min-width: 194px !important;
+            flex: 0 0 194px !important;
+            background: linear-gradient(180deg, rgba(38, 42, 52, 0.98) 0%, rgba(23, 26, 32, 0.98) 100%) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 18px !important;
-            padding: 12px !important;
+            border-radius: 24px !important;
+            padding: 16px !important;
             position: relative !important;
             overflow: hidden !important;
             cursor: pointer !important;
@@ -425,8 +592,30 @@
             backdrop-filter: blur(15px) !important;
             display: flex !important;
             flex-direction: column !important;
-            gap: 8px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+            gap: 12px !important;
+            box-shadow: 0 22px 40px rgba(0, 0, 0, 0.32) !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .menu-reveal-observe,
+            .menu-reveal-observe.is-visible,
+            .menu-header,
+            .cat-nav-wrapper,
+            .featured-card,
+            .menu-item-card,
+            .promo-card-vibrant {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            .featured-card:hover,
+            .menu-item-card:hover,
+            .promo-card-vibrant:hover,
+            .featured-card:hover .featured-img-wrap img,
+            .promo-card-vibrant:hover .promo-visual-vibrant img {
+                transform: none !important;
+            }
         }
 
         @media (min-width: 1024px) {
@@ -437,9 +626,9 @@
         }
 
         .promo-card-vibrant:hover {
-            transform: translateY(-8px) scale(1.03) !important;
-            border-color: #e63946 !important;
-            box-shadow: 0 15px 35px rgba(230, 57, 70, 0.4) !important;
+            transform: translateY(-6px) scale(1.02) !important;
+            border-color: rgba(255, 185, 104, 0.5) !important;
+            box-shadow: 0 28px 48px rgba(0, 0, 0, 0.38) !important;
         }
 
         /* --- NEW PROMO NAV ARROWS --- */
@@ -466,9 +655,9 @@
             transform: translateY(-50%);
             width: 50px;
             height: 50px;
-            background: rgba(230, 57, 70, 0.9);
+            background: linear-gradient(135deg, rgba(255, 159, 67, 0.96) 0%, rgba(230, 57, 70, 0.96) 100%);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 237, 210, 0.28);
             color: #fff;
             border-radius: 50%;
             cursor: pointer;
@@ -478,13 +667,13 @@
             justify-content: center;
             font-size: 1.5rem;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 20px rgba(230, 57, 70, 0.4);
+            box-shadow: 0 18px 34px rgba(230, 57, 70, 0.28);
         }
 
         .promo-nav-btn:hover {
-            background: #ff4d5a;
+            background: linear-gradient(135deg, #ffb257 0%, #ef4b57 100%);
             transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 0 30px rgba(230, 57, 70, 0.8);
+            box-shadow: 0 22px 38px rgba(230, 57, 70, 0.34);
         }
 
         .promo-nav-btn.prev {
@@ -502,7 +691,7 @@
                 left: 0 !important;
                 margin-left: 0 !important;
                 padding: 40px 0 !important;
-                background: linear-gradient(90deg, transparent, rgba(230, 57, 70, 0.05), transparent) !important;
+                background: linear-gradient(90deg, transparent, rgba(255, 159, 67, 0.08), transparent) !important;
                 z-index: 100 !important;
             }
 
@@ -550,12 +739,13 @@
             font-size: 0.6rem;
             font-weight: 800;
             color: #fff;
-            background: #e63946;
-            padding: 2px 6px;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
+            padding: 4px 8px;
+            border-radius: 999px;
             z-index: 2;
-            box-shadow: 0 0 10px #e63946;
+            box-shadow: 0 12px 20px rgba(230, 57, 70, 0.24);
             animation: promoPulseGlow 2s infinite;
+            letter-spacing: 0.4px;
         }
 
         .promo-discount-badge {
@@ -564,12 +754,12 @@
             right: 8px;
             font-size: 0.75rem;
             font-weight: 900;
-            background: #FFD700;
-            color: #000;
-            padding: 4px 8px;
+            background: linear-gradient(180deg, #ffe59b 0%, #ffc84a 100%);
+            color: #1e1604;
+            padding: 5px 9px;
             border-radius: 50px;
             z-index: 2;
-            box-shadow: 2px 2px 0 #000;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
         }
 
         .promo-visual-vibrant {
@@ -607,11 +797,14 @@
 
         .promo-name-vibrant {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.04rem;
             color: #fff;
-            white-space: nowrap;
+            line-height: 1.3;
+            min-height: 2.6em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .price-new {
@@ -630,18 +823,19 @@
 
         .promo-add-vibrant {
             width: 100%;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.96);
             border: none;
-            color: #000;
+            color: #111;
             font-weight: 800;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             margin-top: auto;
             transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.12);
         }
 
         .promo-add-vibrant:hover {
@@ -678,17 +872,51 @@
             border: 2px dashed rgba(255, 255, 255, 0.08);
         }
 
+        @media (max-width: 768px) {
+            .featured-slider {
+                gap: 14px;
+                padding-bottom: 20px;
+            }
+
+            .featured-card {
+                flex-basis: 156px;
+            }
+
+            .menu-section {
+                margin-bottom: 48px;
+            }
+
+            .menu-item-card {
+                padding: 18px;
+                gap: 16px;
+            }
+
+            .menu-item-info {
+                padding-right: 22px;
+            }
+
+            .menu-item-img {
+                width: 88px;
+                height: 88px;
+            }
+
+            .promo-card-vibrant {
+                min-width: 184px !important;
+                flex-basis: 184px !important;
+            }
+        }
+
         /* ═══════════════════════ IMAGE GALLERY MODAL ═══════════════════════ */
         .gallery-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(9, 11, 16, 0.92);
             z-index: 10000;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(14px);
             animation: fadeIn 0.3s ease;
         }
 
@@ -698,8 +926,8 @@
             right: 20px;
             width: 44px;
             height: 44px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+            background: rgba(18, 22, 29, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 50%;
             color: #fff;
             font-size: 1.5rem;
@@ -712,8 +940,8 @@
         }
 
         .gallery-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+            background: rgba(18, 22, 29, 0.9);
+            transform: translateY(-2px);
         }
 
         .gallery-container {
@@ -730,8 +958,9 @@
             max-width: 100%;
             max-height: 80vh;
             object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.3s;
         }
 
@@ -741,8 +970,8 @@
             transform: translateY(-50%);
             width: 50px;
             height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+            background: linear-gradient(135deg, rgba(255, 159, 67, 0.96) 0%, rgba(230, 57, 70, 0.96) 100%);
+            border: 1px solid rgba(255, 237, 210, 0.24);
             border-radius: 50%;
             color: #fff;
             font-size: 1.2rem;
@@ -752,11 +981,12 @@
             cursor: pointer;
             transition: all 0.3s;
             z-index: 10001;
+            box-shadow: 0 18px 30px rgba(230, 57, 70, 0.24);
         }
 
         .gallery-nav:hover {
-            background: #e63946;
-            box-shadow: 0 0 15px #e63946;
+            transform: translateY(-50%) scale(1.06);
+            box-shadow: 0 22px 36px rgba(230, 57, 70, 0.3);
         }
 
         .gallery-prev {
@@ -774,6 +1004,7 @@
             color: #fff;
             width: 100%;
             padding: 0 20px;
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
         }
 
         .gallery-title {
@@ -805,105 +1036,32 @@
 
 
         .cart-bar-count {
-            background: #fff;
-            color: var(--primary);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            color: #c2333f;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 999px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
             font-weight: 800;
             margin-right: 12px;
+            padding: 0 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.14);
         }
 
         .cart-bar-label {
             flex: 1;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1rem;
+            letter-spacing: -0.2px;
         }
 
         .cart-bar-total {
             font-weight: 800;
             font-size: 1.1rem;
-        }
-
-        .lang-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .lang-drop-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-        }
-
-        .lang-drop-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .lang-drop-btn .chevron {
-            font-size: 0.7rem;
-            opacity: 0.6;
-        }
-
-        .lang-options {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            background: #1a1d23;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            min-width: 140px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            z-index: 1100;
-        }
-
-        .lang-options.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .lang-opt {
-            padding: 12px 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-
-        .lang-opt:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .lang-opt .flag {
-            font-size: 1.1rem;
-        }
-
-        .lang-opt:first-child {
-            border-radius: 14px 14px 0 0;
-        }
-
-        .lang-opt:last-child {
-            border-radius: 0 0 14px 14px;
+            letter-spacing: -0.3px;
         }
 
         .menu-lang-wrapper {
@@ -1040,6 +1198,48 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
+        .game-banner-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .game-banner-icon {
+            font-size: 2rem;
+        }
+
+        .game-banner-note {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .game-banner-cta {
+            background: #fff;
+            color: #e01e2f;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+
+        .game-logo-mark {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            line-height: 0.9;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0, 0, 0, 0.5);
+            transform: rotate(-5deg);
+        }
+
+        .game-logo-who {
+            color: #00e5ff;
+        }
+
+        .game-logo-pays {
+            color: #ffcc00;
+        }
+
         .game-modal {
             position: fixed;
             top: 0;
@@ -1098,6 +1298,17 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
+        .game-subtitle-light {
+            color: #fff;
+        }
+
+        .game-subtitle-board {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
         /* Start Screen */
         .game-start-container {
             flex: 1;
@@ -1108,6 +1319,10 @@
 
         .gs-how {
             margin-bottom: 30px;
+        }
+
+        .gs-how-light {
+            color: #fff;
         }
 
         .gs-how h3 {
@@ -1149,9 +1364,35 @@
             margin-bottom: 40px;
         }
 
+        .gs-slider-light {
+            color: #fff;
+        }
+
         .gs-slider-wrap h4 {
             margin-bottom: 15px;
             font-size: 1.1rem;
+        }
+
+        .game-slider-stage {
+            position: relative;
+            margin-top: 25px;
+        }
+
+        .player-slider-val {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #e01e2f;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
         }
 
         .game-slider {
@@ -1322,6 +1563,19 @@
             font-size: 0.95rem;
         }
 
+        .loss-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .loss-copy {
+            margin-bottom: 10px;
+        }
+
+        .loss-title {
+            margin-top: 0;
+        }
+
         .loss-close {
             position: absolute;
             top: 15px;
@@ -1353,7 +1607,7 @@
         <!-- ═══════════ LANDING PAGE VIEW ═══════════ -->
         <div id="landingView">
             <!-- Top Nav on Landing -->
-            <nav class="top-nav-bar" style="position:absolute; top:0; left:0; right:0; z-index:100;">
+            <nav class="top-nav-bar">
                 <div class="top-nav-left">
                     <!-- Language Dropdown -->
                     <div class="lang-dropdown" id="langDropdown">
@@ -1375,47 +1629,48 @@
                     <button class="nav-icon-btn" onclick="openHistory()" title="History">
                         🕒 <span id="histBadgeLanding" class="history-badge">0</span>
                     </button>
-                    <a href="index.html" class="nav-icon-btn close-btn" style="text-decoration:none;">✕</a>
+                    <a href="index.html" class="nav-icon-btn close-btn">✕</a>
                 </div>
             </nav>
 
             <!-- Hero Image -->
             <div class="landing-hero">
-                <img src="images/bg_tasty.png" alt="Restaurant" class="landing-hero-img">
+                <img src="images/hero-default.svg" alt="Restaurant" class="landing-hero-img" id="landingHeroImage">
                 <div class="landing-hero-overlay"></div>
             </div>
 
             <!-- Logo Overlap -->
-            <div class="landing-logo-wrap">
+            <div class="landing-logo-wrap menu-reveal-observe">
                 <div class="landing-logo-circle">
-                    <img src="images/hero_burger.png" alt="Foody Logo" class="landing-logo-img">
+                    <img src="" alt="Restaurant Logo" class="landing-logo-img" id="landingLogoImage" style="display:none;">
+                    <div class="landing-logo-fallback" id="landingLogoFallback">R</div>
                 </div>
             </div>
 
             <!-- Restaurant Info -->
             <div class="landing-body">
-                <h1 class="landing-rest-name">Foody Restaurant</h1>
-                <div id="statusBadge" class="status-badge landing-status">
+                <h1 class="landing-rest-name menu-reveal-observe" id="landingRestaurantName">Restaurant</h1>
+                <div id="statusBadge" class="status-badge landing-status menu-reveal-observe">
                     <span class="dot"></span> <span id="statusText" data-i18n="status_loading">Chargement...</span>
                 </div>
 
                 <!-- Game Banner (Replaces Pills) -->
-                <div class="game-banner" onclick="openGameModal()">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:2rem;">🎮</span>
+                <div class="game-banner menu-reveal-observe" onclick="openGameModal()">
+                    <div class="game-banner-main">
+                        <span class="game-banner-icon">🎮</span>
                         <div>
-                            <div class="gb-text">Qui paie l'addition ?</div>
-                            <div style="font-size:0.8rem; color:rgba(255,255,255,0.8);">Jouez pour passer le temps !
+                            <div class="gb-text" data-i18n="game_title">Qui paie l'addition ?</div>
+                            <div class="game-banner-note" data-i18n="game_subtitle">Jouez pour passer le temps !
                             </div>
                         </div>
                     </div>
                     <div
-                        style="background:#fff; color:#e01e2f; padding:5px 12px; border-radius:20px; font-weight:800; font-size:0.8rem;">
-                        JOUER</div>
+                        class="game-banner-cta">
+                        <span data-i18n="game_cta">JOUER</span></div>
                 </div>
 
                 <!-- Promo Banner -->
-                <div class="promo-section-vibrant">
+                <div class="promo-section-vibrant menu-reveal-observe">
                     <div class="promo-container-wrapper">
                         <div class="promo-inner-container">
                             <button class="promo-nav-btn prev" onclick="scrollPromo(-1)">❮</button>
@@ -1428,34 +1683,34 @@
                 </div>
 
                 <!-- View Menu Button -->
-                <button class="view-menu-btn" onclick="openSuperCatSheet()">
-                    Voir le Menu
+                <button class="view-menu-btn menu-reveal-observe" onclick="openSuperCatSheet()">
+                    <span data-i18n="view_menu">Voir le Menu</span>
                 </button>
 
                 <!-- Info Rows -->
                 <div class="info-section">
-                    <div class="info-row" style="cursor:pointer" title="Voir sur la carte">
+                    <div class="info-row is-actionable menu-reveal-observe" title="Voir sur la carte">
                         <span class="info-icon">📍</span>
-                        <span class="info-text" id="landingLocation">Tanger, Maroc</span>
+                        <span class="info-text" id="landingLocation" data-i18n="landing_address_placeholder">Adresse du restaurant</span>
                     </div>
-                    <div class="info-row" style="cursor:pointer" title="Appeler">
+                    <div class="info-row is-actionable menu-reveal-observe" title="Appeler">
                         <span class="info-icon">📞</span>
                         <span class="info-text" id="landingPhone">+212 600 000 000</span>
                     </div>
-                    <div class="info-row" style="cursor:pointer" title="Nos réseaux sociaux">
+                    <div class="info-row is-actionable menu-reveal-observe" title="Nos réseaux sociaux">
                         <span class="info-icon">📸</span>
-                        <span class="info-text" id="landingSocial">@foody.tanger</span>
+                        <span class="info-text" id="landingSocial">Instagram / Facebook / TikTok</span>
                     </div>
-                    <div class="info-row" style="cursor:pointer" title="Code WiFi">
+                    <div class="info-row is-actionable menu-reveal-observe" title="Code WiFi">
                         <span class="info-icon">📶</span>
-                        <span class="info-text" id="landingWifi">Foody-WiFi</span>
+                        <span class="info-text" id="landingWifi">Demandez le code WiFi</span>
                     </div>
                 </div>
 
                 <!-- Working Hours -->
-                <div class="hours-section">
-                    <h3 class="hours-title">Horaires d'Ouverture</h3>
-                    <div class="hours-grid">
+                <div class="hours-section menu-reveal-observe">
+                    <h3 class="hours-title" data-i18n="landing_hours_title">Horaires d'Ouverture</h3>
+                    <div class="hours-grid" id="landingHoursGrid">
                         <div class="hour-row"><span>Lundi – Jeudi</span><span>10:00 – 00:00</span></div>
                         <div class="hour-row"><span>Vendredi</span><span>12:00 – 01:00</span></div>
                         <div class="hour-row"><span>Samedi</span><span>10:00 – 01:00</span></div>
@@ -1464,7 +1719,7 @@
                 </div>
 
                 <!-- Social Links -->
-                <div class="social-links">
+                <div class="social-links menu-reveal-observe" id="menuLandingSocialLinks">
                     <a href="index.html" class="social-icon-link">🏠</a>
                     <span class="social-icon-link">📘</span>
                     <span class="social-icon-link">📸</span>
@@ -1493,16 +1748,16 @@
 
             <!-- Hero banner in menu -->
             <div class="menu-nav-hero">
-                <img src="images/bg_tasty.png" alt="" class="menu-nav-hero-img">
+                <img src="images/hero-default.svg" alt="" class="menu-nav-hero-img" id="menuHeroImage">
                 <div class="menu-nav-hero-overlay"></div>
-                <div class="menu-nav-hero-title" id="menuNavTitle">Menu</div>
+                <div class="menu-nav-hero-title menu-reveal-observe" id="menuNavTitle">Menu</div>
             </div>
 
             <!-- Content Area -->
-            <div class="menu-content-area">
+            <div class="menu-content-area menu-reveal-observe">
                 <!-- Sub-category grid -->
-                <div id="catNavWrapper" class="cat-nav-wrapper" style="display:none;">
-                    <h2 id="subCatTitle" class="menu-section-title" style="padding: 0 15px 10px; margin-top: 10px;">
+                <div id="catNavWrapper" class="cat-nav-wrapper menu-reveal-observe" style="display:none;">
+                    <h2 id="subCatTitle" class="menu-section-title subcat-title">
                     </h2>
                     <div id="catNavScroll" class="cat-nav-scroll">
                         <!-- Categories injected here -->
@@ -1510,8 +1765,8 @@
                 </div>
 
                 <!-- Search bar (shown in items view) -->
-                <div class="menu-search-box" id="menuSearchBox" style="display:none;">
-                    <input type="text" id="menuSearch" placeholder="Rechercher un plat..."
+                <div class="menu-search-box menu-reveal-observe" id="menuSearchBox" style="display:none;">
+                    <input type="text" id="menuSearch" placeholder="Rechercher un plat..." data-i18n-placeholder="menu_search_placeholder"
                         oninput="searchMenu(this.value)">
                 </div>
 
@@ -1528,13 +1783,12 @@
 
         <!-- GLOBAL UI ELEMENTS -->
         <!-- Cart floating -->
-        <div id="cartHubBtn" class="cart-floating-hub" onclick="openDrawer()" style="display:none; z-index:4000;">
+        <div id="cartHubBtn" class="cart-floating-hub" onclick="openDrawer()" style="display:none;">
             🛒 <span id="cartBadge" class="cart-badge">0</span>
         </div>
 
         <!-- Global Home Bubble -->
-        <div class="home-floating-hub" onclick="showLanding()"
-            style="position:fixed; bottom:25px; left:25px; width:60px; height:60px; background:#fff; border-radius:50%; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; font-size:1.6rem; cursor:pointer; z-index:9000; border:2px solid var(--border);">
+        <div class="home-floating-hub" onclick="showLanding()">
             🏠
         </div>
 
@@ -1560,7 +1814,7 @@
             <h2 id="dishPageName" class="dish-page-name"></h2>
             <div id="dishPagePrice" class="dish-page-price"></div>
             <p id="dishPageDesc" class="dish-page-desc"></p>
-            <div id="dishPageLoveContainer" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
+            <div id="dishPageLoveContainer" class="dish-page-love-row"></div>
             <div class="dish-page-footer">
                 <button id="dishPageAddBtn" class="dish-add-btn">AJOUTER AU PANIER</button>
             </div>
@@ -1572,11 +1826,10 @@
         <div class="history-modal" onclick="event.stopPropagation()">
             <div class="history-header">
                 <h2>Historique</h2>
-                <button onclick="closeHistory()"
-                    style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+                <button onclick="closeHistory()" class="history-close-btn">✕</button>
             </div>
             <div id="historyContent">
-                <p style="text-align:center; color:#999; padding:20px;">Aucune commande récente.</p>
+                <p class="history-empty">Aucune commande récente.</p>
             </div>
         </div>
     </div>
@@ -1591,8 +1844,7 @@
     </div>
 
     <!-- Ticket Modal -->
-    <div id="ticketModal" class="modal-sheet"
-        style="border-radius:0; height:100vh; max-height:100vh; width:100%; max-width:100%; background:#fff; color:#000; z-index:9999;">
+    <div id="ticketModal" class="modal-sheet ticket-sheet">
         <div id="ticketContent"><!-- Digital Ticket here --></div>
     </div>
 
@@ -1602,18 +1854,17 @@
         <button class="game-close" onclick="closeGameModal()">✕</button>
 
         <div class="game-logo">
-            <div
-                style="font-family:'Outfit', sans-serif; font-size:4rem; line-height:0.9; font-weight:900; color:#fff; text-shadow:2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 10px rgba(0,0,0,0.5); transform:rotate(-5deg);">
-                <span style="color:#00e5ff;">WHO</span><br>
-                <span style="color:#ffcc00;">PAYS?</span>
+            <div class="game-logo-mark">
+                <span class="game-logo-who">WHO</span><br>
+                <span class="game-logo-pays">PAYS?</span>
             </div>
         </div>
 
         <!-- Start Screen -->
         <div id="gameStartScreen" class="game-start-container">
-            <div class="game-subtitle" style="color:#fff;">The one who finds the X, pays the check!</div>
+            <div class="game-subtitle game-subtitle-light">The one who finds the X, pays the check!</div>
 
-            <div class="gs-how" style="color:#fff;">
+            <div class="gs-how gs-how-light">
                 <h3>How to play?</h3>
                 <ul>
                     <li>
@@ -1628,13 +1879,12 @@
                 </ul>
             </div>
 
-            <div class="gs-slider-wrap" style="color:#fff;">
+            <div class="gs-slider-wrap gs-slider-light">
                 <h4>Number of Players</h4>
-                <div style="position:relative; margin-top:25px;">
+                <div class="game-slider-stage">
                     <input type="range" id="playerSlider" class="game-slider" min="2" max="8" value="4"
                         oninput="updatePlayerSlider(this.value)">
-                    <div id="playerSliderVal"
-                        style="position:absolute; top:-28px; left:50%; transform:translateX(-50%); background:#ffd700; color:#e01e2f; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem;">
+                    <div id="playerSliderVal" class="player-slider-val">
                         4</div>
                 </div>
             </div>
@@ -1644,7 +1894,7 @@
 
         <!-- Board Screen -->
         <div id="gameBoardScreen" class="game-board-container" style="display:none;">
-            <div class="game-subtitle" style="color:#666; font-size:0.9rem; margin-top:15px; margin-bottom:15px;">
+            <div class="game-subtitle game-subtitle-board">
                 The one who finds the X, pays the check!
             </div>
 
@@ -1660,9 +1910,9 @@
             <div class="loss-popup" id="gameLossPopup" style="display:none;">
                 <div class="loss-card">
                     <div class="loss-close" onclick="closeGameModal()">✕</div>
-                    <div style="font-size:3rem; margin-bottom:10px;">❌</div>
-                    <p id="loserText" style="margin-bottom:10px;">Player X, you've found the X sign.</p>
-                    <h2 style="margin-top:0;">Pay the check!</h2>
+                    <div class="loss-emoji">❌</div>
+                    <p id="loserText" class="loss-copy">Player X, you've found the X sign.</p>
+                    <h2 class="loss-title">Pay the check!</h2>
                 </div>
             </div>
         </div>

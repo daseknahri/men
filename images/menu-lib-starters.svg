@@ -1,0 +1,18 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#F3FBF4"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <ellipse cx="600" cy="400" rx="260" ry="180" fill="#FFFDF7" stroke="#C8DEC7" stroke-width="18"/>
+  <circle cx="510" cy="340" r="48" fill="#E66B5B"/>
+  <circle cx="620" cy="310" r="54" fill="#8BCF7A"/>
+  <circle cx="700" cy="410" r="46" fill="#F8C255"/>
+  <circle cx="560" cy="455" r="44" fill="#83B8E8"/>
+  <circle cx="445" cy="425" r="38" fill="#7EC76F"/>
+  <circle cx="650" cy="485" r="32" fill="#E76A82"/>
+  <text x="600" y="666" text-anchor="middle" fill="#27543A" font-family="Georgia, serif" font-size="54">Starters &amp; Soups</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="90" x2="1080" y2="710" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E6F6E4"/>
+      <stop offset="1" stop-color="#CEECCF"/>
+    </linearGradient>
+  </defs>
+</svg>

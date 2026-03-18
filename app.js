@@ -6,14 +6,41 @@
 
 
 // Persistence Layer
-const defaultWifiData = { ssid: 'Foody_Guest', pass: 'foody2026' };
-const defaultSocialLinks = { instagram: '', facebook: '', tiktok: '', whatsapp: '212626081745' };
+const defaultWifiData = {
+    ssid: window.defaultConfig?.wifi?.name || 'Restaurant WiFi',
+    pass: window.defaultConfig?.wifi?.code || 'Ask the team'
+};
+const defaultSocialLinks = { ...(window.defaultConfig?.socials || {}), whatsapp: window.defaultConfig?.socials?.whatsapp || '' };
+const defaultGuestExperience = {
+    paymentMethods: Array.isArray(window.defaultConfig?.guestExperience?.paymentMethods)
+        ? [...window.defaultConfig.guestExperience.paymentMethods]
+        : ['cash', 'tpe'],
+    facilities: Array.isArray(window.defaultConfig?.guestExperience?.facilities)
+        ? [...window.defaultConfig.guestExperience.facilities]
+        : ['wifi']
+};
+const defaultSectionVisibility = {
+    ...(window.defaultConfig?.sectionVisibility || {
+        about: true,
+        payments: true,
+        events: true,
+        gallery: true,
+        hours: true,
+        contact: true
+    })
+};
+const defaultSectionOrder = Array.isArray(window.defaultConfig?.sectionOrder)
+    ? [...window.defaultConfig.sectionOrder]
+    : ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
 
 let menu = defaultMenu.map(item => ({ ...item, images: Array.isArray(item.images) ? item.images : [], img: item.img || '' }));
 let catEmojis = { ...defaultCatEmojis };
 let wifiData = { ...defaultWifiData };
 let promoId = null;
 let socialLinks = { ...defaultSocialLinks };
+let guestExperience = { ...defaultGuestExperience };
+let sectionVisibility = { ...defaultSectionVisibility };
+let sectionOrder = [...defaultSectionOrder];
 
 let categories = [];
 let cart = [];
@@ -34,7 +61,40 @@ function applySiteData(data) {
     catEmojis = data?.catEmojis && typeof data.catEmojis === 'object' ? data.catEmojis : { ...defaultCatEmojis };
     wifiData = { ...defaultWifiData, ...(data?.wifi && typeof data.wifi === 'object' ? data.wifi : {}) };
     socialLinks = { ...defaultSocialLinks, ...(data?.social && typeof data.social === 'object' ? data.social : {}) };
+    guestExperience = {
+        paymentMethods: Array.isArray(data?.guestExperience?.paymentMethods)
+            ? data.guestExperience.paymentMethods.filter(Boolean)
+            : [...defaultGuestExperience.paymentMethods],
+        facilities: Array.isArray(data?.guestExperience?.facilities)
+            ? data.guestExperience.facilities.filter(Boolean)
+            : [...defaultGuestExperience.facilities]
+    };
+    sectionVisibility = { ...defaultSectionVisibility, ...(data?.sectionVisibility && typeof data.sectionVisibility === 'object' ? data.sectionVisibility : {}) };
+    sectionOrder = Array.isArray(data?.sectionOrder) ? data.sectionOrder.filter(Boolean) : [...defaultSectionOrder];
     promoId = typeof data?.promoId === 'undefined' ? null : data.promoId;
+    window.promoIds = Array.isArray(data?.promoIds)
+        ? data.promoIds
+        : promoId !== null
+            ? [promoId]
+            : [];
+
+    if (typeof window.mergeRestaurantConfig === 'function') {
+        window.mergeRestaurantConfig({
+            wifi: { name: wifiData.ssid, code: wifiData.pass },
+            socials: socialLinks,
+            guestExperience,
+            sectionVisibility,
+            sectionOrder,
+            location: data?.landing?.location || window.restaurantConfig?.location,
+            phone: data?.landing?.phone || window.restaurantConfig?.phone,
+            gallery: Array.isArray(data?.gallery) ? data.gallery : window.restaurantConfig?.gallery,
+            superCategories: Array.isArray(data?.superCategories) ? data.superCategories : window.restaurantConfig?.superCategories,
+            _hours: Array.isArray(data?.hours) ? data.hours : window.restaurantConfig?._hours,
+            _hoursNote: typeof data?.hoursNote === 'string' ? data.hoursNote : window.restaurantConfig?._hoursNote,
+            branding: data?.branding || window.restaurantConfig?.branding,
+            contentTranslations: data?.contentTranslations || window.restaurantConfig?.contentTranslations
+        });
+    }
 }
 
 async function loadSiteData() {
@@ -49,6 +109,9 @@ async function loadSiteData() {
             catEmojis: defaultCatEmojis,
             wifi: defaultWifiData,
             social: defaultSocialLinks,
+            guestExperience: defaultGuestExperience,
+            sectionVisibility: defaultSectionVisibility,
+            sectionOrder: defaultSectionOrder,
             promoId: null
         });
     }
@@ -69,6 +132,8 @@ function initApp() {
     renderSocialLinks();
     renderHours();
     renderGallery();
+    renderPaymentFacilities();
+    renderSectionLayout();
     if (document.getElementById('menuWrap')) setupScroll();
     startSlider();
     updateWifiUI();
@@ -77,7 +142,10 @@ function initApp() {
 
     // Safety check for language initialization
     const initialLangBtn = document.querySelector('.lang-btn') || document.querySelector('.lang-drop-btn');
-    setLang('fr', initialLangBtn);
+    const savedLang = typeof window.getStoredLanguage === 'function'
+        ? window.getStoredLanguage()
+        : 'fr';
+    setLang(savedLang, initialLangBtn);
 
     if (document.getElementById('statusBadge')) updateStatus();
 
@@ -95,8 +163,12 @@ function renderHours() {
     const noteEl = document.getElementById('hoursNote');
     if (!grid) return;
 
-    const hours = JSON.parse(localStorage.getItem('foody_hours')) || window.defaultHours;
-    const note = localStorage.getItem('foody_hours_note') || window.defaultHoursNote || '';
+    const hours = Array.isArray(window.restaurantConfig?._hours) && window.restaurantConfig._hours.length > 0
+        ? window.restaurantConfig._hours
+        : window.defaultHours;
+    const note = typeof window.restaurantConfig?._hoursNote === 'string'
+        ? window.restaurantConfig._hoursNote
+        : (window.defaultHoursNote || '');
 
     grid.innerHTML = hours.map(h => `
         <div class="hours-row${h.highlight ? ' highlight-row' : ''}">
@@ -106,7 +178,9 @@ function renderHours() {
         </div>
     `).join('');
 
-    if (noteEl && note) noteEl.textContent = note;
+    if (noteEl) {
+        noteEl.textContent = note;
+    }
 }
 
 function updateWifiUI() {
@@ -119,57 +193,140 @@ function updateWifiUI() {
 }
 
 function updateWhatsAppLinks() {
-    const wa = socialLinks.whatsapp || '212626081745';
+    const wa = typeof window.getWhatsAppNumber === 'function'
+        ? window.getWhatsAppNumber()
+        : String(socialLinks.whatsapp || '').replace(/\D/g, '');
     const eventLink = document.getElementById('eventWALink');
     const contactLink = document.getElementById('contactWALink');
 
-    if (eventLink) eventLink.href = `https://wa.me/${wa}`;
+    if (eventLink) {
+        eventLink.href = wa ? `https://wa.me/${wa}` : '#contact';
+        eventLink.target = wa ? '_blank' : '_self';
+    }
     if (contactLink) {
-        contactLink.href = `https://wa.me/${wa}`;
-        // Optional: format the display number if it's the default
-        if (wa === '212626081745') {
-            contactLink.textContent = '+212 626 081 745';
+        if (wa) {
+            contactLink.href = `https://wa.me/${wa}`;
+            contactLink.target = '_blank';
+            contactLink.textContent = `+${wa}`;
         } else {
-            contactLink.textContent = '+' + wa;
+            contactLink.href = `tel:${restaurantConfig.phone.replace(/\s/g, '')}`;
+            contactLink.removeAttribute('target');
+            contactLink.textContent = restaurantConfig.phone;
         }
+    }
+}
+
+function updateWhatsAppLinks() {
+    const phoneFallback = (window.restaurantConfig?.phone || '').replace(/\D/g, '');
+    const wa = (socialLinks.whatsapp || '').replace(/\D/g, '') || phoneFallback;
+    const eventLink = document.getElementById('eventWALink');
+    const contactLink = document.getElementById('contactWALink');
+
+    if (eventLink) {
+        if (wa) {
+            eventLink.href = `https://wa.me/${wa}`;
+        } else {
+            eventLink.removeAttribute('href');
+        }
+    }
+
+    if (contactLink) {
+        if (!wa) {
+            contactLink.removeAttribute('href');
+            contactLink.textContent = window.restaurantConfig?.phone || 'WhatsApp';
+            return;
+        }
+
+        contactLink.href = `https://wa.me/${wa}`;
+        contactLink.textContent = socialLinks.whatsapp ? `+${wa}` : (window.restaurantConfig?.phone || `+${wa}`);
     }
 }
 
 function renderSocialLinks() {
     const modalList = document.getElementById('modalSocialList');
     const footerContainer = document.getElementById('footerSocial');
+    const contactSocialLinks = document.getElementById('contactSocialLinks');
 
     let modalItems = '';
     let footerIcons = '';
+    let contactButtons = '';
+    const instagramUrl = window.getSafeExternalUrl(socialLinks.instagram);
+    const facebookUrl = window.getSafeExternalUrl(socialLinks.facebook);
+    const tiktokUrl = window.getSafeExternalUrl(socialLinks.tiktok);
+    const tripAdvisorUrl = window.getSafeExternalUrl(socialLinks.tripadvisor);
 
-    if (socialLinks.instagram) {
-        modalItems += `<a href="${socialLinks.instagram}" target="_blank" class="social-link-item instagram"><span>📸</span> Instagram</a>`;
-        footerIcons += `<a href="${socialLinks.instagram}" target="_blank" class="footer-social-icon">📸</a>`;
+    if (instagramUrl) {
+        modalItems += `<a href="${instagramUrl}" target="_blank" class="social-link-item instagram"><span>📸</span> Instagram</a>`;
+        footerIcons += `<a href="${instagramUrl}" target="_blank" class="footer-social-icon">📸</a>`;
+        contactButtons += `<a href="${instagramUrl}" target="_blank" class="social-btn">📸 Instagram</a>`;
     }
-    if (socialLinks.facebook) {
-        modalItems += `<a href="${socialLinks.facebook}" target="_blank" class="social-link-item facebook"><span>📘</span> Facebook</a>`;
-        footerIcons += `<a href="${socialLinks.facebook}" target="_blank" class="footer-social-icon">📘</a>`;
+    if (facebookUrl) {
+        modalItems += `<a href="${facebookUrl}" target="_blank" class="social-link-item facebook"><span>📘</span> Facebook</a>`;
+        footerIcons += `<a href="${facebookUrl}" target="_blank" class="footer-social-icon">📘</a>`;
+        contactButtons += `<a href="${facebookUrl}" target="_blank" class="social-btn">📘 Facebook</a>`;
     }
-    if (socialLinks.tiktok) {
-        modalItems += `<a href="${socialLinks.tiktok}" target="_blank" class="social-link-item tiktok"><span>🎵</span> TikTok</a>`;
-        footerIcons += `<a href="${socialLinks.tiktok}" target="_blank" class="footer-social-icon">🎵</a>`;
+    if (tiktokUrl) {
+        modalItems += `<a href="${tiktokUrl}" target="_blank" class="social-link-item tiktok"><span>🎵</span> TikTok</a>`;
+        footerIcons += `<a href="${tiktokUrl}" target="_blank" class="footer-social-icon">🎵</a>`;
+        contactButtons += `<a href="${tiktokUrl}" target="_blank" class="social-btn">🎵 TikTok</a>`;
     }
-    if (socialLinks.whatsapp) {
-        modalItems += `<a href="https://wa.me/${socialLinks.whatsapp}" target="_blank" class="social-link-item whatsapp"><span>📞</span> WhatsApp</a>`;
-        footerIcons += `<a href="https://wa.me/${socialLinks.whatsapp}" target="_blank" class="footer-social-icon">📞</a>`;
+    if (tripAdvisorUrl) {
+        modalItems += `<a href="${tripAdvisorUrl}" target="_blank" class="social-link-item"><span>⭐</span> TripAdvisor</a>`;
+        footerIcons += `<a href="${tripAdvisorUrl}" target="_blank" class="footer-social-icon">⭐</a>`;
+        contactButtons += `<a href="${tripAdvisorUrl}" target="_blank" class="social-btn">⭐ TripAdvisor</a>`;
+    }
+    const waNumber = typeof window.getWhatsAppNumber === 'function'
+        ? window.getWhatsAppNumber()
+        : String(socialLinks.whatsapp || '').replace(/\D/g, '');
+    if (waNumber) {
+        modalItems += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-link-item whatsapp"><span>📞</span> WhatsApp</a>`;
+        footerIcons += `<a href="https://wa.me/${waNumber}" target="_blank" class="footer-social-icon">📞</a>`;
+        contactButtons += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-btn">📞 WhatsApp</a>`;
     }
 
-    if (modalList) modalList.innerHTML = modalItems || '<p style="color:#888; text-align:center;">Aucun lien configuré.</p>';
-    if (footerContainer) footerContainer.innerHTML = footerIcons;
+    const emptyText = typeof window.getTranslation === 'function'
+        ? window.getTranslation('social_empty', 'Aucun lien configuré.')
+        : 'Aucun lien configuré.';
+    const emptyStateHtml = `
+        <div class="website-empty-state is-social">
+            <strong>${typeof window.getTranslation === 'function'
+                ? window.getTranslation('social_modal_title', 'Nos réseaux')
+                : 'Nos réseaux'}</strong>
+            <span>${emptyText}</span>
+        </div>
+    `;
+    if (modalList) modalList.innerHTML = modalItems || emptyStateHtml;
+    if (footerContainer) {
+        footerContainer.innerHTML = footerIcons;
+        footerContainer.style.display = footerIcons ? '' : 'none';
+    }
+    if (contactSocialLinks) {
+        contactSocialLinks.innerHTML = contactButtons || emptyStateHtml;
+    }
 }
 
 function renderGallery() {
     const grid = document.getElementById('mainGalleryGrid');
     if (!grid) return;
+    const gallerySection = document.getElementById('gallery');
 
     const images = restaurantConfig.gallery || [];
+    const emptyText = typeof window.getTranslation === 'function'
+        ? window.getTranslation('gallery_empty', 'De nouvelles photos arrivent bientôt...')
+        : 'De nouvelles photos arrivent bientôt...';
+    const emptyStateHtml = `
+        <div class="website-empty-state is-gallery">
+            <strong>${typeof window.getTranslation === 'function'
+                ? window.getTranslation('gallery_title', 'Galerie')
+                : 'Galerie'}</strong>
+            <span>${emptyText}</span>
+        </div>
+    `;
     if (images.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; opacity:0.5; padding:40px;">Bientôt de nouvelles photos...</p>';
+        grid.innerHTML = emptyStateHtml;
+        if (gallerySection && (window.restaurantConfig?.sectionVisibility?.gallery !== false)) {
+            gallerySection.style.display = '';
+        }
         return;
     }
 
@@ -178,28 +335,190 @@ function renderGallery() {
             <img src="${img}" alt="Gallery Image" loading="lazy" />
         </div>
     `).join('');
+    grid.querySelectorAll('img').forEach((imgEl) => {
+        imgEl.onerror = () => {
+            const card = imgEl.closest('.gallery-item');
+            if (card) card.remove();
+            if (!grid.querySelector('.gallery-item')) {
+                grid.innerHTML = emptyStateHtml;
+            }
+        };
+    });
 }
 
 function renderLocation() {
     const addressText = document.getElementById('contactAddressText');
     const footerAddressText = document.getElementById('footerAddressText');
     const addressCard = document.getElementById('contactAddressCard');
+    const topAddressText = document.getElementById('topAddressDisplay');
+    const topPhoneText = document.getElementById('topPhoneDisplay');
+    const contactPhoneLink = document.getElementById('contactPhoneLink');
+    const directionsLink = document.getElementById('directionsLink');
 
     if (restaurantConfig.location) {
         if (addressText) addressText.textContent = restaurantConfig.location.address;
         if (footerAddressText) footerAddressText.textContent = restaurantConfig.location.address;
-        if (addressCard && restaurantConfig.location.url) {
+        if (topAddressText) topAddressText.textContent = `📍 ${restaurantConfig.location.address}`;
+        const mapUrl = window.getSafeExternalUrl(restaurantConfig.location.url);
+        if (addressCard && mapUrl) {
             addressCard.onclick = () => {
-                window.open(restaurantConfig.location.url, '_blank');
+                window.openSafeExternalUrl(mapUrl, '_blank');
             };
+            addressCard.classList.add('is-actionable');
+        } else if (addressCard) {
+            addressCard.onclick = null;
+            addressCard.classList.remove('is-actionable');
         }
+        if (directionsLink && mapUrl) {
+            directionsLink.href = mapUrl;
+            directionsLink.style.pointerEvents = '';
+            directionsLink.style.opacity = '';
+        } else if (directionsLink) {
+            directionsLink.removeAttribute('href');
+            directionsLink.style.pointerEvents = 'none';
+            directionsLink.style.opacity = '0.6';
+        }
+    } else if (addressCard) {
+        addressCard.onclick = null;
+        addressCard.classList.remove('is-actionable');
+    }
+
+    if (restaurantConfig.phone) {
+        if (topPhoneText) topPhoneText.textContent = `📞 ${restaurantConfig.phone}`;
+        if (contactPhoneLink) {
+            const phoneHref = window.getSafePhoneHref(restaurantConfig.phone);
+            if (phoneHref) {
+                contactPhoneLink.href = phoneHref;
+            } else {
+                contactPhoneLink.removeAttribute('href');
+            }
+            contactPhoneLink.textContent = restaurantConfig.phone;
+        }
+    }
+
+    if (typeof window.applyBranding === 'function') {
+        window.applyBranding();
+    }
+}
+
+function renderPaymentFacilities() {
+    const section = document.getElementById('payments');
+    const paymentsList = document.getElementById('paymentMethodsList');
+    const facilitiesList = document.getElementById('facilityList');
+    const divider = document.getElementById('paymentsDivider');
+
+    if (!section || !paymentsList || !facilitiesList) return;
+
+    const paymentCatalog = {
+        cash: { icon: '💵', labelKey: 'pf_payment_cash' },
+        tpe: { icon: '💳', labelKey: 'pf_payment_tpe' }
+    };
+    const facilityCatalog = {
+        wifi: { icon: '📶', labelKey: 'pf_facility_wifi' },
+        accessible: { icon: '♿', labelKey: 'pf_facility_accessible' },
+        parking: { icon: '🅿️', labelKey: 'pf_facility_parking' },
+        terrace: { icon: '☀️', labelKey: 'pf_facility_terrace' },
+        family: { icon: '👨‍👩‍👧‍👦', labelKey: 'pf_facility_family' }
+    };
+
+    const paymentItems = (guestExperience.paymentMethods || [])
+        .map((id) => paymentCatalog[id])
+        .filter(Boolean)
+        .map((item) => `
+            <div class="pf-icon-item">
+              <span class="pf-icon">${item.icon}</span>
+              <span class="pf-label" data-i18n="${item.labelKey}">${window.getTranslation(item.labelKey, item.labelKey)}</span>
+            </div>
+        `)
+        .join('');
+
+    const facilityItems = (guestExperience.facilities || [])
+        .map((id) => facilityCatalog[id])
+        .filter(Boolean)
+        .map((item) => `
+            <div class="pf-icon-item">
+              <span class="pf-icon">${item.icon}</span>
+              <span class="pf-label" data-i18n="${item.labelKey}">${window.getTranslation(item.labelKey, item.labelKey)}</span>
+            </div>
+        `)
+        .join('');
+
+    paymentsList.innerHTML = paymentItems;
+    facilitiesList.innerHTML = facilityItems;
+
+    const hasPayments = Boolean(paymentItems);
+    const hasFacilities = Boolean(facilityItems);
+
+    const paymentsCard = document.getElementById('paymentsCard');
+    const facilitiesCard = document.getElementById('facilitiesCard');
+    if (paymentsCard) paymentsCard.style.display = hasPayments ? '' : 'none';
+    if (facilitiesCard) facilitiesCard.style.display = hasFacilities ? '' : 'none';
+    if (divider) divider.style.display = hasPayments && hasFacilities ? '' : 'none';
+    section.style.display = hasPayments || hasFacilities ? '' : 'none';
+}
+
+function renderSectionLayout() {
+    const visibility = window.restaurantConfig?.sectionVisibility || sectionVisibility || defaultSectionVisibility;
+    const orderSource = Array.isArray(window.restaurantConfig?.sectionOrder) ? window.restaurantConfig.sectionOrder : sectionOrder;
+    const order = [];
+    const knownKeys = ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
+
+    (Array.isArray(orderSource) ? orderSource : []).forEach((key) => {
+        if (!knownKeys.includes(key) || order.includes(key)) return;
+        order.push(key);
+    });
+    knownKeys.forEach((key) => {
+        if (!order.includes(key)) order.push(key);
+    });
+
+    const sectionMap = {
+        about: 'about',
+        payments: 'payments',
+        events: 'events',
+        gallery: 'gallery',
+        hours: 'hours',
+        contact: 'contact'
+    };
+
+    const anchor = document.getElementById('confirmOverlay');
+    if (anchor && anchor.parentNode) {
+        order.forEach((key) => {
+            const section = document.getElementById(sectionMap[key]);
+            if (section) {
+                anchor.parentNode.insertBefore(section, anchor);
+            }
+        });
+    }
+
+    Object.entries(sectionMap).forEach(([key, id]) => {
+        const section = document.getElementById(id);
+        if (section) {
+            section.style.display = visibility[key] === false ? 'none' : '';
+        }
+        document.querySelectorAll(`[data-section-link="${key}"]`).forEach((link) => {
+            link.style.display = visibility[key] === false ? 'none' : '';
+        });
+    });
+
+    const footerSocial = document.getElementById('footerSocial');
+    if (footerSocial && !footerSocial.innerHTML.trim()) {
+        footerSocial.style.display = 'none';
+    } else if (footerSocial) {
+        footerSocial.style.display = '';
+    }
+
+    const hoursNote = document.getElementById('hoursNote');
+    if (hoursNote && !hoursNote.textContent.trim()) {
+        hoursNote.style.display = 'none';
+    } else if (hoursNote) {
+        hoursNote.style.display = '';
     }
 }
 
 function openGalleryLightbox(src) {
     // We can reuse the product detail modal or create a simple lightbox
     // For now, let's keep it simple or integrate with existing modal logic
-    showToast('Photo agrandie (Lightbox à venir)');
+    showToast(window.getTranslation('lightbox_soon', 'Aperçu photo à venir'));
 }
 
 function openSocialModal() {
@@ -223,9 +542,17 @@ function renderPromo() {
 
     if (promoSection) {
         promoSection.style.display = 'block';
-        document.getElementById('promo-item-name').textContent = item.name;
+        document.getElementById('promo-item-name').textContent = window.getLocalizedMenuName(item);
         document.getElementById('promo-item-price').textContent = `MAD ${item.price.toFixed(2)}`;
-        document.getElementById('promo-item-img').src = item.img || '';
+        const promoImg = document.getElementById('promo-item-img');
+        if (promoImg) {
+            window.setSafeImageSource(promoImg, item.img || '', {
+                fallbackSrc: window.defaultBranding?.heroImage || 'images/hero-default.svg',
+                onMissing: () => {
+                    promoImg.style.display = 'none';
+                }
+            });
+        }
         document.getElementById('promo-item-cta').onclick = () => addItem(item.id);
     }
 }
@@ -248,7 +575,7 @@ function goSlide(n) {
 function imgTag(item) {
     const emoji = catEmojis[item.cat] || '🍴';
     const firstImg = (item.images && item.images.length > 0) ? item.images[0] : (item.img || '');
-    if (firstImg) return `<img src="${firstImg}" alt="${item.name}" onerror="this.style.display='none';this.parentNode.textContent='${emoji}'" loading="lazy" />`;
+    if (firstImg) return `<img src="${firstImg}" alt="${window.getLocalizedMenuName(item)}" onerror="this.style.display='none';this.parentNode.textContent='${emoji}'" loading="lazy" />`;
     return emoji;
 }
 
@@ -313,8 +640,8 @@ function renderMenu() {
           <div class="product-card" style="animation-delay:${i * 0.06}s" onclick="openProductModal(${item.id})">
             ${item.badge ? `<span class="p-badge">${item.badge}</span>` : ''}
             <div class="p-info">
-              <div class="p-name">${item.name}</div>
-              <div class="p-desc">${item.desc}</div>
+              <div class="p-name">${window.getLocalizedMenuName(item)}</div>
+              <div class="p-desc">${window.getLocalizedMenuDescription(item)}</div>
               <div class="p-price">${item.hasSizes && item.sizes && item.sizes.length > 0 ? `À partir de MAD ${Math.min(...item.sizes.map(s => s.price)).toFixed(2)}` : `MAD ${item.price.toFixed(2)}`}</div>
             </div>
             <div class="p-img">${imgTag(item)}</div>
@@ -344,7 +671,7 @@ function addItem(id) {
     const existing = cart.find(c => c.id === id);
     if (existing) existing.qty++; else cart.push({ ...item, qty: 1 });
     updateBottomBar();
-    showToast(`✅ ${item.name} ajouté!`);
+    showToast(`✅ ${window.getLocalizedMenuName(item)} ajouté!`);
 }
 
 function updateBottomBar() {
@@ -390,7 +717,7 @@ function renderConfirm() {
     document.getElementById('complementScroll').innerHTML = notInCart.map(item => `
     <div class="comp-card" onclick="compAdd(${item.id})">
       <div class="comp-card-img">${imgTag(item)}<button class="comp-add" onclick="event.stopPropagation();compAdd(${item.id})">+</button></div>
-      <div class="comp-name">${item.name}</div>
+      <div class="comp-name">${window.getLocalizedMenuName(item)}</div>
       <div class="comp-price">MAD ${item.price.toFixed(2)}</div>
     </div>`).join('');
 }
@@ -411,7 +738,10 @@ function sendWA() {
     if (cart.length === 0) return;
     const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
     const svc = { onsite: '🍽️ Sur Place', takeaway: '🛍️ À Emporter', delivery: '🚚 Livraison' };
-    let msg = `🍔 *NOUVELLE COMMANDE – FOODY*\n━━━━━━━━━━━━━━━━\n📋 *Service:* ${svc[serviceType]}\n`;
+    const restaurantName = typeof window.getRestaurantShortName === 'function'
+        ? window.getRestaurantShortName()
+        : 'Restaurant';
+    let msg = `🍔 *NOUVELLE COMMANDE – ${restaurantName.toUpperCase()}*\n━━━━━━━━━━━━━━━━\n📋 *Service:* ${svc[serviceType]}\n`;
     if (serviceType === 'delivery') {
         const n = document.getElementById('cName').value.trim(), a = document.getElementById('cAddr').value.trim(), p = document.getElementById('cPhone').value.trim();
         if (!n) { document.getElementById('cName').focus(); return alert('Entrez votre nom!'); }
@@ -420,8 +750,14 @@ function sendWA() {
     }
     msg += `━━━━━━━━━━━━━━━━\n\n🛒 *COMMANDE:*\n\n`;
     cart.forEach((c, i) => { msg += `${i + 1}. *${c.name}* × ${c.qty}\n   💰 ${(c.price * c.qty).toFixed(2)} MAD\n\n`; });
-    msg += `━━━━━━━━━━━━━━━━\n💵 *TOTAL: ${total.toFixed(2)} MAD*\n━━━━━━━━━━━━━━━━\n\n🙏 Merci chez *Foody*!`;
-    const waNum = socialLinks.whatsapp || '212626081745';
+    msg += `━━━━━━━━━━━━━━━━\n💵 *TOTAL: ${total.toFixed(2)} MAD*\n━━━━━━━━━━━━━━━━\n\n🙏 Merci chez *${restaurantName}*!`;
+    const waNum = typeof window.getWhatsAppNumber === 'function'
+        ? window.getWhatsAppNumber()
+        : String(socialLinks.whatsapp || '').replace(/\D/g, '');
+    if (!waNum) {
+        showToast(window.getTranslation('social_empty', 'Aucun lien configuré.'));
+        return;
+    }
     window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
@@ -459,8 +795,8 @@ function openProductModal(id) {
     const item = menu.find(m => m.id == id);
     if (!item) return;
 
-    document.getElementById('detailName').textContent = item.name;
-    document.getElementById('detailDesc').textContent = item.desc;
+    document.getElementById('detailName').textContent = window.getLocalizedMenuName(item);
+    document.getElementById('detailDesc').textContent = window.getLocalizedMenuDescription(item);
     document.getElementById('detailPrice').textContent = `MAD ${item.price.toFixed(2)}`;
 
     // Gallery
@@ -469,13 +805,24 @@ function openProductModal(id) {
     const thumbStrip = document.getElementById('thumbStrip');
 
     if (images.length > 0) {
-        mainImg.src = images[0];
-        mainImg.style.display = 'block';
+        window.setSafeImageSource(mainImg, images[0], {
+            fallbackSrc: '',
+            onMissing: () => {
+                mainImg.style.display = 'none';
+            },
+            displayValue: 'block'
+        });
         thumbStrip.innerHTML = images.map((img, i) =>
             `<div class="thumb ${i === 0 ? 'active' : ''}" onclick="setDetailImg('${img}', this)">
                 <img src="${img}" alt="Thumb" />
              </div>`
         ).join('');
+        thumbStrip.querySelectorAll('img').forEach((imgEl) => {
+            imgEl.onerror = () => {
+                const thumb = imgEl.closest('.thumb');
+                if (thumb) thumb.remove();
+            };
+        });
     } else {
         mainImg.style.display = 'none';
         thumbStrip.innerHTML = '';
@@ -499,7 +846,13 @@ function openProductModal(id) {
 }
 
 function setDetailImg(src, thumb) {
-    document.getElementById('mainDetailImg').src = src;
+    const mainDetailImg = document.getElementById('mainDetailImg');
+    window.setSafeImageSource(mainDetailImg, src, {
+        onMissing: () => {
+            mainDetailImg.style.display = 'none';
+        },
+        displayValue: 'block'
+    });
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
 }
@@ -565,8 +918,17 @@ function sendEventWA() {
         return;
     }
 
-    const waNum = socialLinks.whatsapp || '212626081745';
-    let msg = `✨ *RÉSERVATION ÉVÉNEMENT – FOODY*\n━━━━━━━━━━━━━━━━\n`;
+    const waNum = typeof window.getWhatsAppNumber === 'function'
+        ? window.getWhatsAppNumber()
+        : String(socialLinks.whatsapp || '').replace(/\D/g, '');
+    if (!waNum) {
+        alert(window.getTranslation('social_empty', 'Aucun lien configuré.'));
+        return;
+    }
+    const restaurantName = typeof window.getRestaurantShortName === 'function'
+        ? window.getRestaurantShortName()
+        : 'Restaurant';
+    let msg = `✨ *RÉSERVATION ÉVÉNEMENT – ${restaurantName.toUpperCase()}*\n━━━━━━━━━━━━━━━━\n`;
     msg += `🏢 *Type:* ${currentEventType}\n`;
     msg += `👤 *Client:* ${name}\n`;
     msg += `📱 *Tél:* ${phone}\n`;

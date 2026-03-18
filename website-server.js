@@ -57,7 +57,7 @@ app.use((_req, res) => {
 });
 
 const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`Foody website server running on 0.0.0.0:${port}`);
+  console.log(`Restaurant website server running on 0.0.0.0:${port}`);
 });
 
 module.exports = { app, server };

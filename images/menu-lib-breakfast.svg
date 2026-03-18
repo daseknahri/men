@@ -1,0 +1,17 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#FFF4E0"/>
+  <rect x="60" y="60" width="1080" height="680" rx="36" fill="url(#bg)"/>
+  <circle cx="430" cy="390" r="170" fill="#FFF8EF" stroke="#E2C7A1" stroke-width="18"/>
+  <circle cx="510" cy="350" r="62" fill="#FFC857"/>
+  <circle cx="350" cy="430" r="62" fill="#FFC857"/>
+  <rect x="625" y="248" width="150" height="250" rx="75" fill="#C9743B"/>
+  <rect x="805" y="248" width="150" height="250" rx="75" fill="#E59A57"/>
+  <rect x="300" y="570" width="600" height="34" rx="17" fill="#D9B48B"/>
+  <text x="600" y="675" text-anchor="middle" fill="#6B3D24" font-family="Georgia, serif" font-size="54">Breakfast &amp; Brunch</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="120" x2="1080" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE9C9"/>
+      <stop offset="1" stop-color="#F8D9AF"/>
+    </linearGradient>
+  </defs>
+</svg>

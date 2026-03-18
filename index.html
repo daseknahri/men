@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Foody – Commandez en ligne</title>
+  <title>Restaurant – Commandez en ligne</title>
   <meta name="description"
-    content="Foody – Commandez vos sandwichs, tacos, burgers en ligne. Livraison via WhatsApp!" />
+    content="Commandez en ligne, découvrez le menu du restaurant et contactez facilement l'établissement." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -14,78 +14,6 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="event-modal.css" />
-  <style>
-    /* Premium Language Dropdown Styles */
-    .lang-dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .lang-drop-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.3s;
-    }
-
-    .lang-drop-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .lang-drop-btn .chevron {
-      font-size: 0.6rem;
-      opacity: 0.6;
-    }
-
-    .lang-options {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      background: #1a1d23;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      min-width: 130px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-      z-index: 1100;
-    }
-
-    .lang-options.open {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .lang-opt {
-      padding: 10px 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: #fff;
-      transition: 0.2s;
-    }
-
-    .lang-opt:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .lang-opt .flag {
-      font-size: 1rem;
-    }
-  </style>
 </head>
 
 <body>
@@ -117,8 +45,8 @@
         <span class="status-text" id="statusText" data-i18n="status_loading">Chargement...</span>
       </div>
       <div class="top-contact">
-        <span>📞 05393-007 07</span>
-        <span>📍 Tanger, Morocco</span>
+        <span id="topPhoneDisplay">📞 05393-007 07</span>
+        <span id="topAddressDisplay">📍 Adresse du restaurant</span>
       </div>
     </div>
   </div>
@@ -126,20 +54,20 @@
   <!-- HEADER -->
   <header class="header" id="header">
     <div class="header-inner">
-      <div class="logo">🍔 <span>Foody</span></div>
+      <div class="logo"><span id="brandLogoIconHeader">🍽️</span> <span id="brandNameHeader">Restaurant</span></div>
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
       <nav class="header-nav" id="headerNav">
         <a href="#heroSlider" class="nav-link active-link" data-i18n="nav_home">Accueil</a>
         <a href="menu.html" class="nav-link" data-i18n="nav_menu">Menu</a>
-        <a href="#about" class="nav-link" data-i18n="nav_about">À Propos</a>
-        <a href="#events" class="nav-link" data-i18n="nav_events">Événements</a>
-        <a href="#gallery" class="nav-link" data-i18n="nav_gallery">Galerie</a>
-        <a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a>
-        <a href="#hours" class="nav-link" data-i18n="nav_hours">Horaires</a>
+        <a href="#about" class="nav-link" data-i18n="nav_about" data-section-link="about">À Propos</a>
+        <a href="#events" class="nav-link" data-i18n="nav_events" data-section-link="events">Événements</a>
+        <a href="#gallery" class="nav-link" data-i18n="nav_gallery" data-section-link="gallery">Galerie</a>
+        <a href="#contact" class="nav-link" data-i18n="nav_contact" data-section-link="contact">Contact</a>
+        <a href="#hours" class="nav-link" data-i18n="nav_hours" data-section-link="hours">Horaires</a>
       </nav>
       <div class="header-actions">
         <button class="order-btn" onclick="location.href='menu.html'" data-i18n="nav_order">COMMANDER</button>
-        <a href="https://maps.google.com" target="_blank" class="dir-btn" data-i18n="nav_directions">ITINÉRAIRE</a>
+        <a href="https://maps.google.com" target="_blank" class="dir-btn" data-i18n="nav_directions" id="directionsLink">ITINÉRAIRE</a>
       </div>
     </div>
   </header>
@@ -148,32 +76,32 @@
   <section class="hero-slider" id="heroSlider">
     <div class="slide slide-active" id="slide1">
       <div class="slide-content">
-        <p class="slide-sub" data-i18n="hero_sub1">Préparez-vous pour</p>
-        <h1 class="slide-title">BIG <span>TASTE.</span></h1>
+        <p class="slide-sub" data-i18n="hero_sub1">Une table pour</p>
+        <h1 class="slide-title" data-i18n="hero_title1">SAVEURS <span>AUTHENTIQUES</span></h1>
         <button class="slide-cta" onclick="location.href='menu.html'" data-i18n="hero_cta">COMMANDER EN LIGNE</button>
       </div>
-      <div class="slide-img"><img src="images/hero_burger.png" alt="Delicious Burger" /></div>
+      <div class="slide-img"><img id="heroSlideImage1" src="images/hero-default.svg" alt="Restaurant hero preview" /></div>
     </div>
     <div class="slide" id="slide2">
       <div class="slide-content">
-        <p class="slide-sub">🇲🇦 <span data-i18n="hero_sub2">Essayez Notre</span></p>
-        <h1 class="slide-title">KING SIZE <span>MEAL</span></h1>
-        <p class="slide-desc" data-i18n="hero_desc2">Frites & Boisson inclus</p>
+        <p class="slide-sub">🇲🇦 <span data-i18n="hero_sub2">Découvrez nos</span></p>
+        <h1 class="slide-title" data-i18n="hero_title2">PLATS <span>SIGNATURE</span></h1>
+        <p class="slide-desc" data-i18n="hero_desc2">Des recettes maison pensées pour tous les appétits</p>
         <button class="slide-cta" onclick="location.href='menu.html'" data-i18n="hero_cta">COMMANDER EN LIGNE</button>
       </div>
-      <div class="slide-img"><img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&q=80"
-          alt="Tacos" /></div>
+      <div class="slide-img"><img id="heroSlideImage2" src="images/hero-cafe.svg"
+          alt="Restaurant atmosphere preview" /></div>
     </div>
     <div class="slide" id="slide3">
       <div class="slide-content">
-        <p class="slide-sub">🔥 <span data-i18n="hero_sub3">Frais Chaque Jour</span></p>
-        <h1 class="slide-title">SUPER <span>CRISPY</span></h1>
-        <p class="slide-desc" data-i18n="hero_desc3">Sandwichs, Paninis & plus</p>
+        <p class="slide-sub">🔥 <span data-i18n="hero_sub3">Cuisine préparée</span></p>
+        <h1 class="slide-title" data-i18n="hero_title3">FRAIS <span>CHAQUE JOUR</span></h1>
+        <p class="slide-desc" data-i18n="hero_desc3">Sur place, à emporter ou en livraison</p>
         <button class="slide-cta" onclick="document.getElementById('menu-area').scrollIntoView({behavior:'smooth'})"
           data-i18n="hero_cta">COMMANDER EN LIGNE</button>
       </div>
-      <div class="slide-img"><img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80"
-          alt="Panini sandwich" /></div>
+      <div class="slide-img"><img id="heroSlideImage3" src="images/hero-traditional.svg"
+          alt="Restaurant service preview" /></div>
     </div>
     <div class="slide-dots">
       <button class="dot dot-active" onclick="goSlide(0)"></button>
@@ -184,7 +112,7 @@
 
   <!-- SIDE FLOATING MENU (Mobile specific placement) -->
   <div class="side-nav">
-    <a href="menu.html" class="side-btn" style="text-decoration:none; display:flex;">
+    <a href="menu.html" class="side-btn">
       <span class="side-btn-text" data-i18n="side_menu">MENU</span>
     </a>
     <button class="side-btn" onclick="openWifiModal()">
@@ -198,31 +126,27 @@
   <div id="menu-area"></div>
 
   <!-- ===== ABOUT US ===== -->
-  <section class="about-section" id="about">
+  <section class="about-section section-reveal reveal-1" id="about">
     <div class="about-inner">
       <div class="about-header">
         <p class="section-tag" data-i18n="about_tag">Notre Histoire</p>
-        <h2 class="section-title" data-i18n="about_title">À Propos de <span>Foody</span></h2>
+        <h2 class="section-title" data-i18n="about_title" id="aboutTitleHeading">À Propos de <span>Notre Maison</span></h2>
         <div class="title-line"></div>
       </div>
       <div class="about-grid">
         <div class="about-text">
-          <h3 class="about-subtitle">Foody</h3>
-          <h4 class="about-tagline" data-i18n="about_tagline">Burgers, Tacos & Plus Encore</h4>
-          <p data-i18n="about_p1">Chers invités, notre histoire commence dans les ruelles vibrantes de Tanger.
-            Passionnés par la cuisine de rue authentique, nous avons voulu créer un lieu où chaque bouchée raconte une
-            histoire de saveur, de fraîcheur et d'amour.</p>
-          <p data-i18n="about_p2">Depuis notre humble début, nous avons toujours cru que la meilleure nourriture est
-            celle préparée avec les ingrédients les plus frais, des recettes halal authentiques, et surtout, beaucoup de
-            passion. Chaque sandwich, chaque tacos, chaque burger est préparé à la commande avec le même soin que nous
-            mettrions pour notre propre famille.</p>
-          <p data-i18n="about_p3">Notre mission est simple : vous offrir la meilleure qualité, un service exceptionnel,
-            et une expérience culinaire inoubliable. Nous vous accueillons comme notre invité et nous vous invitons à
-            partager cette aventure avec vos proches.</p>
+          <h3 class="about-subtitle" id="aboutSubtitleName">Restaurant</h3>
+          <h4 class="about-tagline" data-i18n="about_tagline" id="aboutTaglineText">Cuisine sincère, service attentionné et identité locale</h4>
+          <p data-i18n="about_p1">Notre histoire commence avec une idée simple : proposer une table accueillante, lisible
+            et régulière pour les repas du quotidien comme pour les moments à partager.</p>
+          <p data-i18n="about_p2">Nous privilégions des ingrédients frais, une cuisine soignée et une ambiance qui donne
+            envie de revenir avec confiance.</p>
+          <p data-i18n="about_p3">Notre objectif est de devenir une adresse locale fiable, chaleureuse et facile à
+            recommander.</p>
           <div class="about-signature">
             <p class="sig-welcome" data-i18n="about_welcome">Bienvenue, revenez nous voir !</p>
             <p class="sig-thanks" data-i18n="about_thanks">Merci,</p>
-            <p class="sig-name">— L'équipe Foody 🍔</p>
+            <p class="sig-name" id="aboutSignatureText">— L'équipe du restaurant 🍽️</p>
           </div>
         </div>
         <div class="about-visual">
@@ -236,7 +160,7 @@
           </div>
           <div class="about-card card-3">
             <div class="card-number">100%</div>
-            <div class="card-label" data-i18n="about_halal">Halal & Frais</div>
+            <div class="card-label" data-i18n="about_halal">Préparé chaque jour</div>
           </div>
           <div class="about-card card-4">
             <div class="card-number">⭐ 4.8</div>
@@ -248,59 +172,26 @@
   </section>
 
   <!-- ===== PAYMENT METHODS & FACILITIES ===== -->
-  <section class="payment-facilities-section" id="payments">
+  <section class="payment-facilities-section section-reveal reveal-2" id="payments">
     <div class="pf-inner">
       <div class="pf-grid">
         <!-- Payments side -->
-        <div class="pf-card payments-card">
+        <div class="pf-card payments-card" id="paymentsCard">
           <h3 data-i18n="pf_payments_title">Les Modes De Paiement</h3>
-          <div class="pf-icons">
-            <div class="pf-icon-item">
-              <span class="pf-icon">💵</span>
-              <span class="pf-label">CASH</span>
-            </div>
-            <div class="pf-icon-item">
-              <svg viewBox="0 0 780 500" class="pf-svg-icon" aria-label="Visa">
-                <path
-                  d="M293.2 348.7l33.4-195.8h53.4l-33.4 195.8zM540.7 157.2c-10.6-4-27.2-8.3-47.9-8.3-52.8 0-90 26.6-90.2 64.7-.3 28.2 26.5 43.9 46.8 53.3 20.8 9.6 27.8 15.8 27.7 24.4-.1 13.2-16.6 19.2-32 19.2-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 44c12.5 5.5 35.6 10.2 59.6 10.5 56.2 0 92.6-26.3 93-67 .2-22.3-14-39.3-44.8-53.3-18.6-9.1-30.1-15.1-30-24.3 0-8.1 9.7-16.8 30.6-16.8 17.5-.3 30.1 3.5 40 7.5l4.8 2.3 7.1-42.9zm137.3-4.3h-41.3c-12.8 0-22.4 3.5-28 16.3l-79.3 179.5h56.1s9.2-24.1 11.2-29.4c6.1 0 60.8.1 68.6.1 1.6 6.9 6.5 29.3 6.5 29.3h49.6L678 152.9zm-65.9 126.2c4.4-11.3 21.4-54.8 21.4-54.8-.3.5 4.4-11.4 7.1-18.8l3.6 17s10.3 47 12.5 56.6h-44.6zM232.8 152.9L180.5 284l-5.6-27.1c-9.7-31.2-39.9-65-73.7-81.9l47.9 171.5 56.5-.1 84.1-194.5h-56.9z"
-                  fill="#1a1f71" />
-                <path
-                  d="M131.9 152.9H45.8l-.7 4.1c67 16.2 111.4 55.4 129.7 102.5L156.4 169c-3.2-12.3-12.6-15.7-24.5-16.1z"
-                  fill="#f9a533" />
-              </svg>
-              <span class="pf-label">VISA</span>
-            </div>
-            <div class="pf-icon-item">
-              <svg viewBox="0 0 780 500" class="pf-svg-icon" aria-label="Mastercard">
-                <circle cx="330" cy="250" r="150" fill="#eb001b" />
-                <circle cx="450" cy="250" r="150" fill="#f79e1b" />
-                <path d="M390 130.7a149.4 149.4 0 000 238.6 149.4 149.4 0 000-238.6z" fill="#ff5f00" />
-              </svg>
-              <span class="pf-label">MASTERCARD</span>
-            </div>
-          </div>
+          <div class="pf-icons" id="paymentMethodsList"></div>
         </div>
-        <div class="pf-divider"></div>
+        <div class="pf-divider" id="paymentsDivider"></div>
         <!-- Facilities side -->
-        <div class="pf-card facilities-card">
+        <div class="pf-card facilities-card" id="facilitiesCard">
           <h3 data-i18n="pf_facilities_title">Facilités</h3>
-          <div class="pf-icons">
-            <div class="pf-icon-item">
-              <span class="pf-icon">📶</span>
-              <span class="pf-label">WIFI</span>
-            </div>
-            <div class="pf-icon-item">
-              <span class="pf-icon">♿</span>
-              <span class="pf-label">Accesible</span>
-            </div>
-          </div>
+          <div class="pf-icons" id="facilityList"></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ===== EVENTS ===== -->
-  <section class="events-section" id="events">
+  <section class="events-section section-reveal reveal-3" id="events">
     <div class="events-inner">
       <div class="about-header">
         <p class="section-tag" data-i18n="events_tag">Célébrez avec nous</p>
@@ -311,7 +202,7 @@
         <div class="event-card" onclick="openEventModal('Anniversaire')">
           <div class="event-icon">🎂</div>
           <h3 data-i18n="event_birthday">Anniversaires</h3>
-          <p data-i18n="event_birthday_desc">Célébrez votre jour spécial with a menu personnalisé et une ambiance
+          <p data-i18n="event_birthday_desc">Célébrez votre jour spécial avec un menu personnalisé et une ambiance
             festive.</p>
           <button class="event-reserve-btn" data-i18n="event_reserve">Réserver maintenant</button>
         </div>
@@ -324,20 +215,20 @@
         <div class="event-card" onclick="openEventModal('Événement Corporate')">
           <div class="event-icon">🏢</div>
           <h3 data-i18n="event_corporate">Événements Corporate</h3>
-          <p data-i18n="event_corporate_desc">Impressionnez vos collègues with a traiteur professionnel et savoureux.
+          <p data-i18n="event_corporate_desc">Impressionnez vos collègues avec une offre professionnelle et savoureuse.
           </p>
           <button class="event-reserve-btn" data-i18n="event_reserve">Réserver maintenant</button>
         </div>
         <div class="event-card" onclick="openEventModal('Fête Privée')">
           <div class="event-icon">🎉</div>
           <h3 data-i18n="event_party">Fêtes Privées</h3>
-          <p data-i18n="event_party_desc">Louez notre espace pour une soirée inoubliable with vos amis.</p>
+          <p data-i18n="event_party_desc">Profitez d’un espace adapté pour une soirée inoubliable avec vos amis.</p>
           <button class="event-reserve-btn" data-i18n="event_reserve">Réserver maintenant</button>
         </div>
       </div>
       <div class="events-cta">
         <p data-i18n="events_cta_text">Intéressé par un événement ? Contactez-nous !</p>
-        <a href="https://wa.me/212626081745" target="_blank" class="events-btn" data-i18n="events_cta_btn"
+        <a href="#contact" target="_blank" class="events-btn" data-i18n="events_cta_btn"
           id="eventWALink">📩 Demander
           un Devis</a>
       </div>
@@ -345,10 +236,10 @@
   </section>
 
   <!-- ===== GALLERY ===== -->
-  <section class="gallery-section" id="gallery">
+  <section class="gallery-section section-reveal reveal-4" id="gallery">
     <div class="gallery-inner">
       <div class="about-header">
-        <p class="section-tag" data-i18n="gallery_tag">Moments Foody</p>
+        <p class="section-tag" data-i18n="gallery_tag" id="galleryTaglineText">Nos Moments</p>
         <h2 class="section-title" data-i18n="gallery_title">Notre <span>Galerie</span></h2>
         <div class="title-line"></div>
       </div>
@@ -359,7 +250,7 @@
   </section>
 
   <!-- ===== OPENING HOURS ===== -->
-  <section class="hours-section" id="hours">
+  <section class="hours-section section-reveal reveal-5" id="hours">
     <div class="hours-inner">
       <div class="about-header">
         <p class="section-tag" data-i18n="hours_tag">Quand nous visiter</p>
@@ -378,7 +269,7 @@
   </section>
 
   <!-- ===== CONTACT ===== -->
-  <section class="contact-section" id="contact">
+  <section class="contact-section section-reveal reveal-6" id="contact">
     <div class="contact-inner">
       <div class="about-header">
         <p class="section-tag" data-i18n="contact_tag">Venez Manger</p>
@@ -386,23 +277,23 @@
         <div class="title-line"></div>
       </div>
       <div class="contact-grid">
-        <div class="contact-card" id="contactAddressCard" style="cursor:pointer">
+        <div class="contact-card" id="contactAddressCard">
           <div class="contact-icon">📍</div>
           <h3 data-i18n="contact_address_title">Adresse</h3>
-          <p id="contactAddressText">Avenue Mohammed VI, Tanger 90000, Maroc</p>
+          <p id="contactAddressText">Adresse du restaurant</p>
         </div>
         <div class="contact-card">
           <div class="contact-icon">📞</div>
           <h3 data-i18n="contact_phone_title">Téléphone</h3>
-          <p><a href="tel:05393-007 07">05393-007 07</a></p>
+          <p><a href="tel:05393-007 07" id="contactPhoneLink">05393-007 07</a></p>
         </div>
         <div class="contact-card">
           <div class="contact-icon">💬</div>
           <h3>WhatsApp</h3>
-          <p><a href="https://wa.me/212626081745" target="_blank" id="contactWALink">+212 626 081 745</a></p>
+          <p><a href="tel:+212600000000" id="contactWALink">+212 600 000 000</a></p>
         </div>
       </div>
-      <div class="social-links">
+      <div class="social-links" id="contactSocialLinks">
         <a href="#" class="social-btn">📸 Instagram</a>
         <a href="#" class="social-btn">📘 Facebook</a>
         <a href="#" class="social-btn">⭐ TripAdvisor</a>
@@ -451,12 +342,13 @@
   <!-- FOOTER -->
   <footer class="footer" id="footer">
     <div class="footer-inner">
-      <div class="footer-brand">🍔 <strong>Foody</strong></div>
-      <p id="footerAddressText">Avenue Mohammed VI, Tanger 90000, Maroc</p>
+      <div class="footer-brand"><span id="footerBrandIcon">🍽️</span> <strong id="footerBrandName">Restaurant</strong></div>
+      <p id="footerAddressText">Adresse du restaurant</p>
+      <p id="footerNoteText" data-i18n="footer_note">Cuisine sincère, service chaleureux et accueil de proximité.</p>
       <div class="footer-social" id="footerSocial"></div>
-      <p class="footer-copy">© 2026 Foody — Tous droits réservés.</p>
+      <p class="footer-copy" id="footerCopyText">© 2026 Restaurant — Tous droits réservés.</p>
       <div style="margin-top:20px; font-size: 0.7rem; opacity: 0.5;">
-        <a href="admin.html" style="color:#fff; text-decoration:none;">Admin Panel</a>
+        <a href="admin.html" style="color:#fff; text-decoration:none;" data-i18n="admin_panel_link">Admin Panel</a>
       </div>
     </div>
   </footer>

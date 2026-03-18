@@ -5,7 +5,9 @@
 
 let menu = window.defaultMenu || [];
 let catEmojis = window.defaultCatEmojis || {};
-let cart = JSON.parse(localStorage.getItem('foody_cart_menu')) || [];
+let cart = typeof window.getStoredCart === 'function'
+    ? window.getStoredCart()
+    : [];
 let serviceType = 'onsite';
 
 // Global comparison to detect changes
@@ -27,14 +29,24 @@ async function syncDataFromServer() {
         catEmojis = data.catEmojis || catEmojis;
 
         // Update global config object
-        if (data.superCategories) window.restaurantConfig.superCategories = data.superCategories;
-        if (data.wifi) window.restaurantConfig.wifi = { name: data.wifi.ssid, code: data.wifi.pass };
-        if (data.social) window.restaurantConfig.socials = data.social;
-        if (data.hours) window.restaurantConfig._hours = data.hours;
-        if (data.hoursNote) window.restaurantConfig._hoursNote = data.hoursNote;
+        if (typeof window.mergeRestaurantConfig === 'function') {
+            window.mergeRestaurantConfig({
+                superCategories: Array.isArray(data.superCategories) ? data.superCategories : window.restaurantConfig.superCategories,
+                wifi: data.wifi ? { name: data.wifi.ssid, code: data.wifi.pass } : window.restaurantConfig.wifi,
+                socials: data.social || window.restaurantConfig.socials,
+                location: data.landing?.location || window.restaurantConfig.location,
+                phone: data.landing?.phone || window.restaurantConfig.phone,
+                gallery: Array.isArray(data.gallery) ? data.gallery : window.restaurantConfig.gallery,
+                _hours: Array.isArray(data.hours) ? data.hours : window.restaurantConfig._hours,
+                _hoursNote: typeof data.hoursNote === 'string' ? data.hoursNote : window.restaurantConfig._hoursNote,
+                branding: data.branding || window.restaurantConfig.branding,
+                contentTranslations: data.contentTranslations || window.restaurantConfig.contentTranslations
+            });
+        }
         if (data.promoIds) window.promoIds = data.promoIds;
 
         console.log('[SYNC] Data updated from server');
+        window.applyBranding();
 
         // Refresh UI
         if (typeof renderMenu === 'function') renderMenu();
@@ -50,7 +62,7 @@ async function syncDataFromServer() {
                 navigationStack.pop(); // Remove the extra stack entry added by showCategoryItems
             } else if (last.startsWith('subcats:')) {
                 const scId = last.split(':')[1];
-                const sc = window.restaurantConfig.superCategories.find(s => s.id === scId);
+                const sc = getSuperCategories().find(s => s.id === scId);
                 if (sc) {
                     showSubCategoryGrid(sc, false);
                 }
@@ -61,10 +73,9 @@ async function syncDataFromServer() {
         const dishPage = document.getElementById('dishPage');
         if (dishPage && dishPage.classList.contains('open')) {
             // Re-open (refresh) the current dish page to show new price/sizes
-            const currentName = document.getElementById('dishPageName')?.textContent;
-            if (currentName) {
-                const cleanName = currentName.replace(' (PROMO)', '');
-                const updatedItem = menu.find(m => m.name === cleanName);
+            const currentItemId = Number(dishPage.dataset.itemId);
+            if (Number.isFinite(currentItemId)) {
+                const updatedItem = menu.find((item) => Number(item.id) === currentItemId);
                 if (updatedItem) {
                     openDishPage(updatedItem.id);
                 }
@@ -80,11 +91,75 @@ setInterval(syncDataFromServer, 2000);
 
 // ═══════════════════════ RESTAURANT CONFIG ═══════════════════════
 const config = window.restaurantConfig;
-const superCategories = config.superCategories;
+
+function getSuperCategories() {
+    return Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [];
+}
 
 
 let navigationStack = []; // stack: 'landing', 'supercats', 'subcats:NAME', 'items:CAT'
 let currentSuperCat = null;
+let menuMotionObserver = null;
+let menuMotionRefreshFrame = null;
+
+function prefersReducedMenuMotion() {
+    return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+function ensureMenuMotionObserver() {
+    if (prefersReducedMenuMotion()) return null;
+    if (menuMotionObserver) return menuMotionObserver;
+
+    menuMotionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            menuMotionObserver.unobserve(entry.target);
+        });
+    }, {
+        threshold: 0.14,
+        rootMargin: '0px 0px -12% 0px'
+    });
+
+    return menuMotionObserver;
+}
+
+function refreshMenuMotionTargets() {
+    const targets = Array.from(document.querySelectorAll('.menu-reveal-observe'));
+    if (targets.length === 0) return;
+
+    if (prefersReducedMenuMotion()) {
+        targets.forEach((target) => {
+            target.classList.add('is-visible');
+            target.style.removeProperty('--menu-reveal-delay');
+        });
+        return;
+    }
+
+    const observer = ensureMenuMotionObserver();
+    let staggerIndex = 0;
+
+    targets.forEach((target) => {
+        const styles = window.getComputedStyle(target);
+        if (styles.display === 'none' || styles.visibility === 'hidden') return;
+        if (target.classList.contains('is-visible')) return;
+
+        target.style.setProperty('--menu-reveal-delay', `${Math.min(staggerIndex * 55, 280)}ms`);
+        observer.observe(target);
+        staggerIndex += 1;
+    });
+}
+
+function scheduleMenuMotionRefresh() {
+    if (menuMotionRefreshFrame) {
+        cancelAnimationFrame(menuMotionRefreshFrame);
+    }
+
+    menuMotionRefreshFrame = requestAnimationFrame(() => {
+        menuMotionRefreshFrame = null;
+        refreshMenuMotionTargets();
+    });
+}
 
 // ═══════════════════════ INIT ═══════════════════════
 
@@ -102,54 +177,184 @@ function initMenuApp() {
     updateCartUI();
     updateHistoryBadge();
     window.updateStatus();
-    const savedLang = localStorage.getItem('foody_lang') || 'fr';
+    const savedLang = typeof window.getStoredLanguage === 'function'
+        ? window.getStoredLanguage()
+        : 'fr';
     window.setLang(savedLang);
+    window.applyBranding();
+    scheduleMenuMotionRefresh();
 }
 
 function renderLandingInfo() {
     const config = window.restaurantConfig;
     if (!config) return;
+    const locationConfig = config.location || {};
+    const socialsConfig = config.socials || {};
+    const wifiConfig = config.wifi || {};
+    const mapUrl = window.getSafeExternalUrl(locationConfig.url);
+    const phoneHref = window.getSafePhoneHref(config.phone);
+    const getText = (key, fallback) => typeof window.getTranslation === 'function'
+        ? window.getTranslation(key, fallback)
+        : fallback;
 
     // Location
     const locEl = document.getElementById('landingLocation');
     if (locEl) {
-        locEl.textContent = config.location.address;
-        locEl.onclick = () => window.open(config.location.url, '_blank');
+        const locationRow = locEl.closest('.info-row');
+        const hasAddress = Boolean(locationConfig.address);
+        locEl.textContent = locationConfig.address || getText('landing_address_placeholder', 'Restaurant address');
+        locEl.classList.toggle('is-empty', !hasAddress);
+        if (locationRow && mapUrl && hasAddress) {
+            locationRow.onclick = () => window.openSafeExternalUrl(mapUrl, '_blank');
+            locationRow.classList.add('is-actionable');
+            locationRow.classList.remove('is-empty');
+        } else if (locationRow) {
+            locationRow.onclick = null;
+            locationRow.classList.remove('is-actionable');
+            locationRow.classList.toggle('is-empty', !hasAddress);
+        }
     }
 
     // Phone
     const phoneEl = document.getElementById('landingPhone');
     if (phoneEl) {
-        phoneEl.textContent = config.phone;
-        phoneEl.onclick = () => window.open(`tel:${config.phone.replace(/\s/g, '')}`, '_self');
+        const phoneRow = phoneEl.closest('.info-row');
+        const hasPhone = Boolean(config.phone);
+        phoneEl.textContent = config.phone || getText('landing_phone_placeholder', 'Phone coming soon');
+        phoneEl.classList.toggle('is-empty', !hasPhone);
+        if (phoneRow && phoneHref && hasPhone) {
+            phoneRow.onclick = () => {
+                window.location.href = phoneHref;
+            };
+            phoneRow.classList.add('is-actionable');
+            phoneRow.classList.remove('is-empty');
+        } else if (phoneRow) {
+            phoneRow.onclick = null;
+            phoneRow.classList.remove('is-actionable');
+            phoneRow.classList.toggle('is-empty', !hasPhone);
+        }
     }
 
     // Socials
     const socialEl = document.getElementById('landingSocial');
     if (socialEl) {
-        socialEl.textContent = '@' + (config.socials.instagram.split('/').pop() || 'foody.tanger');
-        socialEl.onclick = () => openSocialModal();
+        const fallbackHandle = (window.restaurantConfig?.branding?.shortName || 'restaurant').toLowerCase().replace(/\s+/g, '');
+        const instagramHandle = (socialsConfig.instagram || '').split('/').filter(Boolean).pop();
+        const socialRow = socialEl.closest('.info-row');
+        const hasSocials = Boolean(
+            window.getSafeExternalUrl(socialsConfig.instagram) ||
+            window.getSafeExternalUrl(socialsConfig.facebook) ||
+            window.getSafeExternalUrl(socialsConfig.tiktok) ||
+            window.getSafeExternalUrl(socialsConfig.tripadvisor) ||
+            window.getWhatsAppNumber()
+        );
+        socialEl.textContent = hasSocials
+            ? '@' + (instagramHandle || fallbackHandle)
+            : getText('landing_social_placeholder', 'Social links coming soon');
+        socialEl.classList.toggle('is-empty', !hasSocials);
+        if (socialRow && hasSocials) {
+            socialRow.onclick = () => openSocialModal();
+            socialRow.classList.add('is-actionable');
+            socialRow.classList.remove('is-empty');
+        } else if (socialRow) {
+            socialRow.onclick = null;
+            socialRow.classList.remove('is-actionable');
+            socialRow.classList.add('is-empty');
+        }
     }
 
     // WiFi
     const wifiEl = document.getElementById('landingWifi');
     if (wifiEl) {
-        wifiEl.textContent = config.wifi.name;
-        wifiEl.onclick = () => openWiFiModal();
+        const wifiRow = wifiEl.closest('.info-row');
+        const hasWifi = Boolean(wifiConfig.name && wifiConfig.code);
+        wifiEl.textContent = hasWifi
+            ? wifiConfig.name
+            : getText('landing_wifi_placeholder', 'WiFi code available on site');
+        wifiEl.classList.toggle('is-empty', !hasWifi);
+        if (wifiRow && hasWifi) {
+            wifiRow.onclick = () => openWiFiModal();
+            wifiRow.classList.add('is-actionable');
+            wifiRow.classList.remove('is-empty');
+        } else if (wifiRow) {
+            wifiRow.onclick = null;
+            wifiRow.classList.remove('is-actionable');
+            wifiRow.classList.add('is-empty');
+        }
     }
+
+    renderLandingHours();
+    renderLandingSocialLinks();
+    scheduleMenuMotionRefresh();
+}
+
+function renderLandingHours() {
+    const grid = document.getElementById('landingHoursGrid');
+    if (!grid) return;
+
+    const hours = Array.isArray(window.restaurantConfig?._hours) && window.restaurantConfig._hours.length > 0
+        ? window.restaurantConfig._hours
+        : window.defaultHours;
+
+    grid.innerHTML = hours.map((hour) => {
+        const translatedDay = window.translations?.[window.currentLang]?.[hour.i18n] || hour.day;
+        return `
+            <div class="hour-row">
+                <span data-i18n="${hour.i18n}">${translatedDay}</span>
+                <span>${hour.open} – ${hour.close}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderLandingSocialLinks() {
+    const container = document.getElementById('menuLandingSocialLinks');
+    if (!container) return;
+
+    const links = ['<a href="index.html" class="social-icon-link">🏠</a>'];
+    const socials = { ...(window.restaurantConfig?.socials || {}) };
+    socials.facebook = window.getSafeExternalUrl(socials.facebook);
+    socials.instagram = window.getSafeExternalUrl(socials.instagram);
+    socials.tiktok = window.getSafeExternalUrl(socials.tiktok);
+    socials.whatsapp = window.getWhatsAppNumber();
+
+    if (socials.facebook) {
+        links.push(`<a href="${socials.facebook}" target="_blank" class="social-icon-link">📘</a>`);
+    }
+    if (socials.instagram) {
+        links.push(`<a href="${socials.instagram}" target="_blank" class="social-icon-link">📸</a>`);
+    }
+    if (socials.tiktok) {
+        links.push(`<a href="${socials.tiktok}" target="_blank" class="social-icon-link">🎵</a>`);
+    }
+    if (socials.whatsapp) {
+        links.push(`<a href="https://wa.me/${socials.whatsapp}" target="_blank" class="social-icon-link">📞</a>`);
+    }
+
+    if (links.length === 1) {
+        const emptyText = typeof window.getTranslation === 'function'
+            ? window.getTranslation('social_empty', 'No links configured yet.')
+            : 'No links configured yet.';
+        links.push(`<span class="social-links-empty">${emptyText}</span>`);
+    }
+
+    container.innerHTML = links.join('');
 }
 
 function openWiFiModal() {
     const config = window.restaurantConfig;
+    const wifiTitle = window.getTranslation('wifi_connect_title', 'Connect to WiFi');
+    const networkLabel = window.getTranslation('wifi_network_label', 'Network');
+    const closeLabel = window.getTranslation('modal_close', 'CLOSE');
     const content = `
-        <div class="modal-body" style="padding:40px 20px; text-align:center;">
-            <div style="font-size:3rem; margin-bottom:20px;">📶</div>
-            <h2 style="margin-bottom:10px;">Connect to WiFi</h2>
-            <p style="color:#666; margin-bottom:30px;">Network: <strong>${config.wifi.name}</strong></p>
-            <div style="background:#f4f4f4; padding:20px; border-radius:15px; font-family:monospace; font-size:1.5rem; letter-spacing:2px; color:var(--primary); font-weight:bold; border:2px dashed #ddd;">
+        <div class="modal-body menu-modal-body is-centered">
+            <div class="menu-modal-icon">📶</div>
+            <h2 class="menu-modal-title">${wifiTitle}</h2>
+            <p class="menu-modal-subtitle">${networkLabel}: <strong>${config.wifi.name}</strong></p>
+            <div class="menu-modal-code-card">
                 ${config.wifi.code}
             </div>
-            <button class="primary-btn" style="margin-top:30px; width:100%;" onclick="closeAllModals()">OK</button>
+            <button class="menu-modal-action" onclick="closeAllModals()">${closeLabel}</button>
         </div>
     `;
     const drawer = document.getElementById('cartDrawer');
@@ -160,24 +365,29 @@ function openWiFiModal() {
 
 function openSocialModal() {
     const config = window.restaurantConfig;
+    const title = window.getTranslation('social_modal_title', 'Our social media');
+    const closeLabel = window.getTranslation('modal_close', 'CLOSE');
+    const emptyText = window.getTranslation('social_empty', 'No links configured yet.');
+    const whatsappNumber = window.getWhatsAppNumber();
+    config.socials = config.socials || {};
+    config.socials.instagram = window.getSafeExternalUrl(config.socials.instagram);
+    config.socials.facebook = window.getSafeExternalUrl(config.socials.facebook);
+    config.socials.tiktok = window.getSafeExternalUrl(config.socials.tiktok);
+    config.socials.tripadvisor = window.getSafeExternalUrl(config.socials.tripadvisor);
+    const socials = [
+        config.socials.instagram ? `<a href="${config.socials.instagram}" target="_blank" class="social-item"><span class="social-item-icon">📸</span> <strong>Instagram</strong></a>` : '',
+        config.socials.facebook ? `<a href="${config.socials.facebook}" target="_blank" class="social-item"><span class="social-item-icon">📘</span> <strong>Facebook</strong></a>` : '',
+        config.socials.tiktok ? `<a href="${config.socials.tiktok}" target="_blank" class="social-item"><span class="social-item-icon">🎵</span> <strong>TikTok</strong></a>` : '',
+        config.socials.tripadvisor ? `<a href="${config.socials.tripadvisor}" target="_blank" class="social-item"><span class="social-item-icon">⭐</span> <strong>TripAdvisor</strong></a>` : '',
+        whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="social-item"><span class="social-item-icon">📞</span> <strong>WhatsApp</strong></a>` : ''
+    ].filter(Boolean).join('');
     const content = `
-        <div class="modal-body" style="padding:30px 20px;">
-            <h2 style="text-align:center; margin-bottom:25px;">Our Social Media</h2>
-            <div class="social-list" style="display:flex; flex-direction:column; gap:15px;">
-                <a href="${config.socials.instagram}" target="_blank" class="social-item" style="display:flex; align-items:center; gap:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-decoration:none; color:#000;">
-                    <span style="font-size:1.5rem;">📸</span> <strong>Instagram</strong>
-                </a>
-                <a href="${config.socials.facebook}" target="_blank" class="social-item" style="display:flex; align-items:center; gap:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-decoration:none; color:#000;">
-                    <span style="font-size:1.5rem;">📘</span> <strong>Facebook</strong>
-                </a>
-                <a href="${config.socials.tiktok}" target="_blank" class="social-item" style="display:flex; align-items:center; gap:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-decoration:none; color:#000;">
-                    <span style="font-size:1.5rem;">🎵</span> <strong>TikTok</strong>
-                </a>
-                <a href="${config.socials.tripadvisor}" target="_blank" class="social-item" style="display:flex; align-items:center; gap:15px; padding:15px; background:#f9f9f9; border-radius:12px; text-decoration:none; color:#000;">
-                    <span style="font-size:1.5rem;">🦉</span> <strong>TripAdvisor</strong>
-                </a>
+        <div class="modal-body menu-modal-body">
+            <h2 class="menu-modal-title">${title}</h2>
+            <div class="social-list">
+                ${socials || `<p class="menu-modal-empty">${emptyText}</p>`}
             </div>
-            <button class="primary-btn" style="margin-top:25px; width:100%; background:#eee; color:#000;" onclick="closeAllModals()">CLOSE</button>
+            <button class="menu-modal-action is-muted" onclick="closeAllModals()">${closeLabel}</button>
         </div>
     `;
     const drawer = document.getElementById('cartDrawer');
@@ -199,13 +409,14 @@ function renderPromoCarousel() {
 
     if (promoItems.length === 0) {
         container.innerHTML = `<div class="promo-empty-msg">🔥 Découvrez nos promos du jour bientôt !</div>`;
+        scheduleMenuMotionRefresh();
         return;
     }
 
     container.innerHTML = promoItems.map(item => {
         const discountedPrice = window.getItemPrice(item);
         return `
-            <div class="promo-card-vibrant" onclick="openDishPage(${item.id})">
+            <div class="promo-card-vibrant menu-reveal-observe" onclick="openDishPage(${item.id})">
                 <span class="promo-tag-glow">OFFRE</span>
                 <span class="promo-discount-badge">-20%</span>
                 <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => p.id === ${item.id}))">
@@ -213,7 +424,7 @@ function renderPromoCarousel() {
                     <div class="promo-glow-vibrant"></div>
                 </div>
                 <div class="promo-info-vibrant">
-                    <div class="promo-name-vibrant">${item.name}</div>
+                    <div class="promo-name-vibrant">${window.getLocalizedMenuName(item)}</div>
                     <div class="promo-price-vibrant">
                         <span class="price-new">${discountedPrice.toFixed(0)} MAD</span>
                         <span class="price-old">${item.price.toFixed(0)} MAD</span>
@@ -227,6 +438,7 @@ function renderPromoCarousel() {
     }).join('');
 
     startPromoAutoSlide(container);
+    scheduleMenuMotionRefresh();
 }
 
 function startPromoAutoSlide(container) {
@@ -266,14 +478,16 @@ function showLanding() {
     document.getElementById('menuNavigationView').style.display = 'none';
     navigationStack = [];
     updateBackBtn();
+    scheduleMenuMotionRefresh();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showMenuNavigationView(title) {
     document.getElementById('landingView').style.display = 'none';
     document.getElementById('menuNavigationView').style.display = 'block';
-    document.getElementById('menuNavTitle').textContent = title || 'Menu';
+    document.getElementById('menuNavTitle').textContent = title || window.getTranslation('nav_menu', 'Menu');
     updateBackBtn();
+    scheduleMenuMotionRefresh();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -283,25 +497,26 @@ function renderFeaturedSlider(items, containerId) {
 
     if (!items || items.length === 0) {
         container.style.display = 'none';
+        scheduleMenuMotionRefresh();
         return;
     }
 
     container.style.display = 'block';
     container.innerHTML = `
-        <div class="featured-header-sexy">
-            <span class="featured-header-label" data-i18n="featured_label">Nolasco Selection</span>
+        <div class="featured-header-sexy menu-reveal-observe">
+            <span class="featured-header-label" data-i18n="featured_label">Sélection Maison</span>
             <h2 class="featured-header-title">
                 <span data-i18n="featured_best">Nos Coups de Coeur</span> ✨
             </h2>
         </div>
         <div class="featured-slider">
             ${items.map(item => `
-                <div class="featured-card" onclick="openDishPage(${item.id})">
+                <div class="featured-card menu-reveal-observe" onclick="openDishPage(${item.id})">
                     <div class="featured-img-wrap">
                         ${imgTag(item)}
                     </div>
                     <div class="featured-info">
-                        <div class="featured-name">${item.name}</div>
+                        <div class="featured-name">${window.getLocalizedMenuName(item)}</div>
                         <div class="featured-price">${window.getItemPrice(item).toFixed(0)} MAD</div>
                     </div>
                     <button class="featured-add-btn" onclick="event.stopPropagation();addToCart(${item.id})">+</button>
@@ -309,6 +524,11 @@ function renderFeaturedSlider(items, containerId) {
             `).join('')}
         </div>
     `;
+
+    if (typeof window.applyBranding === 'function') {
+        window.applyBranding();
+    }
+    scheduleMenuMotionRefresh();
 }
 
 function updateBackBtn() {
@@ -329,7 +549,7 @@ function menuGoBack() {
 
     if (last.startsWith('subcats:')) {
         const scId = last.split(':')[1];
-        const sc = superCategories.find(s => s.id === scId);
+        const sc = getSuperCategories().find(s => s.id === scId);
         if (sc) showSubCategoryGrid(sc, false);
     } else {
         showLanding();
@@ -346,7 +566,7 @@ function menuGoBack() {
 function renderSuperCatPills() {
     const container = document.getElementById('superCatPills');
     if (!container) return;
-    container.innerHTML = superCategories.map((sc, i) => `
+    container.innerHTML = getSuperCategories().map((sc, i) => `
         <button class="super-cat-pill ${i === 0 ? 'active' : ''}" onclick="openSuperCatSheet()">
             ${sc.emoji} ${sc.name}
         </button>
@@ -356,8 +576,8 @@ function renderSuperCatPills() {
 function renderSuperCatSheet() {
     const list = document.getElementById('superCatList');
     if (!list) return;
-    list.innerHTML = superCategories.map(sc => `
-        <div class="super-cat-row" onclick="selectSuperCategory('${sc.id}')">
+    list.innerHTML = getSuperCategories().map(sc => `
+        <div class="super-cat-row menu-reveal-observe" onclick="selectSuperCategory('${sc.id}')">
             <div class="super-cat-row-left">
                 <span class="super-cat-row-emoji">${sc.emoji}</span>
                 <div class="super-cat-row-info">
@@ -368,6 +588,7 @@ function renderSuperCatSheet() {
             <span class="super-cat-row-arrow">›</span>
         </div>
     `).join('');
+    scheduleMenuMotionRefresh();
 }
 
 function openSuperCatSheet() {
@@ -381,7 +602,7 @@ function closeSuperCatSheet() {
 }
 
 function selectSuperCategory(scId) {
-    const sc = superCategories.find(s => s.id === scId);
+    const sc = getSuperCategories().find(s => s.id === scId);
     if (!sc) return;
     currentSuperCat = sc;
     closeSuperCatSheet();
@@ -412,7 +633,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
     const currentCategories = [...new Set(menu.map(m => m.cat))];
     const filteredCats = sc.cats.filter(c => currentCategories.includes(c));
     catNav.innerHTML = filteredCats.map(c => `
-        <button class="menu-cat-btn" data-cat="${c}" onclick="showCategoryItems('${c}')">
+        <button class="menu-cat-btn menu-reveal-observe" data-cat="${c}" onclick="showCategoryItems('${c}')">
             <span class="cat-emoji">${catEmojis[c] || '🍴'}</span>
             <span class="cat-name">${c}</span>
         </button>
@@ -423,6 +644,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
     renderFeaturedSlider(featuredItems, 'featuredGlobal');
 
     updateBackBtn();
+    scheduleMenuMotionRefresh();
 }
 
 // ═══════════════════════ CATEGORY ITEMS ═══════════════════════
@@ -451,6 +673,7 @@ function showCategoryItems(cat) {
     renderFeaturedSlider(featuredItems, 'featuredGlobal');
 
     updateBackBtn();
+    scheduleMenuMotionRefresh();
 }
 
 // ═══════════════════════ RENDERING ═══════════════════════
@@ -464,18 +687,18 @@ function renderMenu() {
     wrap.innerHTML = categories.map(cat => {
         const items = menu.filter(m => m.cat === cat && m.available !== false);
         return `
-            <section class="menu-section" id="cat-${cat.replace(/\s/g, '-')}">
+            <section class="menu-section menu-reveal-observe" id="cat-${cat.replace(/\s/g, '-')}">
                 <h2 class="menu-section-title">${catEmojis[cat] || '🍴'} ${cat}</h2>
                 <div class="menu-grid">
                     ${items.map(item => `
-                        <div class="menu-item-card" onclick="openDishPage(${item.id})">
+                        <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${item.id})">
                              <button class="love-btn ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
                                      onclick="event.stopPropagation(); window.handleToggleLike(${item.id}, this)">
                                 ❤️<span class="love-count">${window.getLikeCount(item.id)}</span>
                              </button>
                             <div class="menu-item-info">
-                                <div class="menu-item-name">${item.name} ${window.isItemInPromo(item.id) ? '<span class="promo-tag-small">PROMO</span>' : ''}</div>
-                                <div class="menu-item-desc">${item.desc}</div>
+                                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? '<span class="promo-tag-small">PROMO</span>' : ''}</div>
+                                <div class="menu-item-desc">${window.getLocalizedMenuDescription(item)}</div>
                                 <div class="menu-item-price">
                                     ${item.hasSizes
                 ? `<span style="font-size:0.7em; opacity:0.7;">À partir de</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
@@ -494,11 +717,16 @@ function renderMenu() {
             </section>
         `;
     }).join('');
+    scheduleMenuMotionRefresh();
 }
 
 function imgTag(item) {
     const src = (item.images && item.images.length > 0) ? item.images[0] : item.img;
-    if (src) return `<img src="${src}" alt="${item.name}" loading="lazy">`;
+    const safeFallbackEmoji = catEmojis[item.cat] || String.fromCodePoint(0x1F354);
+    if (src) return `<img src="${src}" alt="${window.getLocalizedMenuName(item)}" loading="lazy" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(safeFallbackEmoji)} }))">`;
+    return `<span class="emoji-placeholder">${safeFallbackEmoji}</span>`;
+    const fallbackEmoji = catEmojis[item.cat] || 'ðŸ´';
+    if (src) return `<img src="${src}" alt="${window.getLocalizedMenuName(item)}" loading="lazy" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(catEmojis[item.cat] || 'ðŸ´')} }))">`;
     return `<span class="emoji-placeholder">${catEmojis[item.cat] || '🍴'}</span>`;
 }
 
@@ -514,6 +742,7 @@ function openDishPage(id) {
     const priceEl = document.getElementById('dishPagePrice');
     const descEl = document.getElementById('dishPageDesc');
     const addBtn = document.getElementById('dishPageAddBtn');
+    page.dataset.itemId = String(item.id);
 
     // Size Selector Logic
     let selectedSize = item.hasSizes ? 'small' : null;
@@ -570,18 +799,24 @@ function openDishPage(id) {
     const imgSrc = (item.images && item.images.length > 0) ? item.images[0] : item.img;
 
     if (imgSrc) {
-        imgEl.src = imgSrc;
-        imgEl.style.display = 'block';
+        window.setSafeImageSource(imgEl, imgSrc, {
+            onMissing: () => {
+                imgEl.removeAttribute('src');
+                imgEl.style.display = 'none';
+            },
+            displayValue: 'block'
+        });
         imgEl.onclick = () => openGallery([item], 0);
         imgEl.style.cursor = 'zoom-in';
     } else {
+        imgEl.removeAttribute('src');
         imgEl.style.display = 'none';
         imgEl.onclick = null;
     }
 
-    if (nameEl) nameEl.textContent = item.name + (window.isItemInPromo(item.id) ? ' (PROMO)' : '');
+    if (nameEl) nameEl.textContent = window.getLocalizedMenuName(item) + (window.isItemInPromo(item.id) ? ' (PROMO)' : '');
     updateSizePrice();
-    if (descEl) descEl.textContent = item.desc || 'Une préparation soignée avec les meilleurs ingrédients.';
+    if (descEl) descEl.textContent = window.getLocalizedMenuDescription(item, 'Une préparation soignée avec les meilleurs ingrédients.');
 
     if (addBtn) {
         addBtn.onclick = () => { addToCart(item.id, selectedSize); closeDishPage(); };
@@ -640,8 +875,13 @@ function updateGalleryView() {
     img.classList.add('gallery-flip');
 
     const galleryImgSrc = (item.images && item.images.length > 0) ? item.images[0] : item.img;
-    img.src = galleryImgSrc;
-    title.textContent = item.name;
+    window.setSafeImageSource(img, galleryImgSrc, {
+        onMissing: () => {
+            closeGallery();
+        },
+        displayValue: 'block'
+    });
+    title.textContent = window.getLocalizedMenuName(item);
     count.textContent = `${currentGalleryIdx + 1} / ${galleryItems.length}`;
 }
 
@@ -718,7 +958,7 @@ window.addToCart = function (id, size) {
     saveCart();
     updateCartUI();
     const sizeLabel = size ? ` (${size.charAt(0).toUpperCase()})` : '';
-    window.showToast?.(`✅ ${item.name}${sizeLabel} ajouté!`);
+    window.showToast?.(`✅ ${window.getLocalizedMenuName(item)}${sizeLabel} ajouté!`);
 };
 
 window.removeFromCart = function (cartId) {
@@ -733,7 +973,11 @@ window.removeFromCart = function (cartId) {
     else renderDrawer();
 };
 
-function saveCart() { localStorage.setItem('foody_cart_menu', JSON.stringify(cart)); }
+function saveCart() {
+    if (typeof window.setStoredCart === 'function') {
+        window.setStoredCart(cart);
+    }
+}
 
 function updateCartUI() {
     const hubBtn = document.getElementById('cartHubBtn');
@@ -763,65 +1007,71 @@ function renderDrawer() {
     const total = cart.reduce((s, c) => s + (c.price * c.qty), 0);
     const content = document.getElementById('drawerContent');
     if (!content) return;
+    const restaurantName = typeof window.getRestaurantDisplayName === 'function'
+        ? window.getRestaurantDisplayName()
+        : 'Restaurant';
+    const serviceOptions = [
+        { key: 'onsite', icon: '🍽️', label: 'Sur place' },
+        { key: 'takeaway', icon: '🛍️', label: 'À Emporter' },
+        { key: 'delivery', icon: '🛵', label: 'Livraison' }
+    ];
 
     content.innerHTML = `
-        <div style="padding:0 20px 120px;">
-            <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #eee;padding-bottom:10px;">
-                <div style="font-weight:900;font-size:1.4rem;text-transform:uppercase;color:#000;">
-                    ${window.restaurantConfig?.name || 'Foody'}
+        <div class="cart-drawer-body">
+            <div class="cart-drawer-header">
+                <div class="cart-drawer-title">
+                    ${restaurantName}
                 </div>
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <button onclick="if(confirm('Vider le panier ?')) { cart=[]; saveCart(); updateCartUI(); closeAllModals(); }" style="background:none; border:none; color:#888; text-decoration:underline; cursor:pointer; font-size:0.8rem;">Vider</button>
-                    <div style="font-size:0.9rem;color:var(--red);font-weight:700;">${cart.length} items</div>
+                <div class="cart-drawer-meta">
+                    <button onclick="if(confirm('Vider le panier ?')) { cart=[]; saveCart(); updateCartUI(); closeAllModals(); }" class="cart-drawer-clear">Vider</button>
+                    <div class="cart-drawer-count">${cart.length} items</div>
                 </div>
             </div>
-            <div style="max-height:45vh;overflow-y:auto;margin-bottom:20px;">
+            <div class="cart-items-list">
                 ${cart.map(item => `
-                    <div style="display:flex;align-items:center;gap:15px;margin-bottom:15px;background:#f8f8f8;padding:12px;border-radius:12px;">
-                        <div style="flex:1;">
-                            <div style="font-weight:700;font-size:0.95rem;color:#000;">
-                                ${item.name} ${item.selectedSize ? `<span style="font-size:0.8rem; color:var(--primary);">(${item.selectedSize.charAt(0).toUpperCase()})</span>` : ''}
+                    <div class="cart-item-card">
+                        <div class="cart-item-main">
+                            <div class="cart-item-name">
+                                ${window.getLocalizedMenuName(item)} ${item.selectedSize ? `<span class="cart-item-size">(${item.selectedSize.charAt(0).toUpperCase()})</span>` : ''}
                             </div>
-                            <div style="color:var(--red);font-weight:700;font-size:0.9rem;">${(item.price * item.qty).toFixed(2)} MAD</div>
+                            <div class="cart-item-price">${(item.price * item.qty).toFixed(2)} MAD</div>
                         </div>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <button onclick="removeFromCart('${item.cartId}')" style="width:28px;height:28px;border-radius:8px;border:1px solid #ddd;background:#fff;">-</button>
-                            <span style="font-weight:700;color:#000;">${item.qty}</span>
-                            <button onclick="addToCart(${item.id}, '${item.selectedSize || ''}');renderDrawer();" style="width:28px;height:28px;border-radius:8px;border:none;background:var(--red);color:#fff;">+</button>
+                        <div class="cart-item-controls">
+                            <button onclick="removeFromCart('${item.cartId}')" class="cart-qty-btn is-minus">-</button>
+                            <span class="cart-item-qty">${item.qty}</span>
+                            <button onclick="addToCart(${item.id}, '${item.selectedSize || ''}');renderDrawer();" class="cart-qty-btn is-plus">+</button>
                         </div>
                     </div>
                 `).join('')}
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px;">
-                <button class="svc-btn" onclick="serviceType='onsite'; renderDrawer()" style="padding:15px;border-radius:12px;border:2px solid ${serviceType === 'onsite' ? 'var(--red)' : '#eee'};background:${serviceType === 'onsite' ? '#fff' : '#f8f8f8'};color:${serviceType === 'onsite' ? 'var(--red)' : '#666'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s;box-shadow:${serviceType === 'onsite' ? '0 4px 12px rgba(226,27,27,0.15)' : 'none'};">
-                    <span style="font-size:1.5rem;">🍽️</span>
-                    <span style="font-size:0.7rem;font-weight:700;">Sur place</span>
-                </button>
-                <button class="svc-btn" onclick="serviceType='takeaway'; renderDrawer()" style="padding:15px;border-radius:12px;border:2px solid ${serviceType === 'takeaway' ? 'var(--red)' : '#eee'};background:${serviceType === 'takeaway' ? '#fff' : '#f8f8f8'};color:${serviceType === 'takeaway' ? 'var(--red)' : '#666'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s;box-shadow:${serviceType === 'takeaway' ? '0 4px 12px rgba(226,27,27,0.15)' : 'none'};">
-                    <span style="font-size:1.5rem;">🛍️</span>
-                    <span style="font-size:0.7rem;font-weight:700;">À Emporter</span>
-                </button>
-                <button class="svc-btn" onclick="serviceType='delivery'; renderDrawer()" style="padding:15px;border-radius:12px;border:2px solid ${serviceType === 'delivery' ? 'var(--red)' : '#eee'};background:${serviceType === 'delivery' ? '#fff' : '#f8f8f8'};color:${serviceType === 'delivery' ? 'var(--red)' : '#666'};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s;box-shadow:${serviceType === 'delivery' ? '0 4px 12px rgba(226,27,27,0.15)' : 'none'};">
-                    <span style="font-size:1.5rem;">🛵</span>
-                    <span style="font-size:0.7rem;font-weight:700;">Livraison</span>
-                </button>
+            <div class="cart-service-grid">
+                ${serviceOptions.map((option) => `
+                    <button class="cart-service-btn${serviceType === option.key ? ' is-active' : ''}" onclick="serviceType='${option.key}'; renderDrawer()">
+                        <span class="cart-service-icon">${option.icon}</span>
+                        <span class="cart-service-label">${option.label}</span>
+                    </button>
+                `).join('')}
             </div>
             ${serviceType === 'delivery' ? `
-            <div style="margin-bottom:20px; animation: fadeIn 0.3s ease;">
-                <label style="display:block;margin-bottom:8px;font-weight:700;color:#000;font-size:0.9rem;">📍 Adresse de livraison</label>
-                <textarea id="deliveryAddress" rows="2" placeholder="Ex: Appt 12, Résidence Les Fleurs, Tanger..." oninput="window.currentDeliveryAddress = this.value" style="width:100%;padding:12px;border-radius:12px;border:2px solid #eee;font-family:inherit;font-size:0.95rem;box-sizing:border-box;resize:vertical;outline:none;">${window.currentDeliveryAddress || ''}</textarea>
+            <div class="cart-delivery-block">
+                <label class="cart-delivery-label">📍 Adresse de livraison</label>
+                <textarea id="deliveryAddress" rows="2" placeholder="Ex: Appartement 12, résidence, quartier..." oninput="window.currentDeliveryAddress = this.value" class="cart-delivery-input">${window.currentDeliveryAddress || ''}</textarea>
             </div>
             ` : ''}
-            <div style="background:#f8f8f8;padding:15px;border-radius:15px;margin-bottom:20px;">
-                <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;color:#000;">
+            <div class="cart-total-card">
+                <div class="cart-total-row">
                     <span>Total</span><span>${total.toFixed(2)} MAD</span>
                 </div>
             </div>
-            <button onclick="generateTicket()" style="width:100%;padding:18px;border-radius:16px;border:none;background:var(--red);color:#fff;font-weight:800;font-size:1rem;cursor:pointer;transition:transform 0.1s;">
+            <button onclick="generateTicket()" class="cart-confirm-btn">
                 CONFIRMER MA COMMANDE
             </button>
         </div>
     `;
+
+    if (typeof window.applyBranding === 'function') {
+        window.applyBranding();
+    }
 }
 
 // ═══════════════════════ HISTORY ═══════════════════════
@@ -838,37 +1088,49 @@ function closeHistory() {
 }
 
 function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('foody_history')) || [];
+    const history = typeof window.getStoredHistory === 'function'
+        ? window.getStoredHistory()
+        : [];
     const container = document.getElementById('historyContent');
     if (!container) return;
     container.innerHTML = history.length === 0
-        ? '<p style="text-align:center;color:#999;padding:20px;">Aucune commande récente.</p>'
+        ? '<p class="history-empty">Aucune commande récente.</p>'
         : history.map((t, i) => `
-            <div class="history-ticket" style="position:relative;">
+            <div class="history-ticket history-ticket-wrap">
                 ${t}
-                <button onclick="deleteHistoryItem(${i})" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:1.2rem; filter: grayscale(1);" title="Supprimer">🗑️</button>
+                <button onclick="deleteHistoryItem(${i})" class="history-delete-btn" title="Supprimer">🗑️</button>
             </div>
         `).join('');
 }
 
 function deleteHistoryItem(index) {
     if (!confirm('Supprimer ce ticket de l\'historique ?')) return;
-    let h = JSON.parse(localStorage.getItem('foody_history')) || [];
+    let h = typeof window.getStoredHistory === 'function'
+        ? window.getStoredHistory()
+        : [];
     h.splice(index, 1);
-    localStorage.setItem('foody_history', JSON.stringify(h));
+    if (typeof window.setStoredHistory === 'function') {
+        window.setStoredHistory(h);
+    }
     renderHistory();
     updateHistoryBadge();
 }
 
 function saveToHistory(text) {
-    let h = JSON.parse(localStorage.getItem('foody_history')) || [];
+    let h = typeof window.getStoredHistory === 'function'
+        ? window.getStoredHistory()
+        : [];
     h.unshift(text); if (h.length > 3) h = h.slice(0, 3);
-    localStorage.setItem('foody_history', JSON.stringify(h));
+    if (typeof window.setStoredHistory === 'function') {
+        window.setStoredHistory(h);
+    }
     updateHistoryBadge();
 }
 
 function updateHistoryBadge() {
-    const h = JSON.parse(localStorage.getItem('foody_history')) || [];
+    const h = typeof window.getStoredHistory === 'function'
+        ? window.getStoredHistory()
+        : [];
     const count = h.length;
     const badges = ['histBadgeLanding', 'histBadgeMenu'];
     badges.forEach(id => {
@@ -891,6 +1153,12 @@ function generateTicket() {
     const orderNo = Math.floor(1000 + Math.random() * 9000);
     const ticketModal = document.getElementById('ticketModal');
     const ticketContent = document.getElementById('ticketContent');
+    const restaurantName = typeof window.getRestaurantDisplayName === 'function'
+        ? window.getRestaurantDisplayName()
+        : 'Restaurant';
+    const restaurantAddress = typeof window.getRestaurantAddress === 'function'
+        ? window.getRestaurantAddress()
+        : '';
 
     const serviceLabels = {
         'onsite': 'Sur place',
@@ -900,50 +1168,50 @@ function generateTicket() {
     const serviceLabel = serviceLabels[serviceType];
 
     ticketContent.innerHTML = `
-        <div style="padding:50px 30px;font-family:'Outfit',sans-serif;color:#000;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;">
-            <button onclick="closeAllModals()" style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:2rem; cursor:pointer; color:#888;">✕</button>
-            <div style="text-align:center;margin-bottom:40px;">
-                <div style="font-weight:900;font-size:2.8rem;text-transform:uppercase;letter-spacing:2px;">${window.restaurantConfig?.name || 'Foody'}</div>
-                <div style="font-size:0.9rem;color:#666;letter-spacing:4px;text-transform:uppercase;margin-top:10px;">${window.restaurantConfig?.location || 'Tanger, Maroc'}</div>
+        <div class="ticket-content">
+            <button onclick="closeAllModals()" class="ticket-close-btn">✕</button>
+            <div class="ticket-brand">
+                <div class="ticket-brand-name">${restaurantName}</div>
+                <div class="ticket-brand-address">${restaurantAddress}</div>
             </div>
-            <div style="border-top:3px solid #000;border-bottom:3px solid #000;padding:25px 0;margin-bottom:40px;text-align:center;">
-                <div style="font-weight:900;font-size:1.6rem;letter-spacing:1px;">TICKET #${orderNo}</div>
-                <div style="font-size:1rem;color:#555;margin-top:5px;">${now.toLocaleDateString()} — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                <div style="margin-top:15px;font-weight:900;color:var(--red);font-size:1.3rem;text-transform:uppercase;">${serviceLabel}</div>
-                ${serviceType === 'delivery' ? `<div style="font-size:1.1rem;margin-top:10px;color:#333;font-weight:600;background:#fff5f5;padding:10px;border-radius:8px;border:1px dashed var(--red);">📍 ${window.currentDeliveryAddress}</div>` : ''}
+            <div class="ticket-summary">
+                <div class="ticket-number">TICKET #${orderNo}</div>
+                <div class="ticket-datetime">${now.toLocaleDateString()} — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div class="ticket-service">${serviceLabel}</div>
+                ${serviceType === 'delivery' ? `<div class="ticket-delivery-address">📍 ${window.currentDeliveryAddress}</div>` : ''}
             </div>
-            <div style="margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;">
+            <div class="ticket-items">
                 ${cart.map(item => `
-                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;text-align:left;font-size:1.1rem;">
-                        <div style="font-weight:500;"><strong style="color:var(--red);">${item.qty} ×</strong> ${item.name}</div>
-                        <div style="font-weight:800;color:#000;">${(item.price * item.qty).toFixed(0)} <span style="font-size:0.7em;">dhs</span></div>
+                    <div class="ticket-item-row">
+                        <div class="ticket-item-name"><strong class="ticket-item-qty">${item.qty} ×</strong> ${window.getLocalizedMenuName(item)}</div>
+                        <div class="ticket-item-price">${(item.price * item.qty).toFixed(0)} <span class="ticket-item-currency">dhs</span></div>
                     </div>
                 `).join('')}
             </div>
-            <div style="margin-bottom:50px;text-align:center;">
-                <div style="background:#000;color:#fff;padding:20px;font-size:1.8rem;font-weight:900;border-radius:12px;letter-spacing:1px;font-family:'Outfit',sans-serif;">
+            <div class="ticket-total-wrap">
+                <div class="ticket-total-box">
                     TOTAL : ${total.toFixed(0)} dhs
                 </div>
             </div>
             
             ${serviceType === 'delivery' ? `
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div class="ticket-actions-grid">
                     <button onclick="document.getElementById('ticketModal').classList.remove('open'); document.getElementById('cartDrawer').classList.add('open');"
-                            style="padding:20px;border-radius:12px;border:2px solid #000;background:none;color:#000;font-weight:800;font-size:1rem;cursor:pointer;">
+                            class="ticket-action-btn is-outline">
                         MODIFIER
                     </button>
                     <button onclick="sendOrderViaWhatsApp('${orderNo}', ${total.toFixed(2)}, '${serviceLabel}')"
-                            style="padding:20px;border-radius:12px;border:none;background:var(--red);color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 10px 20px rgba(226,27,27,0.3);">
+                            class="ticket-action-btn is-primary">
                         COMMANDER
                     </button>
                 </div>
             ` : `
-                <div id="ticketActions_${orderNo}">
+                <div id="ticketActions_${orderNo}" class="ticket-actions-single">
                     <button onclick="finalizeOrderSilent('${orderNo}', ${total.toFixed(2)}, '${serviceLabel}', this)"
-                            style="width:100%;padding:22px;border-radius:12px;border:none;background:#222;color:#fff;font-weight:800;font-size:1.2rem;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,0.1);">
+                            class="ticket-action-btn is-dark">
                         VALIDER LA COMMANDE
                     </button>
-                    <div style="text-align:center; margin-top:15px; color:#888; font-size:0.9rem;">Cliquez pour enregistrer et montrer au serveur</div>
+                    <div class="ticket-helper">Cliquez pour enregistrer et montrer au serveur</div>
                 </div>
             `}
         </div>
@@ -955,7 +1223,7 @@ function generateTicket() {
 
 function finalizeOrder(orderNo, total, serviceLabel) {
     const now = new Date();
-    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\n${serviceType === 'delivery' ? 'Adresse: ' + window.currentDeliveryAddress.trim() + '\n' : ''}Total: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + i.name).join('\n')}`;
+    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\n${serviceType === 'delivery' ? 'Adresse: ' + window.currentDeliveryAddress.trim() + '\n' : ''}Total: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
     saveToHistory(historyText);
 
     // Clear and return home
@@ -973,7 +1241,7 @@ function finalizeOrder(orderNo, total, serviceLabel) {
  */
 function finalizeOrderSilent(orderNo, total, serviceLabel, btn) {
     const now = new Date();
-    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\nTotal: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + i.name).join('\n')}`;
+    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\nTotal: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
     saveToHistory(historyText);
 
     // Clear background data
@@ -986,16 +1254,14 @@ function finalizeOrderSilent(orderNo, total, serviceLabel, btn) {
     const parent = btn.parentElement;
     parent.innerHTML = `
         <button onclick="closeAllModals(); showLanding();"
-                style="width:100%;padding:22px;border-radius:12px;border:none;background:#44bb44;color:#fff;font-weight:800;font-size:1.2rem;cursor:pointer;box-shadow:0 10px 20px rgba(68,187,68,0.2);">
+                class="ticket-action-btn is-success">
             COMMANDE ENREGISTRÉE ✔
         </button>
-        <div style="text-align:center; margin-top:15px; color:#44bb44; font-weight:700;">Ticket validé ! Cliquez pour fermer.</div>
+        <div class="ticket-helper is-success">Ticket validé ! Cliquez pour fermer.</div>
     `;
 }
 
 function sendOrderViaWhatsApp(orderNo, total, serviceLabel) {
-    const now = new Date();
-
     // WhatsApp formatting
     let waText = `*NOUVELLE COMMANDE #${orderNo}*\n`;
     waText += `Type: ${serviceLabel}\n`;
@@ -1004,19 +1270,22 @@ function sendOrderViaWhatsApp(orderNo, total, serviceLabel) {
     }
     waText += `---------------------------\n`;
     cart.forEach(item => {
-        waText += `${item.qty}x ${item.name} - ${(item.price * item.qty).toFixed(0)} dhs\n`;
+        waText += `${item.qty}x ${window.getLocalizedMenuName(item)} - ${(item.price * item.qty).toFixed(0)} dhs\n`;
     });
     waText += `---------------------------\n`;
     waText += `*TOTAL: ${total.toFixed(0)} dhs*\n`;
 
-    const configPhone = window.restaurantConfig?.phone || '+212600000000';
-    const phone = configPhone.replace(/\D/g, ''); // strip non-numeric
+    const phone = window.getWhatsAppNumber();
+    if (!phone) {
+        window.showToast(window.getTranslation('social_empty', 'Aucun lien configuré.'));
+        return;
+    }
 
     // Save history then clear and send
     finalizeOrder(orderNo, total, serviceLabel);
 
     // Open WhatsApp
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(waText)}`, '_blank');
+    window.openSafeExternalUrl(`https://wa.me/${phone}?text=${encodeURIComponent(waText)}`, '_blank');
 }
 
 // ═══════════════════════ LIKES HANDLER ═══════════════════════

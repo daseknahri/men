@@ -1,0 +1,18 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#EDF9FF"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <path d="M490 210H710L670 575C665 635 615 680 555 680H645C585 680 535 635 530 575L490 210Z" fill="#C0ECFF"/>
+  <path d="M500 210H700L665 565C660 615 620 652 570 652H630C580 652 540 615 535 565L500 210Z" fill="#7BD5F3"/>
+  <path d="M470 210H730" stroke="#166A8A" stroke-width="22" stroke-linecap="round"/>
+  <path d="M690 135L610 250" stroke="#166A8A" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="565" cy="432" r="22" fill="#EAF9FF"/>
+  <circle cx="635" cy="512" r="18" fill="#EAF9FF"/>
+  <circle cx="614" cy="370" r="16" fill="#EAF9FF"/>
+  <text x="600" y="666" text-anchor="middle" fill="#175A74" font-family="Georgia, serif" font-size="54">Cold Drinks &amp; Juice</text>
+  <defs>
+    <linearGradient id="bg" x1="140" y1="100" x2="1040" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDF5FF"/>
+      <stop offset="1" stop-color="#B7E7F9"/>
+    </linearGradient>
+  </defs>
+</svg>

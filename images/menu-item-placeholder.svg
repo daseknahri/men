@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-labelledby="title desc">
+  <title id="title">Menu item placeholder</title>
+  <desc id="desc">Neutral placeholder image for menu items without assigned photography.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2b1a18"/>
+      <stop offset="55%" stop-color="#954335"/>
+      <stop offset="100%" stop-color="#e0a35b"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7e9"/>
+      <stop offset="100%" stop-color="#ebd0a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" rx="28" fill="url(#bg)"/>
+  <ellipse cx="200" cy="198" rx="112" ry="42" fill="rgba(0,0,0,0.16)"/>
+  <ellipse cx="200" cy="176" rx="102" ry="34" fill="url(#plate)"/>
+  <ellipse cx="200" cy="176" rx="76" ry="24" fill="#f6ece0"/>
+  <circle cx="172" cy="170" r="12" fill="#4c7f42"/>
+  <circle cx="201" cy="161" r="11" fill="#c44e36"/>
+  <circle cx="230" cy="173" r="12" fill="#efc96d"/>
+  <path d="M86 70h132" stroke="rgba(255,255,255,0.2)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M86 106h174" stroke="rgba(255,255,255,0.14)" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#FCF6EE"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <ellipse cx="600" cy="418" rx="276" ry="194" fill="#FFF9F0" stroke="#E6D3B7" stroke-width="18"/>
+  <path d="M468 468C468 388 526 324 598 324C670 324 728 388 728 468H468Z" fill="#D79A58"/>
+  <path d="M505 450C505 399 545 358 596 358C647 358 687 399 687 450H505Z" fill="#F0C883"/>
+  <path d="M430 384C430 338 466 302 512 302C558 302 594 338 594 384H430Z" fill="#B6763B"/>
+  <path d="M620 504C620 453 659 414 710 414C761 414 800 453 800 504H620Z" fill="#A85A3A"/>
+  <circle cx="716" cy="448" r="14" fill="#6A3B28"/>
+  <circle cx="680" cy="470" r="14" fill="#6A3B28"/>
+  <circle cx="748" cy="480" r="14" fill="#6A3B28"/>
+  <text x="600" y="666" text-anchor="middle" fill="#6A4528" font-family="Georgia, serif" font-size="54">Bakery &amp; Pastries</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="100" x2="1080" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6EAD9"/>
+      <stop offset="1" stop-color="#ECD3B1"/>
+    </linearGradient>
+  </defs>
+</svg>

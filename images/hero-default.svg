@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Restaurant website hero placeholder</title>
+  <desc id="desc">Abstract warm-toned restaurant hero illustration for white-label website setup.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f1816"/>
+      <stop offset="45%" stop-color="#8c3d2c"/>
+      <stop offset="100%" stop-color="#d38a37"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff6e9"/>
+      <stop offset="100%" stop-color="#f2d5aa"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1260" cy="180" r="260" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="250" cy="760" r="320" fill="rgba(255,255,255,0.05)"/>
+  <ellipse cx="850" cy="610" rx="380" ry="170" fill="url(#plate)" opacity="0.95"/>
+  <ellipse cx="850" cy="610" rx="290" ry="115" fill="#f7efe2"/>
+  <path d="M710 520c58-54 127-78 212-76 87 2 157 32 219 93-22 18-49 34-82 48-84 35-165 47-246 37-48-6-91-20-128-42-23-13-47-30-71-50 29-4 61-8 96-10z" fill="#37663b" opacity="0.92"/>
+  <path d="M663 554c33-18 74-23 118-18 46 5 93 21 144 46 65 32 122 46 176 42 34-2 67-11 99-28-22 46-58 82-108 109-62 34-130 48-206 42-79-6-144-31-194-76-19-17-36-38-51-63 8-22 16-40 22-54z" fill="#8c2f28" opacity="0.86"/>
+  <circle cx="815" cy="565" r="26" fill="#f4c96c"/>
+  <circle cx="888" cy="532" r="18" fill="#f4c96c"/>
+  <circle cx="954" cy="582" r="22" fill="#f4c96c"/>
+  <circle cx="1030" cy="550" r="20" fill="#f4c96c"/>
+  <ellipse cx="1120" cy="420" rx="210" ry="140" fill="url(#glow)" opacity="0.28"/>
+  <path d="M170 170h360" stroke="rgba(255,255,255,0.24)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M170 220h260" stroke="rgba(255,255,255,0.16)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M170 270h300" stroke="rgba(255,255,255,0.12)" stroke-width="12" stroke-linecap="round"/>
+</svg>

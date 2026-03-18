@@ -1,0 +1,17 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="48" fill="#F6F1ED"/>
+  <rect x="70" y="70" width="1060" height="660" rx="38" fill="url(#bg)"/>
+  <ellipse cx="600" cy="400" rx="280" ry="195" fill="#FFF9F3" stroke="#D7C7B8" stroke-width="18"/>
+  <ellipse cx="600" cy="400" rx="200" ry="118" fill="#E4B54A"/>
+  <path d="M470 375C515 322 586 295 662 301C725 306 780 341 810 391C770 435 709 468 633 477C556 486 492 458 447 414C447 401 454 389 470 375Z" fill="#9E4E30"/>
+  <circle cx="478" cy="480" r="26" fill="#6CA854"/>
+  <circle cx="544" cy="518" r="24" fill="#86BE64"/>
+  <circle cx="735" cy="490" r="26" fill="#6CA854"/>
+  <text x="600" y="666" text-anchor="middle" fill="#5A3425" font-family="Georgia, serif" font-size="54">Main Dishes</text>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="100" x2="1080" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3E7D6"/>
+      <stop offset="1" stop-color="#E7D4BE"/>
+    </linearGradient>
+  </defs>
+</svg>

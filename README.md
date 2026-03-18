@@ -1,116 +1,171 @@
-# Foody
+# White-Label Restaurant Website
 
-Deployable website and admin panel for the Foody product site.
+This repo is no longer just a single demo restaurant site.
 
-## Architecture
+It is now a seller-oriented white-label restaurant website template with:
 
-- `website-server.js`: public website API and static site
-- `admin-server.js`: protected admin API and admin UI
-- shared persistent data in `data.json`
-- shared uploads directory in `uploads/`
+- a public website
+- a public menu and ordering flow
+- a protected admin panel
+- multilingual content support for French / English / Arabic
+- branding, hero, and media management
+- support for multiple homepage hero slide images
+- preset-aware branding controls for colors, surfaces, text, and menu mood
+- a branding preview that mirrors homepage/menu mood more closely during setup
+- preset-specific public styling so each main preset feels more distinct on homepage and menu
+- section visibility and ordering controls
+- quick-launch presets for new restaurants
+- a local menu-image suggestion library for missing dish visuals
+- backup export / import for cloning and recovery
+- smoke checks for safer deployment work
 
-The admin is configured for a separate subdomain:
+The current goal is to turn this into a dependable first sellable product that can be reused for many restaurants with minimal code changes.
 
-- website: `foody.ibnbatoutaweb.com`
-- admin: `admin.foody.ibnbatoutaweb.com`
+## Docs Map
 
-## Local development
+- [PRODUCTIZATION_ROADMAP.md](./PRODUCTIZATION_ROADMAP.md): product direction, current status, next work slices
+- [SELLER_HANDOFF_CHECKLIST.md](./SELLER_HANDOFF_CHECKLIST.md): operational workflow for cloning, configuring, reviewing, and delivering a restaurant instance
+- [DEPLOYMENT.md](./DEPLOYMENT.md): Coolify deployment and validation workflow
+- [coolify.env.example](./coolify.env.example): starter env values for configuring a new Coolify instance
+- [coolify.matsco.env.example](./coolify.matsco.env.example): prepared Coolify env values for the `matsco.ibnbatoutaweb.com` deployment target
+- [MEDIA_IMPORT_BASIS.md](./MEDIA_IMPORT_BASIS.md): future-facing basis for seller-side asset libraries, static media assignment, and PDF/image import
+- [IMPORTER_PAYLOAD_SPEC.md](./IMPORTER_PAYLOAD_SPEC.md): implementable importer contract against the live restaurant schema
 
-1. Install dependencies:
-   ```bash
-   npm ci
-   ```
-2. Start the website:
-   ```bash
-   npm run start:website
-   ```
-3. Start the admin:
-   ```bash
-   ADMIN_USER=admin ADMIN_PASS=change-me-now npm run start:admin
-   ```
+## Current Product Status
 
-Local URLs:
+Already working in the codebase:
+
+- server-backed restaurant branding
+- server-backed homepage and menu configuration
+- admin uploads for logo and hero assets
+- admin-managed multi-slide homepage hero media
+- preset selection and deeper theme-token editing in the branding form
+- neutral starter defaults for branding, WiFi, and seed content
+- per-item FR / EN / AR translations for menu items
+- section visibility controls
+- section ordering controls
+- JSON backup export / import
+- quick-launch presets
+- persisted preset-aware theme tokens for public branding
+- local menu-image suggestion rules, confidence-aware matching, and managed placeholder assets
+- shared slot-level media audit for branding, gallery, promo, featured, and menu imagery
+- stronger homepage/menu spacing and motion polish on the public-facing experience
+- rerender-safe staged motion on the menu landing, promo, featured, category, and item flows instead of one-shot paint-only animation
+- hashed admin credentials with throttling and security status
+- safer public handling for broken URLs and missing images
+
+Still not finished:
+
+- launch-quality media/content pass for the first sellable package
+- importer implementation for PDF / image menu ingestion
+- internal launcher / AI onboarding tooling
+- stronger preset/theme system for different restaurant categories
+
+## Project Structure
+
+- `website-server.js`: serves the public site and public APIs
+- `admin-server.js`: serves the admin UI and protected admin APIs
+- `site-store.js`: shared storage, normalization, and persistence rules
+- `server-common.js`: shared auth/session helpers
+- `index.html`: homepage
+- `menu.html`: menu / ordering / landing flow
+- `admin.html`: admin UI
+- `app.js`: homepage behavior
+- `menu.js`: menu / ordering / gallery / game behavior
+- `admin.js`: admin behavior
+- `shared.js`: shared defaults, i18n helpers, browser-state helpers
+- `data.json`: persisted restaurant data
+- `uploads/`: uploaded assets
+- `scripts/smoke-check.js`: lightweight end-to-end sanity test
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm ci
+```
+
+Run the public website:
+
+```bash
+npm run start:website
+```
+
+Run the admin:
+
+```bash
+ADMIN_USER=admin ADMIN_PASS=change-me-now npm run start:admin
+```
+
+Default local URLs:
 
 - website: `http://localhost:3002`
 - admin: `http://localhost:3102/admin`
 
-## Security model
+## Validation Commands
 
-- public site can only read site data
-- admin login is server-side and cookie-based
-- admin credentials come from `ADMIN_USER` / `ADMIN_PASS`
-- uploads require admin authentication
-- site data no longer stores admin credentials in browser storage
+Run these before deployment or handoff:
 
-## Deploy to Coolify
-
-Use Docker Compose.
-
-### Environment variables
-
-- `WEBSITE_PORT=3002`
-- `ADMIN_PORT=3102`
-- `PRODUCT_DOMAIN=foody.ibnbatoutaweb.com`
-- `ADMIN_DOMAIN=admin.foody.ibnbatoutaweb.com`
-- `ADMIN_USER=admin`
-- `ADMIN_PASS=<strong-password>`
-- `COOKIE_SECURE=true`
-- `DATA_FILE=/app/data/data.json`
-- `UPLOADS_DIR=/app/uploads`
-
-### Coolify domain fields
-
-Use generated domains first. After they work over HTTPS, move to custom domains one by one.
-
-- website service: `https://foody.ibnbatoutaweb.com:3002`
-- admin service: `https://admin.foody.ibnbatoutaweb.com:3102`
-
-Do not start with bare hostnames in the domain fields. Use full HTTPS FQDNs with ports.
-
-### DNS strategy
-
-For first deployment:
-
-- `A panel -> <server-ip>`
-- `A * -> <server-ip>`
-
-After custom domains are stable, keep only:
-
-- `A panel -> <server-ip>`
-- `A foody -> <server-ip>`
-- `A admin.foody -> <server-ip>`
-
-Add `AAAA` records only after IPv4 HTTP/HTTPS is confirmed working.
-
-## Deployment scripts
-
-Generate `.env` for the Foody subdomain:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup-env.ps1 -ParentDomain ibnbatoutaweb.com -ProductSubdomain foody
+```bash
+npm run check
+npm run smoke
+npm run predeploy
 ```
 
-The generated local `.env` keeps `COOKIE_SECURE=false` for HTTP testing. In Coolify production, set `COOKIE_SECURE=true`.
+What they do:
 
-Deploy locally with Docker:
+- `npm run check`: syntax-checks the main server and frontend entry files
+- `npm run smoke`: boots the public and admin servers on test ports and checks key public/admin routes
+- `npm run predeploy`: runs the full local deploy gate before pushing to Coolify
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy-local.ps1
-```
+## Security Notes
 
-Commit, push, and optionally trigger Coolify directly:
+- Admin auth is server-side and cookie-based.
+- Credentials should be changed before delivery.
+- The app supports hashed password storage and login throttling.
+- With the recommended deployment config, admin credential changes are persisted in `/app/data/auth.json`.
+- Once a restaurant changes credentials from the Security tab, that stored auth file takes precedence over the original `ADMIN_USER` / `ADMIN_PASS` environment values.
+- The admin security panel should not show the default-credentials warning at handoff time.
+- Keep AI keys and future automation credentials out of the live restaurant admin.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\push-and-deploy.ps1 -Branch main -Remote origin
-```
+## Data And Product Model
 
-## GitHub auto-deploy
+This product is currently best treated as:
 
-This repo includes `.github/workflows/deploy.yml`.
+- one deployable restaurant instance per client
+- one shared codebase
+- one normalized restaurant data shape
 
-Set these repository secrets:
+That data shape already covers:
 
-- `COOLIFY_WEBHOOK_PROD`
-- `COOLIFY_TOKEN_PROD`
-- `COOLIFY_WEBHOOK_STAGING` (optional)
-- `COOLIFY_TOKEN_STAGING` (optional)
+- brand identity
+- homepage copy
+- contact data
+- hours
+- payment / facilities
+- social links
+- gallery
+- promotions
+- menu items with translations
+
+The future importer and launcher should write into that same normalized shape instead of creating a separate format.
+
+## Recommended Working Mode
+
+For now, the strongest delivery model is:
+
+1. prepare a restaurant instance yourself
+2. use presets, uploads, admin tools, and backups to speed up setup
+3. deliver the finished site plus admin access
+4. let the restaurant use admin for small edits only
+
+Do not put raw AI onboarding or OpenAI credentials directly into the live client admin.
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the deploy-safe Coolify flow.
+
+## Handoff
+
+See [SELLER_HANDOFF_CHECKLIST.md](./SELLER_HANDOFF_CHECKLIST.md) before cloning or delivering a restaurant instance.
