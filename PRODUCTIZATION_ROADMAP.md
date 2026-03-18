@@ -23,6 +23,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 - The latest public refinement pass tightened homepage spacing further and moved the menu landing/navigation/item motion to a rerender-safe observer pattern, so staged reveals still work after dynamic menu/category refreshes
 - The deployment workflow now has a concrete Coolify configure-and-deploy path, including a shared env template and a single `npm run predeploy` gate before pushing live changes
 - The repo is now also prepared for a separate product deployment target, with a dedicated `matsco.ibnbatoutaweb.com` Coolify env template using 4xxx ports so live QA can happen in an isolated project
+- The admin boot path no longer collides with `shared.js` on section-order constants, which fixes the live `Identifier 'SECTION_ORDER_KEYS' has already been declared` error on the admin page
 - Presets are now first-class in the branding flow: the admin can review and save a real preset choice plus the deeper surface/text/menu theme tokens instead of only three colors
 - The homepage hero slider now follows the selected preset and brand hero media instead of shipping only fixed static slide images, which makes the public shell align better with the saved branding state
 - The branding preview now includes a homepage hero mock and a menu-shell mock, which makes preset/theme decisions easier to review against something closer to the real public experience

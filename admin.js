@@ -64,7 +64,7 @@ const SECTION_VISIBILITY_FIELDS = {
     hours: 'lpSectionHours',
     contact: 'lpSectionContact'
 };
-const SECTION_ORDER_KEYS = ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
+const ADMIN_SECTION_ORDER_KEYS = ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
 const SECTION_ORDER_LABELS = {
     about: 'About section',
     payments: 'Payment & facilities',
@@ -73,7 +73,7 @@ const SECTION_ORDER_LABELS = {
     hours: 'Hours section',
     contact: 'Contact section'
 };
-let landingSectionOrderDraft = [...SECTION_ORDER_KEYS];
+let landingSectionOrderDraft = [...ADMIN_SECTION_ORDER_KEYS];
 const PRESET_THEME_TOKENS = {
     fast_food: {
         presetId: 'fast_food',
@@ -1709,12 +1709,12 @@ function normalizeSectionOrderDraft(input) {
     source.forEach((value) => {
         if (typeof value !== 'string') return;
         const safeValue = value.trim();
-        if (!SECTION_ORDER_KEYS.includes(safeValue)) return;
+        if (!ADMIN_SECTION_ORDER_KEYS.includes(safeValue)) return;
         if (out.includes(safeValue)) return;
         out.push(safeValue);
     });
 
-    SECTION_ORDER_KEYS.forEach((key) => {
+    ADMIN_SECTION_ORDER_KEYS.forEach((key) => {
         if (!out.includes(key)) {
             out.push(key);
         }
@@ -2130,7 +2130,7 @@ function initLandingPageForm() {
     initGuestExperienceFields();
     initSectionVisibilityFields();
     landingSectionOrderDraft = normalizeSectionOrderDraft(
-        restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || SECTION_ORDER_KEYS
+        restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || ADMIN_SECTION_ORDER_KEYS
     );
     renderSectionOrderEditor();
     renderLandingContentEditor();
@@ -2439,7 +2439,7 @@ window.applyOnboardingPreset = async function () {
     }
 
     landingSectionOrderDraft = normalizeSectionOrderDraft(
-        preset.sectionOrder || restaurantConfig.sectionOrder || SECTION_ORDER_KEYS
+        preset.sectionOrder || restaurantConfig.sectionOrder || ADMIN_SECTION_ORDER_KEYS
     );
 
     try {
@@ -2525,7 +2525,7 @@ async function saveAndRefreshLegacy() {
         social: restaurantConfig.socials || {},
         guestExperience: restaurantConfig.guestExperience || window.defaultConfig?.guestExperience || { paymentMethods: [], facilities: [] },
         sectionVisibility: restaurantConfig.sectionVisibility || window.defaultConfig?.sectionVisibility || {},
-        sectionOrder: restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || SECTION_ORDER_KEYS,
+        sectionOrder: restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || ADMIN_SECTION_ORDER_KEYS,
         branding: restaurantConfig.branding || window.defaultBranding || {},
         contentTranslations: restaurantConfig.contentTranslations || { fr: {}, en: {}, ar: {} },
         promoId: promoIds.length > 0 ? promoIds[0] : null,
@@ -2764,7 +2764,7 @@ async function saveAndRefresh() {
         social: restaurantConfig.socials || {},
         guestExperience: restaurantConfig.guestExperience || window.defaultConfig?.guestExperience || { paymentMethods: [], facilities: [] },
         sectionVisibility: restaurantConfig.sectionVisibility || window.defaultConfig?.sectionVisibility || {},
-        sectionOrder: restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || SECTION_ORDER_KEYS,
+        sectionOrder: restaurantConfig.sectionOrder || window.defaultConfig?.sectionOrder || ADMIN_SECTION_ORDER_KEYS,
         branding: restaurantConfig.branding || window.defaultBranding || {},
         contentTranslations: restaurantConfig.contentTranslations || { fr: {}, en: {}, ar: {} },
         promoId: promoIds.length > 0 ? promoIds[0] : null,
