@@ -36,8 +36,8 @@ window.whiteLabelStarterSeed = {
             name: "Soupe du chef",
             desc: "Velouté du jour servi avec pain maison.",
             price: 28,
-            img: "",
-            images: [],
+            img: "images/menu-lib-starters.svg",
+            images: ["images/menu-lib-starters.svg"],
             ingredients: ["Légumes du jour", "Crème légère", "Pain maison"],
             translations: {
                 fr: { name: "Soupe du chef", desc: "Velouté du jour servi avec pain maison." },
@@ -51,8 +51,8 @@ window.whiteLabelStarterSeed = {
             name: "Salade du marché",
             desc: "Mesclun, légumes croquants, graines et vinaigrette citron.",
             price: 36,
-            img: "",
-            images: [],
+            img: "images/menu-lib-starters.svg",
+            images: ["images/menu-lib-starters.svg"],
             ingredients: ["Salade verte", "Légumes croquants", "Graines", "Vinaigrette citron"],
             translations: {
                 fr: { name: "Salade du marché", desc: "Mesclun, légumes croquants, graines et vinaigrette citron." },
@@ -66,8 +66,8 @@ window.whiteLabelStarterSeed = {
             name: "Burrata des jardins",
             desc: "Tomates confites, herbes fraîches et huile d'olive.",
             price: 48,
-            img: "",
-            images: [],
+            img: "images/menu-lib-starters.svg",
+            images: ["images/menu-lib-starters.svg"],
             ingredients: ["Burrata", "Tomates confites", "Herbes fraîches", "Huile d'olive"],
             translations: {
                 fr: { name: "Burrata des jardins", desc: "Tomates confites, herbes fraîches et huile d'olive." },
@@ -82,8 +82,8 @@ window.whiteLabelStarterSeed = {
             desc: "Servi avec pommes grenailles et sauce au jus.",
             price: 78,
             featured: true,
-            img: "",
-            images: [],
+            img: "images/menu-lib-grill.svg",
+            images: ["images/menu-lib-grill.svg"],
             ingredients: ["Poulet rôti", "Pommes grenailles", "Sauce maison"],
             translations: {
                 fr: { name: "Poulet rôti maison", desc: "Servi avec pommes grenailles et sauce au jus." },
@@ -98,8 +98,8 @@ window.whiteLabelStarterSeed = {
             desc: "Poisson du jour, légumes sautés et citron rôti.",
             price: 84,
             featured: true,
-            img: "",
-            images: [],
+            img: "images/menu-lib-seafood.svg",
+            images: ["images/menu-lib-seafood.svg"],
             ingredients: ["Poisson du jour", "Légumes sautés", "Citron rôti"],
             translations: {
                 fr: { name: "Filet de poisson citronné", desc: "Poisson du jour, légumes sautés et citron rôti." },
@@ -113,8 +113,8 @@ window.whiteLabelStarterSeed = {
             name: "Pâtes crémeuses aux champignons",
             desc: "Sauce onctueuse, champignons rôtis et parmesan.",
             price: 62,
-            img: "",
-            images: [],
+            img: "images/menu-lib-mains.svg",
+            images: ["images/menu-lib-mains.svg"],
             ingredients: ["Pâtes fraîches", "Champignons rôtis", "Parmesan"],
             translations: {
                 fr: { name: "Pâtes crémeuses aux champignons", desc: "Sauce onctueuse, champignons rôtis et parmesan." },
@@ -124,13 +124,13 @@ window.whiteLabelStarterSeed = {
         },
         {
             id: 1007,
-            cat: "Maison",
+            cat: "Signatures",
             name: "Club sandwich poulet",
             desc: "Poulet grillé, laitue, tomate et sauce maison.",
             price: 48,
             featured: true,
-            img: "",
-            images: [],
+            img: "images/menu-lib-sandwich.svg",
+            images: ["images/menu-lib-sandwich.svg"],
             ingredients: ["Poulet grillé", "Laitue", "Tomate", "Sauce maison"],
             translations: {
                 fr: { name: "Club sandwich poulet", desc: "Poulet grillé, laitue, tomate et sauce maison." },
@@ -140,13 +140,13 @@ window.whiteLabelStarterSeed = {
         },
         {
             id: 1008,
-            cat: "Maison",
+            cat: "Signatures",
             name: "Assiette signature",
             desc: "Recette de la maison, garniture du moment et sauce signature.",
             price: 58,
             featured: true,
-            img: "",
-            images: [],
+            img: "images/menu-lib-mains.svg",
+            images: ["images/menu-lib-mains.svg"],
             ingredients: ["Recette maison", "Garniture du moment", "Sauce signature"],
             translations: {
                 fr: { name: "Assiette signature", desc: "Recette de la maison, garniture du moment et sauce signature." },
@@ -156,12 +156,12 @@ window.whiteLabelStarterSeed = {
         },
         {
             id: 1009,
-            cat: "Maison",
+            cat: "Signatures",
             name: "Wrap légumes grillés",
             desc: "Légumes de saison, houmous et herbes fraîches.",
             price: 42,
-            img: "",
-            images: [],
+            img: "images/menu-lib-street-food.svg",
+            images: ["images/menu-lib-street-food.svg"],
             ingredients: ["Légumes grillés", "Houmous", "Herbes fraîches"],
             translations: {
                 fr: { name: "Wrap légumes grillés", desc: "Légumes de saison, houmous et herbes fraîches." },
@@ -175,8 +175,8 @@ window.whiteLabelStarterSeed = {
             name: "Fondant au chocolat",
             desc: "Servi tiède avec une touche de crème légère.",
             price: 32,
-            img: "",
-            images: [],
+            img: "images/menu-lib-dessert.svg",
+            images: ["images/menu-lib-dessert.svg"],
             ingredients: ["Chocolat noir", "Crème légère"],
             translations: {
                 fr: { name: "Fondant au chocolat", desc: "Servi tiède avec une touche de crème légère." },
@@ -190,8 +190,8 @@ window.whiteLabelStarterSeed = {
             name: "Tarte fine aux pommes",
             desc: "Pommes caramélisées et pâte croustillante.",
             price: 30,
-            img: "",
-            images: [],
+            img: "images/menu-lib-bakery.svg",
+            images: ["images/menu-lib-bakery.svg"],
             ingredients: ["Pommes", "Pâte croustillante", "Caramel léger"],
             translations: {
                 fr: { name: "Tarte fine aux pommes", desc: "Pommes caramélisées et pâte croustillante." },
@@ -211,8 +211,8 @@ window.whiteLabelStarterSeed = {
                 medium: 24,
                 large: 29
             },
-            img: "",
-            images: [],
+            img: "images/menu-lib-cold-drinks.svg",
+            images: ["images/menu-lib-cold-drinks.svg"],
             ingredients: ["Citron", "Menthe", "Eau fraîche"],
             translations: {
                 fr: { name: "Citronnade maison", desc: "Boisson fraîche au citron et à la menthe." },
@@ -226,8 +226,8 @@ window.whiteLabelStarterSeed = {
             name: "Thé à la menthe",
             desc: "Infusion traditionnelle servie bien chaude.",
             price: 16,
-            img: "",
-            images: [],
+            img: "images/menu-lib-hot-drinks.svg",
+            images: ["images/menu-lib-hot-drinks.svg"],
             ingredients: ["Thé vert", "Menthe fraîche"],
             translations: {
                 fr: { name: "Thé à la menthe", desc: "Infusion traditionnelle servie bien chaude." },
@@ -239,7 +239,7 @@ window.whiteLabelStarterSeed = {
     catEmojis: {
         "Entrées": "🥗",
         "Plats": "🍽️",
-        "Maison": "🥪",
+        "Signatures": "⭐",
         "Desserts": "🍰",
         "Boissons": "🥤"
     },
@@ -252,11 +252,11 @@ window.whiteLabelStarterSeed = {
             cats: ["Entrées", "Plats"]
         },
         {
-            id: "maison",
-            name: "Suggestions maison",
-            desc: "Assiettes, sandwiches et recettes flexibles",
-            emoji: "🥪",
-            cats: ["Maison"]
+            id: "signatures",
+            name: "Signatures",
+            desc: "Assiettes, sandwichs et recettes maison",
+            emoji: "⭐",
+            cats: ["Signatures"]
         },
         {
             id: "desserts",
@@ -589,6 +589,11 @@ window.isManagedMenuLibraryImage = function (src) {
     return /^images\/menu-lib-[a-z0-9-]+\.svg$/i.test(value) || value === 'images/menu-item-placeholder.svg';
 };
 
+window.isManagedGalleryImage = function (src) {
+    const value = typeof src === 'string' ? src.trim() : '';
+    return /^images\/gallery-default-[a-z0-9-]+\.svg$/i.test(value);
+};
+
 window.getMenuImageSuggestion = function (item) {
     const haystack = getMenuImageMatchText(item);
     const normalizedCategory = normalizeMenuImageMatchText(item?.cat || '');
@@ -697,6 +702,8 @@ window.getMediaSlotAudit = function (config, menuItems, promoIdsInput) {
         ? promoIdsInput
         : (Array.isArray(sourceConfig.promoIds) ? sourceConfig.promoIds : (typeof window.getPromoIds === 'function' ? window.getPromoIds() : []));
     const heroSlides = Array.isArray(branding.heroSlides) ? branding.heroSlides : [];
+    const galleryManagedCount = galleryItems.filter((src) => window.isManagedGalleryImage(src)).length;
+    const galleryReadyCount = galleryItems.filter((src) => src && !window.isManagedGalleryImage(src)).length;
     const featuredItems = menuList.filter((item) => item && item.featured);
     const featuredWithImages = featuredItems.filter((item) => getMenuAuditImageState(window.getPrimaryMenuItemImage(item)) !== 'missing');
     const promoItems = menuList.filter((item) => item && promoIds.includes(item.id));
@@ -828,11 +835,19 @@ window.getMediaSlotAudit = function (config, menuItems, promoIdsInput) {
             'Homepage gallery',
             'gallery[]',
             false,
-            galleryItems.length >= 3 ? 'ready' : galleryItems.length > 0 ? 'partial' : 'missing',
-            galleryItems.length >= 3
+            galleryReadyCount >= 3
+                ? 'ready'
+                : galleryItems.length > 0 && galleryReadyCount === 0
+                    ? 'managed'
+                    : galleryItems.length > 0
+                        ? 'partial'
+                        : 'missing',
+            galleryReadyCount >= 3
                 ? `${galleryItems.length} gallery image(s) configured.`
-                : galleryItems.length > 0
-                    ? `${galleryItems.length} gallery image(s) configured; add more for a stronger launch set.`
+                : galleryItems.length > 0 && galleryReadyCount === 0
+                    ? `${galleryManagedCount} managed gallery visual(s) configured; replace them with client media for final delivery.`
+                    : galleryItems.length > 0
+                        ? `Gallery mixes ${galleryReadyCount} custom and ${galleryManagedCount} managed visual(s); add more client media for a stronger launch set.`
                     : 'No gallery images configured yet.'
         ),
         createAuditItem(
@@ -995,7 +1010,11 @@ window.defaultConfig = {
         "name": "Restaurant WiFi",
         "code": "Ask the team"
     },
-    "gallery": [],
+    "gallery": [
+        "images/gallery-default-room.svg",
+        "images/gallery-default-plating.svg",
+        "images/gallery-default-table.svg"
+    ],
     "guestExperience": {
         "paymentMethods": ["cash", "tpe"],
         "facilities": ["wifi"]
@@ -1606,7 +1625,7 @@ window.translations = {
         wifi_connect_title: 'Connexion WiFi',
         wifi_network_label: 'Réseau',
         modal_close: 'FERMER',
-        featured_label: 'Sélection Maison',
+        featured_label: 'Sélection Signature',
         featured_best: 'Nos Coups de Coeur ✨',
         gallery_empty: 'De nouvelles photos arrivent bientôt...',
         lightbox_soon: 'Aperçu photo à venir',
@@ -1673,7 +1692,7 @@ window.translations = {
         wifi_network_label: 'Network',
         modal_close: 'CLOSE',
         "event_booking_subtitle": "Share your details with us",
-        "featured_label": "House Selection",
+        "featured_label": "Signature Selection",
         "featured_best": "Our Favorites ✨",
         gallery_empty: 'New photos coming soon...',
         lightbox_soon: 'Photo preview coming soon',
@@ -1740,7 +1759,7 @@ window.translations = {
         wifi_network_label: 'الشبكة',
         modal_close: 'إغلاق',
         "event_booking_subtitle": "شاركنا تفاصيلك",
-        "featured_label": "مختارات البيت",
+        "featured_label": "مختارات مميزة",
         "featured_best": "أفضل أطباقنا ✨",
         gallery_empty: 'صور جديدة قريباً...',
         lightbox_soon: 'معاينة الصور قريباً',

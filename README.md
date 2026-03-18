@@ -48,6 +48,7 @@ Already working in the codebase:
 - quick-launch presets
 - persisted preset-aware theme tokens for public branding
 - local menu-image suggestion rules, confidence-aware matching, and managed placeholder assets
+- a starter restaurant seed with managed dish visuals and a managed gallery set, so first-launch demos do not open completely empty
 - shared slot-level media audit for branding, gallery, promo, featured, and menu imagery
 - stronger homepage/menu spacing and motion polish on the public-facing experience
 - rerender-safe staged motion on the menu landing, promo, featured, category, and item flows instead of one-shot paint-only animation

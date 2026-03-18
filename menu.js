@@ -504,7 +504,7 @@ function renderFeaturedSlider(items, containerId) {
     container.style.display = 'block';
     container.innerHTML = `
         <div class="featured-header-sexy menu-reveal-observe">
-            <span class="featured-header-label" data-i18n="featured_label">Sélection Maison</span>
+            <span class="featured-header-label" data-i18n="featured_label">Selection Signature</span>
             <h2 class="featured-header-title">
                 <span data-i18n="featured_best">Nos Coups de Coeur</span> ✨
             </h2>

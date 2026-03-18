@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" role="img" aria-label="Managed plating placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8f1"/>
+      <stop offset="1" stop-color="#efe0cf"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#efe5d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#bg)"/>
+  <circle cx="1260" cy="160" r="110" fill="#fff0d9" opacity=".55"/>
+  <circle cx="260" cy="1020" r="140" fill="#f6d2ae" opacity=".34"/>
+  <rect x="140" y="170" width="1320" height="860" rx="54" fill="#f5eadb" stroke="#e5d4bf" stroke-width="10"/>
+  <ellipse cx="800" cy="634" rx="460" ry="340" fill="#d8bf9d" opacity=".38"/>
+  <ellipse cx="800" cy="604" rx="394" ry="286" fill="url(#plate)"/>
+  <ellipse cx="800" cy="604" rx="280" ry="194" fill="#f8f0e5"/>
+  <path d="M628 660c44-92 114-160 182-176 96-24 174 50 208 130 36 86 8 168-92 200-104 34-242 10-302-48-44-42-42-70 4-106Z" fill="#d97144"/>
+  <path d="M662 584c72-74 164-98 248-62 38 16 66 40 86 74-82-22-164-14-246 24-54 24-92 56-120 96-30-52-18-92 32-132Z" fill="#b75137"/>
+  <circle cx="708" cy="556" r="24" fill="#6f9a57"/>
+  <circle cx="918" cy="706" r="28" fill="#6f9a57"/>
+  <circle cx="994" cy="546" r="16" fill="#6f9a57"/>
+  <circle cx="824" cy="486" r="18" fill="#6f9a57"/>
+  <rect x="1198" y="338" width="34" height="388" rx="17" fill="#6d4331"/>
+  <rect x="1270" y="338" width="34" height="388" rx="17" fill="#6d4331"/>
+  <path d="M1200 338v-74c0-28 14-42 32-42s32 14 32 42v74" fill="#6d4331"/>
+  <rect x="332" y="356" width="40" height="358" rx="20" fill="#6d4331"/>
+  <path d="M372 356c0-58 24-94 58-94 18 0 32 8 42 24-26 8-42 24-52 46-8 20-10 50-6 88l-42-64Z" fill="#6d4331"/>
+  <text x="800" y="970" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="72" font-weight="700" fill="#5d392a">Managed plating visual</text>
+</svg>

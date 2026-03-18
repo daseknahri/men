@@ -6,8 +6,10 @@
       "name": "Soupe du chef",
       "desc": "Velouté du jour servi avec pain maison.",
       "price": 28,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-starters.svg",
+      "images": [
+        "images/menu-lib-starters.svg"
+      ],
       "ingredients": [
         "Légumes du jour",
         "Crème légère",
@@ -35,8 +37,10 @@
       "name": "Salade du marché",
       "desc": "Mesclun, légumes croquants, graines et vinaigrette citron.",
       "price": 36,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-starters.svg",
+      "images": [
+        "images/menu-lib-starters.svg"
+      ],
       "ingredients": [
         "Salade verte",
         "Légumes croquants",
@@ -65,8 +69,10 @@
       "name": "Burrata des jardins",
       "desc": "Tomates confites, herbes fraîches et huile d'olive.",
       "price": 48,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-starters.svg",
+      "images": [
+        "images/menu-lib-starters.svg"
+      ],
       "ingredients": [
         "Burrata",
         "Tomates confites",
@@ -96,8 +102,10 @@
       "desc": "Servi avec pommes grenailles et sauce au jus.",
       "price": 78,
       "featured": true,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-grill.svg",
+      "images": [
+        "images/menu-lib-grill.svg"
+      ],
       "ingredients": [
         "Poulet rôti",
         "Pommes grenailles",
@@ -126,8 +134,10 @@
       "desc": "Poisson du jour, légumes sautés et citron rôti.",
       "price": 84,
       "featured": true,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-seafood.svg",
+      "images": [
+        "images/menu-lib-seafood.svg"
+      ],
       "ingredients": [
         "Poisson du jour",
         "Légumes sautés",
@@ -155,8 +165,10 @@
       "name": "Pâtes crémeuses aux champignons",
       "desc": "Sauce onctueuse, champignons rôtis et parmesan.",
       "price": 62,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-mains.svg",
+      "images": [
+        "images/menu-lib-mains.svg"
+      ],
       "ingredients": [
         "Pâtes fraîches",
         "Champignons rôtis",
@@ -180,13 +192,15 @@
     },
     {
       "id": 1007,
-      "cat": "Maison",
+      "cat": "Signatures",
       "name": "Club sandwich poulet",
       "desc": "Poulet grillé, laitue, tomate et sauce maison.",
       "price": 48,
       "featured": true,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-sandwich.svg",
+      "images": [
+        "images/menu-lib-sandwich.svg"
+      ],
       "ingredients": [
         "Poulet grillé",
         "Laitue",
@@ -211,43 +225,46 @@
     },
     {
       "id": 1008,
-      "cat": "Maison",
+      "cat": "Signatures",
       "name": "Assiette signature",
-      "desc": "Steak grillé, cheddar, oignons confits et sauce du chef.",
+      "desc": "Recette de la maison, garniture du moment et sauce signature.",
       "price": 58,
       "featured": true,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-mains.svg",
+      "images": [
+        "images/menu-lib-mains.svg"
+      ],
       "ingredients": [
-        "Steak grillé",
-        "Cheddar",
-        "Oignons confits",
-        "Sauce du chef"
+        "Recette maison",
+        "Garniture du moment",
+        "Sauce signature"
       ],
       "badge": "",
       "translations": {
         "fr": {
           "name": "Assiette signature",
-          "desc": "Steak grillé, cheddar, oignons confits et sauce du chef."
+          "desc": "Recette de la maison, garniture du moment et sauce signature."
         },
         "en": {
           "name": "Signature Plate",
-          "desc": "Grilled patty, cheddar, caramelized onions, and chef's sauce."
+          "desc": "House recipe, seasonal garnish, and signature sauce."
         },
         "ar": {
-          "name": "ساندويتش سيغناتشر",
-          "desc": "لحم مشوي مع شيدر وبصل مكرمل وصلصة الشيف."
+          "name": "طبق سيغنتشر",
+          "desc": "وصفة من المطعم مع مرافقة اليوم وصلصة مميزة."
         }
       }
     },
     {
       "id": 1009,
-      "cat": "Maison",
+      "cat": "Signatures",
       "name": "Wrap légumes grillés",
       "desc": "Légumes de saison, houmous et herbes fraîches.",
       "price": 42,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-street-food.svg",
+      "images": [
+        "images/menu-lib-street-food.svg"
+      ],
       "ingredients": [
         "Légumes grillés",
         "Houmous",
@@ -275,8 +292,10 @@
       "name": "Fondant au chocolat",
       "desc": "Servi tiède avec une touche de crème légère.",
       "price": 32,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-dessert.svg",
+      "images": [
+        "images/menu-lib-dessert.svg"
+      ],
       "ingredients": [
         "Chocolat noir",
         "Crème légère"
@@ -303,8 +322,10 @@
       "name": "Tarte fine aux pommes",
       "desc": "Pommes caramélisées et pâte croustillante.",
       "price": 30,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-bakery.svg",
+      "images": [
+        "images/menu-lib-bakery.svg"
+      ],
       "ingredients": [
         "Pommes",
         "Pâte croustillante",
@@ -338,8 +359,10 @@
         "medium": 24,
         "large": 29
       },
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-cold-drinks.svg",
+      "images": [
+        "images/menu-lib-cold-drinks.svg"
+      ],
       "ingredients": [
         "Citron",
         "Menthe",
@@ -367,8 +390,10 @@
       "name": "Thé à la menthe",
       "desc": "Infusion traditionnelle servie bien chaude.",
       "price": 16,
-      "img": "",
-      "images": [],
+      "img": "images/menu-lib-hot-drinks.svg",
+      "images": [
+        "images/menu-lib-hot-drinks.svg"
+      ],
       "ingredients": [
         "Thé vert",
         "Menthe fraîche"
@@ -393,7 +418,7 @@
   "catEmojis": {
     "Entrées": "🥗",
     "Plats": "🍽️",
-    "Maison": "🥪",
+    "Signatures": "⭐",
     "Desserts": "🍰",
     "Boissons": "🥤"
   },
@@ -452,12 +477,12 @@
       ]
     },
     {
-      "id": "maison",
-      "name": "Suggestions maison",
-      "desc": "Assiettes, sandwiches et recettes flexibles",
-      "emoji": "🥪",
+      "id": "signatures",
+      "name": "Signatures",
+      "desc": "Assiettes, sandwichs et recettes maison",
+      "emoji": "⭐",
       "cats": [
-        "Maison"
+        "Signatures"
       ]
     },
     {
@@ -531,7 +556,11 @@
     }
   ],
   "hoursNote": "",
-  "gallery": [],
+  "gallery": [
+    "images/gallery-default-room.svg",
+    "images/gallery-default-plating.svg",
+    "images/gallery-default-table.svg"
+  ],
   "guestExperience": {
     "paymentMethods": [
       "cash",

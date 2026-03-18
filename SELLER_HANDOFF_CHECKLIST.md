@@ -105,6 +105,7 @@ If item images are missing:
 - use admin `Data Tools` -> `Menu Image Suggestions` to assign managed local placeholders quickly
 - treat those placeholders as an internal delivery aid, not a final substitute for strong client-specific visuals
 - use the confidence levels in the suggestion summary to replace fallback placeholders first
+- starter instances may also already include managed local menu and gallery visuals; treat them the same way during review
 
 For each item, review:
 
@@ -131,6 +132,7 @@ Check:
 - gallery has no broken items
 - dish images feel consistent
 - missing images degrade gracefully
+- managed starter visuals are replaced where the client has stronger real media
 - if using temporary static media, keep it aligned with the current preset/theme and log what still needs client-specific replacement
 
 Current blocker policy:
