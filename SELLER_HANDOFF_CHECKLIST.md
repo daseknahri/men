@@ -97,6 +97,7 @@ Before publishing the menu:
 - use super-categories only when they improve navigation
 - review category names and super-category labels in FR / EN / AR
 - review menu landing labels, cart/ticket flow, social/WiFi modals, and game/event prompts in FR / EN / AR
+- review admin seller-facing screens in FR / EN / AR too: login, sidebar, Seller Tools, Launch Readiness, handoff summary, and security text
 - confirm prices
 - confirm promo flags
 - confirm featured flags

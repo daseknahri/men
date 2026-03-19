@@ -7,9 +7,16 @@ let adminAuth = { user: 'admin', pass: '' };
 let adminSecurityStatus = null;
 let adminSaveState = {
     type: 'idle',
-    message: 'No server save yet in this session.',
+    message: '',
     updatedAt: null
 };
+
+function t(key, fallback = '', vars = {}) {
+    if (typeof window.formatTranslation === 'function') {
+        return window.formatTranslation(key, fallback, vars);
+    }
+    return fallback;
+}
 
 // Admin category filter state
 let currentAdminCategory = typeof window.getStoredAdminCategoryFilter === 'function'
@@ -67,12 +74,12 @@ const SECTION_VISIBILITY_FIELDS = {
 };
 const ADMIN_SECTION_ORDER_KEYS = ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
 const SECTION_ORDER_LABELS = {
-    about: 'About section',
-    payments: 'Payment & facilities',
-    events: 'Events section',
-    gallery: 'Gallery section',
-    hours: 'Hours section',
-    contact: 'Contact section'
+    about: 'admin.section_order.about',
+    payments: 'admin.section_order.payments',
+    events: 'admin.section_order.events',
+    gallery: 'admin.section_order.gallery',
+    hours: 'admin.section_order.hours',
+    contact: 'admin.section_order.contact'
 };
 let landingSectionOrderDraft = [...ADMIN_SECTION_ORDER_KEYS];
 const PRESET_THEME_TOKENS = {
@@ -676,12 +683,13 @@ function renderAdminSaveState() {
     if (!el) return;
 
     const palette = {
-        idle: { bg: '#f5f5f5', color: '#555', dot: '#999', label: 'Ready' },
-        saving: { bg: '#fff6db', color: '#8a5a00', dot: '#f59e0b', label: 'Saving' },
-        success: { bg: '#e9f9ef', color: '#166534', dot: '#10b981', label: 'Saved' },
-        error: { bg: '#fdeaea', color: '#991b1b', dot: '#ef4444', label: 'Attention' }
+        idle: { bg: '#f5f5f5', color: '#555', dot: '#999', label: t('admin.save_state.idle_label', 'Ready') },
+        saving: { bg: '#fff6db', color: '#8a5a00', dot: '#f59e0b', label: t('admin.save_state.saving_label', 'Saving') },
+        success: { bg: '#e9f9ef', color: '#166534', dot: '#10b981', label: t('admin.save_state.success_label', 'Saved') },
+        error: { bg: '#fdeaea', color: '#991b1b', dot: '#ef4444', label: t('admin.save_state.error_label', 'Attention') }
     };
     const style = palette[adminSaveState.type] || palette.idle;
+    const message = adminSaveState.message || t('admin.save_state.idle_message', 'No server save yet in this session.');
     const timeText = adminSaveState.updatedAt
         ? new Date(adminSaveState.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : '';
@@ -690,7 +698,7 @@ function renderAdminSaveState() {
     el.style.color = style.color;
     el.innerHTML = `
         <span class="admin-save-status-dot" style="background:${style.dot};"></span>
-        <span>${style.label}: ${adminSaveState.message}${timeText ? ` (${timeText})` : ''}</span>
+        <span>${style.label}: ${message}${timeText ? ` (${timeText})` : ''}</span>
     `;
 }
 
@@ -815,89 +823,97 @@ function getLaunchReadinessChecks() {
 
     return [
         {
-            label: 'Branding media',
+            id: 'branding_media',
+            label: t('admin.readiness.branding_media', 'Branding media'),
             ok: Boolean(branding.logoImage && branding.heroImage),
             detail: branding.logoImage && branding.heroImage
-                ? 'Logo and hero image are configured.'
-                : 'Add both a logo and a hero image before delivery.'
+                ? t('admin.readiness.branding_media_ok', 'Logo and hero image are configured.')
+                : t('admin.readiness.branding_media_missing', 'Add both a logo and a hero image before delivery.')
         },
         {
-            label: 'Core contact details',
+            id: 'core_contact_details',
+            label: t('admin.readiness.core_contact_details', 'Core contact details'),
             ok: Boolean(location.address && mapUrl && config.phone),
             detail: location.address && mapUrl && config.phone
-                ? 'Address, map link, and phone are present.'
-                : 'Address, map URL, or phone is still incomplete.'
+                ? t('admin.readiness.core_contact_details_ok', 'Address, map link, and phone are present.')
+                : t('admin.readiness.core_contact_details_missing', 'Address, map URL, or phone is still incomplete.')
         },
         {
-            label: 'Opening hours',
+            id: 'opening_hours',
+            label: t('admin.readiness.opening_hours', 'Opening hours'),
             ok: hours.length > 0,
             detail: hours.length > 0
-                ? `${hours.length} hour rows configured.`
-                : 'Add opening hours before handoff.'
+                ? t('admin.readiness.opening_hours_ok', '{count} hour rows configured.', { count: hours.length })
+                : t('admin.readiness.opening_hours_missing', 'Add opening hours before handoff.')
         },
         {
-            label: 'Menu coverage',
+            id: 'menu_coverage',
+            label: t('admin.readiness.menu_coverage', 'Menu coverage'),
             ok: menuItems.length > 0,
             detail: menuItems.length > 0
-                ? `${menuItems.length} menu items configured.`
-                : 'No menu items are configured yet.'
+                ? t('admin.readiness.menu_coverage_ok', '{count} menu items configured.', { count: menuItems.length })
+                : t('admin.readiness.menu_coverage_missing', 'No menu items are configured yet.')
         },
         {
-            label: 'Menu translations',
+            id: 'menu_translations',
+            label: t('admin.readiness.menu_translations', 'Menu translations'),
             ok: menuItems.length > 0 && missingTranslationCount === 0,
             detail: menuItems.length === 0
-                ? 'Add menu items before reviewing translations.'
+                ? t('admin.readiness.menu_translations_empty', 'Add menu items before reviewing translations.')
                 : missingTranslationCount === 0
-                    ? 'All menu items have FR / EN / AR names.'
-                    : `${missingTranslationCount} menu item(s) still miss one or more translated names.`
+                    ? t('admin.readiness.menu_translations_ok', 'All menu items have FR / EN / AR names.')
+                    : t('admin.readiness.menu_translations_missing', '{count} menu item(s) still miss one or more translated names.', { count: missingTranslationCount })
         },
         {
-            label: 'Item imagery',
+            id: 'item_imagery',
+            label: t('admin.readiness.item_imagery', 'Item imagery'),
             ok: menuItems.length > 0 && missingImageCount === 0,
             detail: menuItems.length === 0
-                ? 'Add menu items before reviewing dish imagery.'
+                ? t('admin.readiness.item_imagery_empty', 'Add menu items before reviewing dish imagery.')
                 : missingImageCount === 0
                     ? managedLibraryImageCount > 0
-                        ? `Every menu item has an image source. ${managedLibraryImageCount} item(s) still use managed library placeholders.`
-                        : 'Every menu item has an image source.'
-                    : `${missingImageCount} menu item(s) still miss an image.`
+                        ? t('admin.readiness.item_imagery_managed', 'Every menu item has an image source. {count} item(s) still use managed library placeholders.', { count: managedLibraryImageCount })
+                        : t('admin.readiness.item_imagery_ok', 'Every menu item has an image source.')
+                    : t('admin.readiness.item_imagery_missing', '{count} menu item(s) still miss an image.', { count: missingImageCount })
         },
         {
-            label: 'Gallery',
+            id: 'gallery',
+            label: t('admin.readiness.gallery', 'Gallery'),
             ok: galleryItems.length > 0,
             detail: galleryItems.length > 0
-                ? `${galleryItems.length} gallery image(s) configured.`
-                : 'Add at least one gallery image for a more complete delivery.'
+                ? t('admin.readiness.gallery_ok', '{count} gallery image(s) configured.', { count: galleryItems.length })
+                : t('admin.readiness.gallery_missing', 'Add at least one gallery image for a more complete delivery.')
         },
         {
-            label: 'Admin security',
+            id: 'admin_security',
+            label: t('admin.readiness.admin_security', 'Admin security'),
             ok: Boolean(adminSecurityStatus) && !adminSecurityStatus.usesDefaultCredentials,
             detail: !adminSecurityStatus
-                ? 'Security status has not loaded yet.'
+                ? t('admin.readiness.admin_security_loading', 'Security status has not loaded yet.')
                 : adminSecurityStatus.usesDefaultCredentials
-                ? 'Default admin credentials are still active.'
-                : 'Custom admin credentials are active.'
+                ? t('admin.readiness.admin_security_default', 'Default admin credentials are still active.')
+                : t('admin.readiness.admin_security_ok', 'Custom admin credentials are active.')
         }
     ];
 }
 
 function getLaunchReadinessAction(check) {
     const source = check && typeof check === 'object' ? check : {};
-    switch (source.label) {
-        case 'Branding media':
-            return { sectionId: 'branding', label: 'Open Branding' };
-        case 'Core contact details':
-            return { sectionId: 'landing', label: 'Open Landing' };
-        case 'Opening hours':
-            return { sectionId: 'hours', label: 'Open Hours' };
-        case 'Menu coverage':
-        case 'Menu translations':
-        case 'Item imagery':
-            return { sectionId: 'menu', label: 'Open Menu' };
-        case 'Gallery':
-            return { sectionId: 'gallery', label: 'Open Gallery' };
-        case 'Admin security':
-            return { sectionId: 'security', label: 'Open Security' };
+    switch (source.id) {
+        case 'branding_media':
+            return { sectionId: 'branding', label: t('admin.actions.open_branding', 'Open Branding') };
+        case 'core_contact_details':
+            return { sectionId: 'landing', label: t('admin.actions.open_landing', 'Open Landing') };
+        case 'opening_hours':
+            return { sectionId: 'hours', label: t('admin.actions.open_hours', 'Open Hours') };
+        case 'menu_coverage':
+        case 'menu_translations':
+        case 'item_imagery':
+            return { sectionId: 'menu', label: t('admin.actions.open_menu', 'Open Menu') };
+        case 'gallery':
+            return { sectionId: 'gallery', label: t('admin.actions.open_gallery', 'Open Gallery') };
+        case 'admin_security':
+            return { sectionId: 'security', label: t('admin.actions.open_security', 'Open Security') };
         default:
             return null;
     }
@@ -910,13 +926,13 @@ function getMediaSlotAction(slot) {
         case 'branding.hero.primary':
         case 'branding.hero.slide2':
         case 'branding.hero.slide3':
-            return { sectionId: 'branding', label: 'Open Branding' };
+            return { sectionId: 'branding', label: t('admin.actions.open_branding', 'Open Branding') };
         case 'homepage.gallery':
-            return { sectionId: 'gallery', label: 'Open Gallery' };
+            return { sectionId: 'gallery', label: t('admin.actions.open_gallery', 'Open Gallery') };
         case 'menu.featured':
         case 'menu.promo':
         case 'menu.items':
-            return { sectionId: 'menu', label: 'Open Menu' };
+            return { sectionId: 'menu', label: t('admin.actions.open_menu', 'Open Menu') };
         default:
             return null;
     }
@@ -960,10 +976,10 @@ function renderLaunchReadinessCard() {
     const totalCount = checks.length;
     const allReady = okCount === totalCount && mediaBlockers.length === 0;
     const summaryLabel = allReady
-        ? 'Ready for final review'
+        ? t('admin.readiness.summary_ready', 'Ready for final review')
         : mediaBlockers.length > 0
-            ? `${mediaBlockers.length} handoff blocker(s)`
-            : `${okCount}/${totalCount} checks passed`;
+            ? t('admin.readiness.summary_blockers', '{count} handoff blocker(s)', { count: mediaBlockers.length })
+            : t('admin.readiness.summary_progress', '{ok}/{total} checks passed', { ok: okCount, total: totalCount });
 
     summaryEl.innerHTML = `
         <span class="readiness-summary-dot"></span>
@@ -981,28 +997,28 @@ function renderLaunchReadinessCard() {
                     <small>${check.detail}</small>
                     ${action ? `<button type="button" class="readiness-action" onclick="openReadinessSection('${action.sectionId}')">${action.label}</button>` : ''}
                 </div>
-                <span class="readiness-badge">${check.ok ? 'OK' : 'Needs work'}</span>
+                <span class="readiness-badge">${check.ok ? t('admin.readiness.badge_ok', 'OK') : t('admin.readiness.badge_needs_work', 'Needs work')}</span>
             </div>
         `;
     }).join('');
 
     mediaEl.innerHTML = `
-        <div class="readiness-section-title">Media Delivery Status</div>
+        <div class="readiness-section-title">${t('admin.media.status_title', 'Media Delivery Status')}</div>
         <div class="readiness-metrics">
-            <span class="readiness-metric ${mediaBlockers.length > 0 ? 'is-block' : 'is-muted'}">${mediaBlockers.length} blocker${mediaBlockers.length === 1 ? '' : 's'}</span>
-            <span class="readiness-metric ${mediaWarnings.length > 0 ? 'is-warn' : 'is-muted'}">${mediaWarnings.length} warning${mediaWarnings.length === 1 ? '' : 's'}</span>
-            <span class="readiness-metric ${mediaManaged.length > 0 ? 'is-managed' : 'is-muted'}">${mediaManaged.length} managed</span>
-            <span class="readiness-metric ${mediaMissing.length > 0 || mediaPartial.length > 0 ? 'is-warn' : 'is-muted'}">${mediaMissing.length} missing / ${mediaPartial.length} partial</span>
+            <span class="readiness-metric ${mediaBlockers.length > 0 ? 'is-block' : 'is-muted'}">${t('admin.media.metric_blockers', '{count} blocker(s)', { count: mediaBlockers.length })}</span>
+            <span class="readiness-metric ${mediaWarnings.length > 0 ? 'is-warn' : 'is-muted'}">${t('admin.media.metric_warnings', '{count} warning(s)', { count: mediaWarnings.length })}</span>
+            <span class="readiness-metric ${mediaManaged.length > 0 ? 'is-managed' : 'is-muted'}">${t('admin.media.metric_managed', '{count} managed', { count: mediaManaged.length })}</span>
+            <span class="readiness-metric ${mediaMissing.length > 0 || mediaPartial.length > 0 ? 'is-warn' : 'is-muted'}">${t('admin.media.metric_missing_partial', '{missing} missing / {partial} partial', { missing: mediaMissing.length, partial: mediaPartial.length })}</span>
         </div>
         ${mediaSlots.length === 0
-            ? '<div class="readiness-item is-warn"><div><strong>Media audit unavailable</strong><small>Run again after the restaurant data loads fully.</small></div><span class="readiness-badge">Pending</span></div>'
+            ? `<div class="readiness-item is-warn"><div><strong>${t('admin.media.audit_unavailable_title', 'Media audit unavailable')}</strong><small>${t('admin.media.audit_unavailable_detail', 'Run again after the restaurant data loads fully.')}</small></div><span class="readiness-badge">${t('admin.media.badge_pending', 'Pending')}</span></div>`
             : mediaSlots.map((slot) => {
                 const variantClass = slot.blocksHandoff
                     ? 'is-block'
                     : (slot.state === 'ready' ? 'is-ok' : 'is-warn');
                 const badgeLabel = slot.blocksHandoff
-                    ? 'Blocks handoff'
-                    : (slot.state === 'ready' ? 'Ready' : 'Warning');
+                    ? t('admin.media.badge_blocks_handoff', 'Blocks handoff')
+                    : (slot.state === 'ready' ? t('admin.media.badge_ready', 'Ready') : t('admin.media.badge_warning', 'Warning'));
                 const action = getMediaSlotAction(slot);
                 return `
                     <div class="readiness-item ${variantClass}">
@@ -1019,12 +1035,12 @@ function renderLaunchReadinessCard() {
 
     noteEl.style.display = 'block';
     noteEl.innerHTML = `
-        <strong>Seller policy</strong>
+        <strong>${t('admin.media.policy_title', 'Seller policy')}</strong>
         ${mediaBlockers.length > 0
-            ? `${mediaBlockers.length} media blocker(s) must be fixed before delivery. ${mediaWarnings.length} other slot(s) are warnings only.`
+            ? t('admin.media.policy_blockers', '{blockers} media blocker(s) must be fixed before delivery. {warnings} other slot(s) are warnings only.', { blockers: mediaBlockers.length, warnings: mediaWarnings.length })
             : mediaWarnings.length > 0
-                ? `No media blockers remain. ${mediaWarnings.length} optional media warning(s) can still be improved before handoff.`
-                : 'Core media requirements are ready for delivery.'}
+                ? t('admin.media.policy_warnings', 'No media blockers remain. {warnings} optional media warning(s) can still be improved before handoff.', { warnings: mediaWarnings.length })
+                : t('admin.media.policy_ready', 'Core media requirements are ready for delivery.')}
     `;
 }
 
@@ -1068,38 +1084,38 @@ window.generateHandoffSummary = function () {
     }).length;
 
     output.value = [
-        `Restaurant: ${branding.restaurantName || branding.shortName || 'Not set'}`,
-        `Short brand: ${branding.shortName || 'Not set'}`,
-        `Website URL: ${urls.websiteUrl}`,
-        `Admin URL: ${urls.adminUrl}`,
-        `Admin user: ${adminAuth.user || 'Not set'}`,
-        `Phone: ${config.phone || 'Not set'}`,
-        `Address: ${location.address || 'Not set'}`,
-        `Menu items: ${menuItems.length}`,
-        `Library image placeholders: ${managedLibraryImageCount}`,
-        `Gallery images: ${galleryItems.length}`,
-        `Hours rows: ${hours.length}`,
-        `Launch readiness: ${checks.filter((check) => check.ok).length}/${checks.length} checks passed`,
-        `Media blockers: ${mediaBlockers.length}`,
-        `Media warnings: ${mediaWarnings.length}`,
+        `${t('admin.handoff.restaurant', 'Restaurant')}: ${branding.restaurantName || branding.shortName || t('admin.common.not_set', 'Not set')}`,
+        `${t('admin.handoff.short_brand', 'Short brand')}: ${branding.shortName || t('admin.common.not_set', 'Not set')}`,
+        `${t('admin.handoff.website_url', 'Website URL')}: ${urls.websiteUrl}`,
+        `${t('admin.handoff.admin_url', 'Admin URL')}: ${urls.adminUrl}`,
+        `${t('admin.handoff.admin_user', 'Admin user')}: ${adminAuth.user || t('admin.common.not_set', 'Not set')}`,
+        `${t('admin.handoff.phone', 'Phone')}: ${config.phone || t('admin.common.not_set', 'Not set')}`,
+        `${t('admin.handoff.address', 'Address')}: ${location.address || t('admin.common.not_set', 'Not set')}`,
+        `${t('admin.handoff.menu_items', 'Menu items')}: ${menuItems.length}`,
+        `${t('admin.handoff.library_placeholders', 'Library image placeholders')}: ${managedLibraryImageCount}`,
+        `${t('admin.handoff.gallery_images', 'Gallery images')}: ${galleryItems.length}`,
+        `${t('admin.handoff.hours_rows', 'Hours rows')}: ${hours.length}`,
+        `${t('admin.handoff.launch_readiness', 'Launch readiness')}: ${t('admin.readiness.summary_progress', '{ok}/{total} checks passed', { ok: checks.filter((check) => check.ok).length, total: checks.length })}`,
+        `${t('admin.handoff.media_blockers', 'Media blockers')}: ${mediaBlockers.length}`,
+        `${t('admin.handoff.media_warnings', 'Media warnings')}: ${mediaWarnings.length}`,
         '',
         mediaSlots.length
-            ? 'Media slots:'
-            : 'Media slots: unavailable.',
+            ? `${t('admin.handoff.media_slots', 'Media slots')}:`
+            : `${t('admin.handoff.media_slots', 'Media slots')}: ${t('admin.common.unavailable', 'unavailable.')}`,
         ...mediaSlots.map((slot) => `- ${slot.label}: ${slot.state}${slot.blocksHandoff ? ' [BLOCKS HANDOFF]' : ''}. ${slot.detail} ${slot.sellerRule}`),
         '',
         mediaBlockers.length
-            ? 'Media blockers:'
-            : 'Media blockers: none.',
+            ? `${t('admin.handoff.media_blockers', 'Media blockers')}:`
+            : `${t('admin.handoff.media_blockers', 'Media blockers')}: ${t('admin.common.none', 'none.')}`,
         ...mediaBlockers.map((slot) => `- ${slot.label}: ${slot.sellerRule}`),
         '',
         warnChecks.length
-            ? 'Open issues:'
-            : 'Open issues: none. Ready for final review.',
+            ? `${t('admin.handoff.open_issues', 'Open issues')}:`
+            : `${t('admin.handoff.open_issues', 'Open issues')}: ${t('admin.handoff.open_issues_none', 'none. Ready for final review.')}`,
         ...warnChecks.map((check) => `- ${check.label}: ${check.detail}`)
     ].join('\n');
 
-    showToast('Handoff summary generated.');
+    showToast(t('admin.handoff.generated', 'Handoff summary generated.'));
 };
 
 window.copyHandoffSummary = async function () {
@@ -1111,11 +1127,11 @@ window.copyHandoffSummary = async function () {
 
     try {
         await navigator.clipboard.writeText(output.value);
-        showToast('Handoff summary copied.');
+        showToast(t('admin.handoff.copied', 'Handoff summary copied.'));
     } catch (_error) {
         output.focus();
         output.select();
-        showToast('Copy failed. Select the summary manually.');
+        showToast(t('admin.common.copy_failed', 'Copy failed. Select the summary manually.'));
     }
 };
 
@@ -1140,7 +1156,7 @@ window.downloadHandoffSummary = function () {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
-    showToast('Handoff summary downloaded.');
+    showToast(t('admin.handoff.downloaded', 'Handoff summary downloaded.'));
 };
 
 window.suggestMissingMenuImages = async function () {
@@ -1193,28 +1209,28 @@ window.suggestMissingMenuImages = async function () {
     });
 
     const summaryLines = [
-        'Menu image suggestion run',
-        `Items reviewed: ${menuItems.length}`,
-        `Images assigned: ${assignedCount}`,
-        `Items already covered: ${alreadyCoveredCount}`,
-        `High confidence matches: ${confidenceCounts.high}`,
-        `Medium confidence matches: ${confidenceCounts.medium}`,
-        `Low confidence matches: ${confidenceCounts.low}`,
-        `Generic fallback placeholders: ${confidenceCounts.fallback}`,
+        t('admin.menu_images.summary_title', 'Menu image suggestion run'),
+        t('admin.menu_images.items_reviewed', 'Items reviewed: {count}', { count: menuItems.length }),
+        t('admin.menu_images.images_assigned', 'Images assigned: {count}', { count: assignedCount }),
+        t('admin.menu_images.items_already_covered', 'Items already covered: {count}', { count: alreadyCoveredCount }),
+        t('admin.menu_images.high_confidence', 'High confidence matches: {count}', { count: confidenceCounts.high }),
+        t('admin.menu_images.medium_confidence', 'Medium confidence matches: {count}', { count: confidenceCounts.medium }),
+        t('admin.menu_images.low_confidence', 'Low confidence matches: {count}', { count: confidenceCounts.low }),
+        t('admin.menu_images.fallback_confidence', 'Generic fallback placeholders: {count}', { count: confidenceCounts.fallback }),
         ''
     ];
 
     if (suggestions.length > 0) {
-        summaryLines.push('Assignments:');
+        summaryLines.push(`${t('admin.menu_images.assignments', 'Assignments')}:`);
         suggestions.forEach((entry) => {
             summaryLines.push(`- ${entry.itemName} [${entry.category}] -> ${entry.label} [${entry.confidence} / ${entry.matchType}] (${entry.reason})`);
         });
         if (confidenceCounts.fallback > 0) {
             summaryLines.push('');
-            summaryLines.push('Review note: fallback assignments are generic placeholders and should be replaced first when better client media exists.');
+            summaryLines.push(t('admin.menu_images.review_note', 'Review note: fallback assignments are generic placeholders and should be replaced first when better client media exists.'));
         }
     } else {
-        summaryLines.push('Assignments: none. Every menu item already had an image.');
+        summaryLines.push(t('admin.menu_images.assignments_none', 'Assignments: none. Every menu item already had an image.'));
     }
 
     if (output) {
@@ -1223,7 +1239,7 @@ window.suggestMissingMenuImages = async function () {
 
     if (assignedCount === 0) {
         renderLaunchReadinessCard();
-        showToast('No missing menu images were found.');
+        showToast(t('admin.menu_images.none_missing', 'No missing menu images were found.'));
         return;
     }
 
@@ -1233,7 +1249,7 @@ window.suggestMissingMenuImages = async function () {
 
     const saved = await saveAndRefresh();
     if (saved) {
-        showToast(`Assigned ${assignedCount} menu image suggestion(s).`);
+        showToast(t('admin.menu_images.assigned_toast', 'Assigned {count} menu image suggestion(s).', { count: assignedCount }));
     }
 };
 
@@ -1242,17 +1258,17 @@ window.copyMenuImageSuggestionSummary = async function () {
     if (!output) return;
 
     if (!output.value.trim()) {
-        showToast('Run the suggestion tool first.');
+        showToast(t('admin.menu_images.run_first', 'Run the suggestion tool first.'));
         return;
     }
 
     try {
         await navigator.clipboard.writeText(output.value);
-        showToast('Image suggestion summary copied.');
+        showToast(t('admin.menu_images.copied', 'Image suggestion summary copied.'));
     } catch (_error) {
         output.focus();
         output.select();
-        showToast('Copy failed. Select the summary manually.');
+        showToast(t('admin.common.copy_failed', 'Copy failed. Select the summary manually.'));
     }
 };
 
@@ -1825,7 +1841,7 @@ function renderSectionOrderEditor() {
     container.innerHTML = landingSectionOrderDraft.map((key, index) => `
         <div class="section-order-item">
             <div class="section-order-copy">
-                <strong>${escapeHtml(SECTION_ORDER_LABELS[key] || key)}</strong>
+                <strong>${escapeHtml(t(SECTION_ORDER_LABELS[key], key))}</strong>
                 <span>Position ${index + 1}</span>
             </div>
             <div class="section-order-actions">
@@ -2495,7 +2511,10 @@ window.applyOnboardingPreset = async function () {
     try {
         await saveAndRefresh();
         refreshUI();
-        const dataToolsButton = Array.from(document.querySelectorAll('.nav-btn')).find((button) => button.textContent.includes('Seller Tools'));
+        const dataToolsButton = Array.from(document.querySelectorAll('.nav-btn')).find((button) => {
+            const handler = button.getAttribute('onclick') || '';
+            return handler.includes(`showSection('data-tools'`);
+        });
         if (dataToolsButton) {
             showSection('data-tools', dataToolsButton);
         }
@@ -2553,7 +2572,7 @@ async function forceSaveChangesLegacy() {
     }
 }
 async function saveAndRefreshLegacy() {
-    setAdminSaveState('saving', 'Saving changes to the server...');
+    setAdminSaveState('saving', t('admin.save_state.saving_message', 'Saving changes to the server...'));
     // Strip base64 images before sending to server
     const cleanMenu = menu.map(item => {
         const imgs = item.images || (item.img ? [item.img] : []);
@@ -2632,21 +2651,21 @@ async function loadSecurityStatus() {
         const notes = [];
 
         if (data.usesDefaultCredentials) {
-            notes.push('Default admin credentials are still active. Change them before client handoff.');
+            notes.push(t('admin.security.default_credentials_note', 'Default admin credentials are still active. Change them before client handoff.'));
         }
         if (data.isLegacyPlainText) {
-            notes.push('Credentials are still stored in the legacy plain-text format. Saving a new password will migrate them to secure hashed storage.');
+            notes.push(t('admin.security.legacy_plaintext_note', 'Credentials are still stored in the legacy plain-text format. Saving a new password will migrate them to secure hashed storage.'));
         }
         if (data.credentialSource === 'env') {
-            notes.push('This instance currently relies on environment credentials. Saving here will create a local hashed auth file for this restaurant.');
+            notes.push(t('admin.security.env_source_note', 'This instance currently relies on environment credentials. Saving here will create a local hashed auth file for this restaurant.'));
         }
         if (data.credentialSource === 'default') {
-            notes.push('This instance is still using the built-in fallback credentials. Replace them before production delivery.');
+            notes.push(t('admin.security.default_source_note', 'This instance is still using the built-in fallback credentials. Replace them before production delivery.'));
         }
 
-        notes.push('Username rule: minimum 3 characters.');
-        notes.push(`Password rule: minimum ${data.minPasswordLength || 8} characters.`);
-        notes.push('When credentials change, older admin sessions are closed automatically.');
+        notes.push(t('admin.security.username_rule', 'Username rule: minimum 3 characters.'));
+        notes.push(t('admin.security.password_rule', 'Password rule: minimum {count} characters.', { count: data.minPasswordLength || 8 }));
+        notes.push(t('admin.security.session_rule', 'When credentials change, older admin sessions are closed automatically.'));
 
         const hasRisk = Boolean(
             data.usesDefaultCredentials ||
@@ -2655,7 +2674,7 @@ async function loadSecurityStatus() {
         );
         statusCard.classList.toggle('is-risk', hasRisk);
         statusCard.innerHTML = `
-            <div class="security-status-title">Security Status</div>
+            <div class="security-status-title">${t('admin.security.status_title', 'Security Status')}</div>
             <ul class="security-status-list">
                 ${notes.map(note => `<li>${note}</li>`).join('')}
             </ul>
@@ -2699,9 +2718,9 @@ async function performAdminLogin() {
             if (errorEl) {
                 if (data.error === 'too_many_attempts' && data.retryAfterSec) {
                     const retryMinutes = Math.max(1, Math.ceil(data.retryAfterSec / 60));
-                    errorEl.textContent = `Too many attempts. Try again in ${retryMinutes} min.`;
+                    errorEl.textContent = t('admin.login.too_many_attempts', 'Too many attempts. Try again in {minutes} min.', { minutes: retryMinutes });
                 } else {
-                    errorEl.textContent = 'Incorrect credentials';
+                    errorEl.textContent = t('admin.login.incorrect_credentials', 'Incorrect credentials');
                 }
                 errorEl.style.display = 'block';
             }
@@ -2715,7 +2734,7 @@ async function performAdminLogin() {
     } catch (e) {
         console.error('[LOGIN] Request error:', e);
         if (errorEl) {
-            errorEl.textContent = 'Server connection error';
+            errorEl.textContent = t('admin.login.server_connection_error', 'Server connection error');
             errorEl.style.display = 'block';
         }
     }
@@ -2737,7 +2756,7 @@ function initSecurityForm() {
         const confirmPassword = document.getElementById('adminConfirmPass').value;
 
         if (newPassword && newPassword !== confirmPassword) {
-            showToast('Passwords do not match.');
+            showToast(t('admin.security.passwords_mismatch', 'Passwords do not match.'));
             return;
         }
 
@@ -2753,16 +2772,16 @@ function initSecurityForm() {
 
             if (res.ok && data.ok) {
                 adminAuth.user = data.user || newUsername;
-                showToast(data.message || 'Credentials updated successfully.');
+                showToast(data.message || t('admin.security.credentials_updated', 'Credentials updated successfully.'));
                 document.getElementById('adminNewPass').value = '';
                 document.getElementById('adminConfirmPass').value = '';
                 loadSecurityStatus();
             } else {
-                showToast(data.error || 'Unable to update credentials.');
+                showToast(data.error || t('admin.security.credentials_update_failed', 'Unable to update credentials.'));
             }
         } catch (err) {
             console.error('Credentials update error:', err);
-            showToast('Server connection error.');
+            showToast(t('admin.login.server_connection_error', 'Server connection error.'));
         }
     };
 }
@@ -2856,8 +2875,8 @@ async function saveAndRefresh() {
 
         if (!res.ok) {
             if (res.status === 401) {
-                setAdminSaveState('error', 'Session expired. Please sign in again.');
-                showToast('Session expired. Please sign in again.');
+                setAdminSaveState('error', t('admin.save_state.session_expired', 'Session expired. Please sign in again.'));
+                showToast(t('admin.save_state.session_expired', 'Session expired. Please sign in again.'));
                 location.reload();
                 return false;
             }
@@ -2867,12 +2886,12 @@ async function saveAndRefresh() {
         }
 
         refreshUI();
-        setAdminSaveState('success', 'All current changes are saved on the server.');
+        setAdminSaveState('success', t('admin.save_state.success_message', 'All current changes are saved on the server.'));
         return true;
     } catch (e) {
         console.error('Save Error:', e);
-        setAdminSaveState('error', e.message || 'Save failed.');
-        showToast('Save failed: ' + e.message);
+        setAdminSaveState('error', e.message || t('admin.save_state.error_message', 'Save failed.'));
+        showToast(`${t('admin.save_state.error_prefix', 'Save failed')}: ${e.message}`);
         return false;
     }
 }

@@ -1936,18 +1936,18 @@
     <!-- LOGIN SCREEN -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
-            <h1 id="adminLoginTitleText">🍽️ Restaurant Admin</h1>
-            <p id="adminLoginSubtitleText">Connectez-vous pour gérer votre restaurant</p>
-            <input type="text" id="loginUser" placeholder="Nom d'utilisateur" />
-            <input type="password" id="loginPass" placeholder="Mot de passe" />
+            <h1 id="adminLoginTitleText" data-i18n="admin.login.title">🍽️ Restaurant Admin</h1>
+            <p id="adminLoginSubtitleText" data-i18n="admin.login.subtitle">Connectez-vous pour gérer votre restaurant</p>
+            <input type="text" id="loginUser" placeholder="Nom d'utilisateur" data-i18n-placeholder="admin.login.username_placeholder" />
+            <input type="password" id="loginPass" placeholder="Mot de passe" data-i18n-placeholder="admin.login.password_placeholder" />
             <div class="login-error" id="loginError" style="display:none"></div>
-            <button class="login-btn" onclick="performAdminLogin()">Se Connecter</button>
+            <button class="login-btn" onclick="performAdminLogin()" data-i18n="admin.login.button">Se Connecter</button>
         </div>
     </div>
 
     <!-- MOBILE HEADER -->
     <div class="mobile-header">
-        <span id="mobileAdminTitleText" style="font-family:'Bebas Neue'; font-size:1.5rem; color:var(--primary);">🍽️ RESTAURANT ADMIN</span>
+        <span id="mobileAdminTitleText" style="font-family:'Bebas Neue'; font-size:1.5rem; color:var(--primary);" data-i18n="admin.mobile_title">🍽️ RESTAURANT ADMIN</span>
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
@@ -1955,33 +1955,33 @@
     <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <div class="sidebar" id="adminSidebar" style="display:none">
-        <h1 id="adminSidebarTitleText">🍽️ Restaurant Admin</h1>
-        <button class="nav-btn active" onclick="showSection('menu', this)">🍴 Menu Items</button>
-        <button class="nav-btn" onclick="showSection('categories', this)">📂 Categories</button>
-        <button class="nav-btn" onclick="showSection('branding', this)">🎨 Branding</button>
-        <button class="nav-btn" onclick="showSection('landing', this)">🏠 Landing Page</button>
-        <button class="nav-btn" onclick="showSection('supercategories', this)">📂 Super Categories</button>
-        <button class="nav-btn" onclick="showSection('hours', this)">🕐 Horaires</button>
-        <button class="nav-btn" onclick="showSection('wifi', this)">📶 WiFi</button>
-        <button class="nav-btn" onclick="showSection('data-tools', this)">🧰 Data Tools</button>
-        <button class="nav-btn" onclick="showSection('security', this)">🛡️ Security</button>
-        <button class="nav-btn" onclick="showSection('stats', this)">📊 Statistics</button>
-        <button class="nav-btn" onclick="showSection('gallery', this)">🖼️ Galerie</button>
+        <h1 id="adminSidebarTitleText" data-i18n="admin.sidebar_title">🍽️ Restaurant Admin</h1>
+        <button class="nav-btn active" onclick="showSection('menu', this)" data-i18n="admin.nav.menu">🍴 Menu Items</button>
+        <button class="nav-btn" onclick="showSection('categories', this)" data-i18n="admin.nav.categories">📂 Categories</button>
+        <button class="nav-btn" onclick="showSection('branding', this)" data-i18n="admin.nav.branding">🎨 Branding</button>
+        <button class="nav-btn" onclick="showSection('landing', this)" data-i18n="admin.nav.landing">🏠 Landing Page</button>
+        <button class="nav-btn" onclick="showSection('supercategories', this)" data-i18n="admin.nav.supercategories">📂 Super Categories</button>
+        <button class="nav-btn" onclick="showSection('hours', this)" data-i18n="admin.nav.hours">🕐 Horaires</button>
+        <button class="nav-btn" onclick="showSection('wifi', this)" data-i18n="admin.nav.wifi">📶 WiFi</button>
+        <button class="nav-btn" onclick="showSection('data-tools', this)" data-i18n="admin.nav.data_tools">🧰 Data Tools</button>
+        <button class="nav-btn" onclick="showSection('security', this)" data-i18n="admin.nav.security">🛡️ Security</button>
+        <button class="nav-btn" onclick="showSection('stats', this)" data-i18n="admin.nav.stats">📊 Statistics</button>
+        <button class="nav-btn" onclick="showSection('gallery', this)" data-i18n="admin.nav.gallery">🖼️ Galerie</button>
         <div class="sidebar-actions">
-            <button class="nav-btn sidebar-save-btn" onclick="forceSaveChanges()">
+            <button class="nav-btn sidebar-save-btn" onclick="forceSaveChanges()" data-i18n="admin.nav.save_changes">
                 💾 Enregistrer les modifications
             </button>
-            <button class="nav-btn sidebar-logout-btn" onclick="adminLogout()">🚪 Déconnexion</button>
+            <button class="nav-btn sidebar-logout-btn" onclick="adminLogout()" data-i18n="admin.nav.logout">🚪 Déconnexion</button>
         </div>
     </div>
 
     <main class="main" id="adminMain" style="display:none">
         <div class="header">
             <div>
-                <h2 id="section-title">Menu Management</h2>
+                <h2 id="section-title" data-i18n="admin.header.menu_management">Menu Management</h2>
                 <div id="adminSaveStatus" class="admin-save-status"></div>
             </div>
-            <a href="/" class="back-btn">&larr; Website Home</a>
+            <a href="/" class="back-btn" data-i18n="admin.header.website_home">&larr; Website Home</a>
         </div>
 
         <!-- MENU SECTION -->
@@ -2703,50 +2703,50 @@
 
         <!-- DATA TOOLS SECTION -->
         <div id="data-tools" class="section">
-            <h3>Seller Tools</h3>
-            <p class="copy-muted">
+            <h3 data-i18n="admin.seller_tools.title">Seller Tools</h3>
+            <p class="copy-muted" data-i18n="admin.seller_tools.subtitle">
                 Review launch readiness, prepare handoff material, manage starter presets, and move restaurant data safely between instances.
             </p>
             <div class="tool-grid">
                 <div class="tool-card tool-card--accent tool-card--wide">
-                    <div class="tool-card-eyebrow">Audit</div>
-                    <h4>Launch Readiness</h4>
-                    <p>Review the current restaurant instance before handoff. This quick audit highlights missing branding, contact data, menu completeness, gallery coverage, and security issues.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.audit">Audit</div>
+                    <h4 data-i18n="admin.tools.launch_readiness">Launch Readiness</h4>
+                    <p data-i18n="admin.tools.launch_readiness_desc">Review the current restaurant instance before handoff. This quick audit highlights missing branding, contact data, menu completeness, gallery coverage, and security issues.</p>
                     <div id="launchReadinessSummary" class="readiness-summary">
                         <span class="readiness-summary-dot"></span>
-                        <span>Audit loading...</span>
+                        <span data-i18n="admin.tools.audit_loading">Audit loading...</span>
                     </div>
                     <div id="launchReadinessList" class="readiness-list"></div>
                     <div id="launchReadinessMedia" class="readiness-list"></div>
                     <div id="launchReadinessNote" class="readiness-note" style="display:none;"></div>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-card-eyebrow">Delivery</div>
-                    <h4>Handoff Summary</h4>
-                    <p>Generate a concise operational summary for this restaurant instance before delivery or internal review.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.delivery">Delivery</div>
+                    <h4 data-i18n="admin.tools.handoff_summary">Handoff Summary</h4>
+                    <p data-i18n="admin.tools.handoff_summary_desc">Generate a concise operational summary for this restaurant instance before delivery or internal review.</p>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="generateHandoffSummary()">Generate Summary</button>
-                        <button type="button" class="brand-secondary-btn" onclick="copyHandoffSummary()">Copy Summary</button>
-                        <button type="button" class="brand-secondary-btn" onclick="downloadHandoffSummary()">Download Summary</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="generateHandoffSummary()" data-i18n="admin.tools.generate_summary">Generate Summary</button>
+                        <button type="button" class="brand-secondary-btn" onclick="copyHandoffSummary()" data-i18n="admin.tools.copy_summary">Copy Summary</button>
+                        <button type="button" class="brand-secondary-btn" onclick="downloadHandoffSummary()" data-i18n="admin.tools.download_summary">Download Summary</button>
                     </div>
-                    <textarea id="handoffSummaryOutput" class="summary-output" readonly placeholder="Generate a summary to review the current restaurant setup."></textarea>
+                    <textarea id="handoffSummaryOutput" class="summary-output" readonly placeholder="Generate a summary to review the current restaurant setup." data-i18n-placeholder="admin.tools.handoff_summary_placeholder"></textarea>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-card-eyebrow">Media</div>
-                    <h4>Menu Image Suggestions</h4>
-                    <p>Assign local library placeholders to menu items that still have no image. Use this as a fast internal delivery step before real client photos or future AI generation.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.media">Media</div>
+                    <h4 data-i18n="admin.tools.menu_image_suggestions">Menu Image Suggestions</h4>
+                    <p data-i18n="admin.tools.menu_image_suggestions_desc">Assign local library placeholders to menu items that still have no image. Use this as a fast internal delivery step before real client photos or future AI generation.</p>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="suggestMissingMenuImages()">Assign Missing Images</button>
-                        <button type="button" class="brand-secondary-btn" onclick="copyMenuImageSuggestionSummary()">Copy Summary</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="suggestMissingMenuImages()" data-i18n="admin.tools.assign_missing_images">Assign Missing Images</button>
+                        <button type="button" class="brand-secondary-btn" onclick="copyMenuImageSuggestionSummary()" data-i18n="admin.tools.copy_summary">Copy Summary</button>
                     </div>
-                    <textarea id="menuImageSuggestionOutput" class="summary-output" readonly placeholder="Run the suggestion tool to assign local library images to items without visuals."></textarea>
+                    <textarea id="menuImageSuggestionOutput" class="summary-output" readonly placeholder="Run the suggestion tool to assign local library images to items without visuals." data-i18n-placeholder="admin.tools.menu_image_suggestions_placeholder"></textarea>
                 </div>
                 <div class="tool-card tool-card--accent tool-card--wide">
-                    <div class="tool-card-eyebrow">Starter</div>
-                    <h4>Quick Launch Preset</h4>
-                    <p>Apply a strong starting point for a fast-food, cafe, or traditional restaurant before you fine-tune the final content.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.starter">Starter</div>
+                    <h4 data-i18n="admin.tools.quick_launch_preset">Quick Launch Preset</h4>
+                    <p data-i18n="admin.tools.quick_launch_preset_desc">Apply a strong starting point for a fast-food, cafe, or traditional restaurant before you fine-tune the final content.</p>
                     <div class="form-group">
-                        <label>Preset</label>
+                        <label data-i18n="admin.quick_launch.preset">Preset</label>
                         <select id="quickStartPreset">
                             <option value="fast_food">Fast Food / Street Food</option>
                             <option value="cafe">Cafe / Brunch</option>
@@ -2754,52 +2754,52 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Restaurant Name</label>
-                        <input type="text" id="quickStartRestaurantName" placeholder="e.g. Atlas Restaurant" />
+                        <label data-i18n="admin.quick_launch.restaurant_name">Restaurant Name</label>
+                        <input type="text" id="quickStartRestaurantName" placeholder="e.g. Atlas Restaurant" data-i18n-placeholder="admin.quick_launch.restaurant_name_placeholder" />
                     </div>
                     <div class="form-group">
-                        <label>Short Brand Name</label>
-                        <input type="text" id="quickStartShortName" placeholder="e.g. Atlas" />
+                        <label data-i18n="admin.quick_launch.short_brand_name">Short Brand Name</label>
+                        <input type="text" id="quickStartShortName" placeholder="e.g. Atlas" data-i18n-placeholder="admin.quick_launch.short_brand_name_placeholder" />
                     </div>
                     <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" id="quickStartAddress" placeholder="e.g. Avenue Hassan II, Casablanca" />
+                        <label data-i18n="admin.quick_launch.address">Address</label>
+                        <input type="text" id="quickStartAddress" placeholder="e.g. Avenue Hassan II, Casablanca" data-i18n-placeholder="admin.quick_launch.address_placeholder" />
                     </div>
                     <div class="form-group">
-                        <label>Phone</label>
-                        <input type="text" id="quickStartPhone" placeholder="+212 6..." />
+                        <label data-i18n="admin.quick_launch.phone">Phone</label>
+                        <input type="text" id="quickStartPhone" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" />
                     </div>
                     <div class="form-group">
-                        <label>WhatsApp (optional)</label>
-                        <input type="text" id="quickStartWhatsApp" placeholder="+212 6..." />
+                        <label data-i18n="admin.quick_launch.whatsapp_optional">WhatsApp (optional)</label>
+                        <input type="text" id="quickStartWhatsApp" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" />
                     </div>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()">Apply Quick Launch Setup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()" data-i18n="admin.tools.apply_quick_launch">Apply Quick Launch Setup</button>
                     </div>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-card-eyebrow">Backup</div>
-                    <h4>Export Current Restaurant</h4>
-                    <p>Download the complete normalized website data including menu, branding, hours, translations, visibility, and section order.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.backup">Backup</div>
+                    <h4 data-i18n="admin.tools.export_current_restaurant">Export Current Restaurant</h4>
+                    <p data-i18n="admin.tools.export_current_restaurant_desc">Download the complete normalized website data including menu, branding, hours, translations, visibility, and section order.</p>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()">Export Backup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()" data-i18n="admin.tools.export_backup">Export Backup</button>
                     </div>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-card-eyebrow">Restore</div>
-                    <h4>Import Restaurant Backup</h4>
-                    <p>Upload a previously exported JSON backup to restore or clone a restaurant setup quickly.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.restore">Restore</div>
+                    <h4 data-i18n="admin.tools.import_restaurant_backup">Import Restaurant Backup</h4>
+                    <p data-i18n="admin.tools.import_restaurant_backup_desc">Upload a previously exported JSON backup to restore or clone a restaurant setup quickly.</p>
                     <div class="tool-actions">
                         <input type="file" id="dataImportFile" accept="application/json,.json" />
-                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()">Import Backup</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()" data-i18n="admin.tools.import_backup">Import Backup</button>
                     </div>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-card-eyebrow">Reset</div>
-                    <h4>Starter Reset</h4>
-                    <p>Reset this instance back to the bundled starter template when you want to begin a fresh restaurant setup.</p>
+                    <div class="tool-card-eyebrow" data-i18n="admin.tools.reset">Reset</div>
+                    <h4 data-i18n="admin.tools.starter_reset">Starter Reset</h4>
+                    <p data-i18n="admin.tools.starter_reset_desc">Reset this instance back to the bundled starter template when you want to begin a fresh restaurant setup.</p>
                     <div class="tool-actions">
-                        <button type="button" class="brand-secondary-btn" onclick="resetDefaults()">Reset To Starter</button>
+                        <button type="button" class="brand-secondary-btn" onclick="resetDefaults()" data-i18n="admin.tools.reset_to_starter">Reset To Starter</button>
                     </div>
                 </div>
             </div>
@@ -2807,8 +2807,8 @@
 
         <!-- SECURITY SECTION -->
         <div id="security" class="section">
-            <h3>Admin Security</h3>
-            <p class="copy-muted">Update the admin login used for this restaurant. Credential changes are stored in persisted server storage and survive redeploys.</p>
+            <h3 data-i18n="admin.security.title">Admin Security</h3>
+            <p class="copy-muted" data-i18n="admin.security.subtitle">Update the admin login used for this restaurant. Credential changes are stored in persisted server storage and survive redeploys.</p>
 
             <div class="security-layout">
                 <div class="security-main">
@@ -2816,38 +2816,38 @@
 
                     <form id="securityForm" class="security-form">
                         <div class="form-group">
-                            <label for="adminNewUser">Admin Username</label>
-                            <input type="text" id="adminNewUser" required placeholder="admin" />
-                            <small class="security-help">Minimum 3 characters. This becomes the next admin login for this restaurant.</small>
+                            <label for="adminNewUser" data-i18n="admin.security.admin_username">Admin Username</label>
+                            <input type="text" id="adminNewUser" required placeholder="admin" data-i18n-placeholder="admin.security.admin_username_placeholder" />
+                            <small class="security-help" data-i18n="admin.security.admin_username_help">Minimum 3 characters. This becomes the next admin login for this restaurant.</small>
                         </div>
 
                         <div class="form-group">
-                            <label for="adminNewPass">New Password</label>
-                            <input type="password" id="adminNewPass" placeholder="********" />
-                            <small class="security-help">Minimum 8 characters. Leave blank only if you want to keep the current password.</small>
+                            <label for="adminNewPass" data-i18n="admin.security.new_password">New Password</label>
+                            <input type="password" id="adminNewPass" placeholder="********" data-i18n-placeholder="admin.security.password_placeholder" />
+                            <small class="security-help" data-i18n="admin.security.new_password_help">Minimum 8 characters. Leave blank only if you want to keep the current password.</small>
                         </div>
 
                         <div class="form-group">
-                            <label for="adminConfirmPass">Confirm New Password</label>
-                            <input type="password" id="adminConfirmPass" placeholder="********" />
+                            <label for="adminConfirmPass" data-i18n="admin.security.confirm_password">Confirm New Password</label>
+                            <input type="password" id="adminConfirmPass" placeholder="********" data-i18n-placeholder="admin.security.password_placeholder" />
                         </div>
 
-                        <button type="submit" class="primary-btn security-submit">Save Credentials</button>
+                        <button type="submit" class="primary-btn security-submit" data-i18n="admin.security.save_credentials">Save Credentials</button>
                     </form>
                 </div>
 
                 <div class="security-side">
                     <div class="security-side-card">
-                        <h4>What happens on save</h4>
+                        <h4 data-i18n="admin.security.what_happens_on_save">What happens on save</h4>
                         <ul class="security-rule-list">
-                            <li><span class="security-rule-dot"></span><span>Older admin sessions are closed automatically after credentials change.</span></li>
-                            <li><span class="security-rule-dot"></span><span>If the instance still relies on env credentials, saving here creates the local persisted auth file for this restaurant.</span></li>
-                            <li><span class="security-rule-dot"></span><span>Credential changes are stored at the configured persisted auth path, not only inside the running container.</span></li>
+                            <li><span class="security-rule-dot"></span><span data-i18n="admin.security.save_rule_1">Older admin sessions are closed automatically after credentials change.</span></li>
+                            <li><span class="security-rule-dot"></span><span data-i18n="admin.security.save_rule_2">If the instance still relies on env credentials, saving here creates the local persisted auth file for this restaurant.</span></li>
+                            <li><span class="security-rule-dot"></span><span data-i18n="admin.security.save_rule_3">Credential changes are stored at the configured persisted auth path, not only inside the running container.</span></li>
                         </ul>
                     </div>
                     <div class="security-side-card">
-                        <h4>Handoff policy</h4>
-                        <p>Do not deliver the website while default credentials remain active. Confirm the warning disappears in Launch Readiness and test a fresh login before handoff.</p>
+                        <h4 data-i18n="admin.security.handoff_policy">Handoff policy</h4>
+                        <p data-i18n="admin.security.handoff_policy_text">Do not deliver the website while default credentials remain active. Confirm the warning disappears in Launch Readiness and test a fresh login before handoff.</p>
                     </div>
                 </div>
             </div>
@@ -2863,9 +2863,9 @@
     </button>
 
     <!-- FLOATING SAVE BUTTON -->
-    <button id="floatSaveBtn" class="floating-action floating-action--save" onclick="forceSaveChanges()" title="Save changes">
+    <button id="floatSaveBtn" class="floating-action floating-action--save" onclick="forceSaveChanges()" title="Save changes" data-i18n-title="admin.floating_save_title">
         <span class="floating-action-icon">SV</span>
-        <span>Publish Changes</span>
+        <span data-i18n="admin.floating_save">Publish Changes</span>
     </button>
 
     <style>

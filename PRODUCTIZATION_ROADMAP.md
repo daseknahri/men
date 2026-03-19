@@ -8,6 +8,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 
 ### Latest Progress
 
+- The admin shell now has a real FR / EN / AR translation foundation for login, sidebar navigation, seller tools, launch-readiness copy, handoff-summary labels, security messaging, and quick-launch/security form labels, so the i18n system no longer stops at public pages and menu data
 - Public frontend i18n has been tightened further: remaining visible hardcoded labels/placeholders in the homepage, menu landing, game modal, cart drawer, history, ticket flow, event booking flow, social modals, and WhatsApp/order prompts have been moved into the shared FR / EN / AR translation layer or cleared from static HTML when those fields are runtime-driven
 - Categories and super-categories now have the same FR / EN / AR translation foundation as menu items, including shared runtime helpers, server sanitization, admin form fields, and public menu rendering for localized names
 - Starter runtime/contact defaults are now safer for live preview: fake phone/address/WiFi values have been removed from the shared seed and fallback storage, the homepage now falls back to empty-state behavior instead of leaking false public details, and the directions CTA uses a proper disabled class instead of inline state styling
