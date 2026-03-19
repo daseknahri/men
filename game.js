@@ -113,6 +113,8 @@ function handleBoxClick(index) {
 function endGame(loser) {
     gameActive = false;
     const popup = document.getElementById('gameLossPopup');
-    popup.querySelector('#loserText').textContent = `Player ${loser}, you've found the X sign.`;
+    popup.querySelector('#loserText').textContent = typeof window.formatTranslation === 'function'
+        ? window.formatTranslation('game_loss_text', `Player ${loser}, you've found the X sign.`, { player: loser })
+        : `Player ${loser}, you've found the X sign.`;
     popup.style.display = 'flex';
 }

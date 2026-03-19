@@ -47,6 +47,16 @@ let cart = [];
 let serviceType = 'onsite';
 let currentSlide = 0;
 
+function t(key, fallback, vars) {
+    if (typeof window.formatTranslation === 'function') {
+        return window.formatTranslation(key, fallback, vars);
+    }
+    if (typeof window.getTranslation === 'function') {
+        return window.getTranslation(key, fallback);
+    }
+    return fallback;
+}
+
 function normalizeMenuItem(item) {
     const images = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
     return {
@@ -188,7 +198,7 @@ function updateWifiUI() {
     const ssidEl = document.getElementById('wifiSSIDDisplay');
     const passEl = document.getElementById('wifiPass');
     const qrEl = document.getElementById('wifiQR');
-    if (ssidEl) ssidEl.innerHTML = `<strong>SSID:</strong> ${wifiData.ssid}`;
+    if (ssidEl) ssidEl.innerHTML = `<strong>${t('wifi_ssid_label', 'SSID')}:</strong> ${wifiData.ssid}`;
     if (passEl) passEl.textContent = wifiData.pass;
     if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI:S:${encodeURIComponent(wifiData.ssid)};T:WPA;P:${encodeURIComponent(wifiData.pass)};;`;
 }
@@ -234,7 +244,7 @@ function updateWhatsAppLinks() {
     if (contactLink) {
         if (!wa) {
             contactLink.removeAttribute('href');
-            contactLink.textContent = window.restaurantConfig?.phone || 'WhatsApp';
+            contactLink.textContent = window.restaurantConfig?.phone || t('social_whatsapp', 'WhatsApp');
             return;
         }
 
@@ -257,32 +267,32 @@ function renderSocialLinks() {
     const tripAdvisorUrl = window.getSafeExternalUrl(socialLinks.tripadvisor);
 
     if (instagramUrl) {
-        modalItems += `<a href="${instagramUrl}" target="_blank" class="social-link-item instagram"><span>📸</span> Instagram</a>`;
+        modalItems += `<a href="${instagramUrl}" target="_blank" class="social-link-item instagram"><span>📸</span> ${t('social_instagram', 'Instagram')}</a>`;
         footerIcons += `<a href="${instagramUrl}" target="_blank" class="footer-social-icon">📸</a>`;
-        contactButtons += `<a href="${instagramUrl}" target="_blank" class="social-btn">📸 Instagram</a>`;
+        contactButtons += `<a href="${instagramUrl}" target="_blank" class="social-btn">📸 ${t('social_instagram', 'Instagram')}</a>`;
     }
     if (facebookUrl) {
-        modalItems += `<a href="${facebookUrl}" target="_blank" class="social-link-item facebook"><span>📘</span> Facebook</a>`;
+        modalItems += `<a href="${facebookUrl}" target="_blank" class="social-link-item facebook"><span>📘</span> ${t('social_facebook', 'Facebook')}</a>`;
         footerIcons += `<a href="${facebookUrl}" target="_blank" class="footer-social-icon">📘</a>`;
-        contactButtons += `<a href="${facebookUrl}" target="_blank" class="social-btn">📘 Facebook</a>`;
+        contactButtons += `<a href="${facebookUrl}" target="_blank" class="social-btn">📘 ${t('social_facebook', 'Facebook')}</a>`;
     }
     if (tiktokUrl) {
-        modalItems += `<a href="${tiktokUrl}" target="_blank" class="social-link-item tiktok"><span>🎵</span> TikTok</a>`;
+        modalItems += `<a href="${tiktokUrl}" target="_blank" class="social-link-item tiktok"><span>🎵</span> ${t('social_tiktok', 'TikTok')}</a>`;
         footerIcons += `<a href="${tiktokUrl}" target="_blank" class="footer-social-icon">🎵</a>`;
-        contactButtons += `<a href="${tiktokUrl}" target="_blank" class="social-btn">🎵 TikTok</a>`;
+        contactButtons += `<a href="${tiktokUrl}" target="_blank" class="social-btn">🎵 ${t('social_tiktok', 'TikTok')}</a>`;
     }
     if (tripAdvisorUrl) {
-        modalItems += `<a href="${tripAdvisorUrl}" target="_blank" class="social-link-item"><span>⭐</span> TripAdvisor</a>`;
+        modalItems += `<a href="${tripAdvisorUrl}" target="_blank" class="social-link-item"><span>⭐</span> ${t('social_tripadvisor', 'TripAdvisor')}</a>`;
         footerIcons += `<a href="${tripAdvisorUrl}" target="_blank" class="footer-social-icon">⭐</a>`;
-        contactButtons += `<a href="${tripAdvisorUrl}" target="_blank" class="social-btn">⭐ TripAdvisor</a>`;
+        contactButtons += `<a href="${tripAdvisorUrl}" target="_blank" class="social-btn">⭐ ${t('social_tripadvisor', 'TripAdvisor')}</a>`;
     }
     const waNumber = typeof window.getWhatsAppNumber === 'function'
         ? window.getWhatsAppNumber()
         : String(socialLinks.whatsapp || '').replace(/\D/g, '');
     if (waNumber) {
-        modalItems += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-link-item whatsapp"><span>📞</span> WhatsApp</a>`;
+        modalItems += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-link-item whatsapp"><span>📞</span> ${t('social_whatsapp', 'WhatsApp')}</a>`;
         footerIcons += `<a href="https://wa.me/${waNumber}" target="_blank" class="footer-social-icon">📞</a>`;
-        contactButtons += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-btn">📞 WhatsApp</a>`;
+        contactButtons += `<a href="https://wa.me/${waNumber}" target="_blank" class="social-btn">📞 ${t('social_whatsapp', 'WhatsApp')}</a>`;
     }
 
     const emptyText = typeof window.getTranslation === 'function'
@@ -687,7 +697,7 @@ function addItem(id) {
     const existing = cart.find(c => c.id === id);
     if (existing) existing.qty++; else cart.push({ ...item, qty: 1 });
     updateBottomBar();
-    showToast(`✅ ${window.getLocalizedMenuName(item)} ajouté!`);
+    showToast(t('toast_item_added', `✅ ${window.getLocalizedMenuName(item)} ajouté !`, { item: window.getLocalizedMenuName(item) }));
 }
 
 function updateBottomBar() {
@@ -696,13 +706,13 @@ function updateBottomBar() {
     const bar = document.getElementById('bottomBar');
     if (count === 0) { bar.style.display = 'none'; return; }
     bar.style.display = 'block';
-    document.getElementById('bottomCount').textContent = count + ' product' + (count > 1 ? 's' : '');
+    document.getElementById('bottomCount').textContent = t('cart_items_count', '{count} item(s)', { count });
     document.getElementById('bottomTotal').textContent = 'MAD ' + total.toFixed(2);
 }
 
 // CONFIRM
 function openConfirm() {
-    if (cart.length === 0) { showToast('🛒 Ajoutez des articles!'); return; }
+    if (cart.length === 0) { showToast(t('confirm_add_items', '🛒 Ajoutez des articles !')); return; }
     renderConfirm();
     document.getElementById('confirmPage').classList.add('open');
     document.getElementById('confirmOverlay').classList.add('open');
@@ -753,20 +763,24 @@ function selectService(svc, btn) {
 function sendWA() {
     if (cart.length === 0) return;
     const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
-    const svc = { onsite: '🍽️ Sur Place', takeaway: '🛍️ À Emporter', delivery: '🚚 Livraison' };
+    const svc = {
+        onsite: `🍽️ ${t('service_onsite', 'Sur place')}`,
+        takeaway: `🛍️ ${t('service_takeaway', 'À emporter')}`,
+        delivery: `🚚 ${t('service_delivery', 'Livraison')}`
+    };
     const restaurantName = typeof window.getRestaurantShortName === 'function'
         ? window.getRestaurantShortName()
         : 'Restaurant';
-    let msg = `🍔 *NOUVELLE COMMANDE – ${restaurantName.toUpperCase()}*\n━━━━━━━━━━━━━━━━\n📋 *Service:* ${svc[serviceType]}\n`;
+    let msg = `🍔 *${t('wa_new_order_title', 'NOUVELLE COMMANDE – {restaurant}', { restaurant: restaurantName.toUpperCase() })}*\n━━━━━━━━━━━━━━━━\n📋 *${t('wa_service_label', 'Service')}:* ${svc[serviceType]}\n`;
     if (serviceType === 'delivery') {
         const n = document.getElementById('cName').value.trim(), a = document.getElementById('cAddr').value.trim(), p = document.getElementById('cPhone').value.trim();
-        if (!n) { document.getElementById('cName').focus(); return alert('Entrez votre nom!'); }
-        if (!a) { document.getElementById('cAddr').focus(); return alert('Entrez votre adresse!'); }
-        msg += `👤 *Client:* ${n}\n📍 *Adresse:* ${a}\n`; if (p) msg += `📱 *Tél:* ${p}\n`;
+        if (!n) { document.getElementById('cName').focus(); return alert(t('event_booking_name_required', 'Veuillez entrer votre nom.')); }
+        if (!a) { document.getElementById('cAddr').focus(); return alert(t('ticket_delivery_required', 'Veuillez saisir votre adresse de livraison.')); }
+        msg += `👤 *${t('wa_client_label', 'Client')}:* ${n}\n📍 *${t('ticket_addr', 'Adresse')}:* ${a}\n`; if (p) msg += `📱 *${t('wa_phone_label', 'Tél')}:* ${p}\n`;
     }
-    msg += `━━━━━━━━━━━━━━━━\n\n🛒 *COMMANDE:*\n\n`;
+    msg += `━━━━━━━━━━━━━━━━\n\n🛒 *${t('wa_order_label', 'COMMANDE')}:*\n\n`;
     cart.forEach((c, i) => { msg += `${i + 1}. *${c.name}* × ${c.qty}\n   💰 ${(c.price * c.qty).toFixed(2)} MAD\n\n`; });
-    msg += `━━━━━━━━━━━━━━━━\n💵 *TOTAL: ${total.toFixed(2)} MAD*\n━━━━━━━━━━━━━━━━\n\n🙏 Merci chez *${restaurantName}*!`;
+    msg += `━━━━━━━━━━━━━━━━\n💵 *${t('wa_total_label', 'TOTAL')}: ${total.toFixed(2)} MAD*\n━━━━━━━━━━━━━━━━\n\n🙏 ${t('wa_thanks', 'Merci chez *{restaurant}*!', { restaurant: restaurantName })}`;
     const waNum = typeof window.getWhatsAppNumber === 'function'
         ? window.getWhatsAppNumber()
         : String(socialLinks.whatsapp || '').replace(/\D/g, '');
@@ -802,7 +816,7 @@ function closeWifiModal() {
 function copyWifi() {
     const pass = document.getElementById('wifiPass').textContent;
     navigator.clipboard.writeText(pass).then(() => {
-        showToast(currentLang === 'ar' ? 'تم نسخ كلمة المرور!' : (currentLang === 'en' ? 'Password copied!' : 'Mot de passe copié !'));
+        showToast(t('wifi_password_copied', 'Mot de passe copié !'));
     });
 }
 
@@ -897,7 +911,7 @@ function openEventModal(type) {
     if (nameInput) nameInput.value = '';
     if (phoneInput) phoneInput.value = '';
 
-    title.textContent = `Réserver : ${type}`;
+    title.textContent = t('event_booking_title_prefix', `Réserver : ${type}`, { type });
 
     // Set dynamic icons based on type
     const icons = {
@@ -924,12 +938,12 @@ function sendEventWA() {
     const phone = document.getElementById('eventCustPhone').value.trim();
 
     if (!name) {
-        alert('Veuillez entrer votre nom.');
+        alert(t('event_booking_name_required', 'Veuillez entrer votre nom.'));
         document.getElementById('eventCustName').focus();
         return;
     }
     if (!phone) {
-        alert('Veuillez entrer votre numéro de téléphone.');
+        alert(t('event_booking_phone_required', 'Veuillez entrer votre numéro de téléphone.'));
         document.getElementById('eventCustPhone').focus();
         return;
     }
@@ -944,11 +958,11 @@ function sendEventWA() {
     const restaurantName = typeof window.getRestaurantShortName === 'function'
         ? window.getRestaurantShortName()
         : 'Restaurant';
-    let msg = `✨ *RÉSERVATION ÉVÉNEMENT – ${restaurantName.toUpperCase()}*\n━━━━━━━━━━━━━━━━\n`;
-    msg += `🏢 *Type:* ${currentEventType}\n`;
-    msg += `👤 *Client:* ${name}\n`;
-    msg += `📱 *Tél:* ${phone}\n`;
-    msg += `━━━━━━━━━━━━━━━━\n\n🙏 Merci de me contacter pour confirmer les détails !`;
+    let msg = `✨ *${t('wa_event_title', 'RÉSERVATION ÉVÉNEMENT – {restaurant}', { restaurant: restaurantName.toUpperCase() })}*\n━━━━━━━━━━━━━━━━\n`;
+    msg += `🏢 *${t('ticket_type_label', 'Type')}:* ${currentEventType}\n`;
+    msg += `👤 *${t('wa_client_label', 'Client')}:* ${name}\n`;
+    msg += `📱 *${t('wa_phone_label', 'Tél')}:* ${phone}\n`;
+    msg += `━━━━━━━━━━━━━━━━\n\n🙏 ${t('wa_contact_confirm', 'Merci de me contacter pour confirmer les détails !')}`;
 
     window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
     closeEventModal();

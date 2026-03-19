@@ -1347,6 +1347,13 @@ window.getTranslation = function (key, fallback = '') {
     return window.getLocaleDictionary(lang)?.[key] || fallback;
 };
 
+window.formatTranslation = function (key, fallback = '', vars = {}) {
+    const template = window.getTranslation(key, fallback);
+    return Object.entries(vars || {}).reduce((text, [token, value]) => {
+        return text.replace(new RegExp(`\\{${token}\\}`, 'g'), String(value ?? ''));
+    }, template);
+};
+
 window.getSafeExternalUrl = function (value) {
     const raw = typeof value === 'string' ? value.trim() : '';
     if (!raw) return '';
@@ -1788,6 +1795,7 @@ window.translations = {
         wifi_connect_title: 'Connexion WiFi',
         wifi_network_label: 'Réseau',
         modal_close: 'FERMER',
+        event_booking_subtitle: 'Parlez-nous de votre projet',
         featured_label: 'Sélection Signature',
         featured_best: 'Nos Coups de Coeur ✨',
         gallery_empty: 'De nouvelles photos arrivent bientôt...',
@@ -1807,6 +1815,20 @@ window.translations = {
         ticket_order_no: 'Commande N°', ticket_date: 'Date', ticket_total: 'TOTAL',
         ticket_service: 'Mode', ticket_client: 'Client', ticket_addr: 'Adresse',
         ticket_footer: 'Veuillez présenter ce ticket à la caisse.',
+        social_instagram: 'Instagram', social_facebook: 'Facebook', social_tiktok: 'TikTok', social_tripadvisor: 'TripAdvisor', social_whatsapp: 'WhatsApp',
+        history_button_title: 'Historique', history_title: 'Historique', history_empty: 'Aucune commande récente.', history_delete_title: 'Supprimer', history_delete_confirm: 'Supprimer ce ticket de l\'historique ?',
+        landing_map_title: 'Voir sur la carte', landing_call_title: 'Appeler', landing_social_title: 'Nos réseaux sociaux', landing_wifi_title: 'Code WiFi', landing_home_title: 'Accueil',
+        game_rule_1: 'Attendez votre tour puis ouvrez une case.', game_rule_2: 'Essayez d\'éviter le signe X.', game_rule_3: 'Si vous trouvez le X, vous payez l\'addition.',
+        game_players_label: 'Nombre de joueurs', game_start_button: 'COMMENCER', game_board_subtitle: 'Celui qui trouve le X paie l\'addition !', game_loss_text: 'Joueur {player}, vous avez trouvé le signe X.', game_loss_title: 'Payez l\'addition !',
+        promo_empty: '🔥 Découvrez nos promos du jour bientôt !', promo_offer_badge: 'OFFRE', promo_small_badge: 'PROMO', promo_add_short: 'AJOUTER',
+        price_from: 'À partir de', dish_promo_suffix: ' (PROMO)', dish_default_desc: 'Une préparation soignée avec les meilleurs ingrédients.',
+        cart_clear: 'Vider', cart_clear_confirm: 'Vider le panier ?', cart_items_count: '{count} article(s)', cart_delivery_label: '📍 Adresse de livraison', cart_delivery_placeholder: 'Ex : Appartement 12, résidence, quartier...', cart_total_label: 'Total', cart_confirm_order: 'CONFIRMER MA COMMANDE',
+        service_onsite: 'Sur place', service_takeaway: 'À emporter', service_delivery: 'Livraison',
+        ticket_delivery_required: 'Veuillez saisir votre adresse de livraison.', ticket_number_prefix: 'TICKET', ticket_type_label: 'Type', ticket_total_prefix: 'TOTAL :', ticket_edit: 'MODIFIER', ticket_order: 'COMMANDER', ticket_validate: 'VALIDER LA COMMANDE', ticket_helper: 'Cliquez pour enregistrer et montrer au serveur', ticket_saved: 'COMMANDE ENREGISTRÉE ✔', ticket_saved_help: 'Ticket validé ! Cliquez pour fermer.',
+        confirm_back: '← Retour', confirm_cart_label: 'Votre panier', confirm_complement_title: 'Complétez votre commande', confirm_service_prompt: 'Choisissez le type de service :', confirm_name_placeholder: 'Votre nom...', confirm_address_placeholder: 'Adresse de livraison...', confirm_phone_placeholder: 'Numéro de téléphone...', confirm_whatsapp: 'Confirmer sur WhatsApp', confirm_add_items: '🛒 Ajoutez des articles !',
+        contact_whatsapp_title: 'WhatsApp', wifi_ssid_label: 'SSID', wifi_password_label: 'Mot de passe', wifi_password_copied: 'Mot de passe copié !',
+        toast_item_added: '✅ {item} ajouté !', event_booking_name_label: 'Votre nom', event_booking_phone_label: 'Téléphone', event_booking_name_placeholder: 'Ex : Ahmed Alaoui', event_booking_phone_placeholder: 'Ex : 0612345678', event_booking_submit: '📩 Envoyer sur WhatsApp', event_booking_name_required: 'Veuillez entrer votre nom.', event_booking_phone_required: 'Veuillez entrer votre numéro de téléphone.', event_booking_title_prefix: 'Réserver : {type}',
+        wa_new_order_title: 'NOUVELLE COMMANDE – {restaurant}', wa_service_label: 'Service', wa_client_label: 'Client', wa_phone_label: 'Tél', wa_order_label: 'COMMANDE', wa_total_label: 'TOTAL', wa_thanks: 'Merci chez *{restaurant}*!', wa_event_title: 'RÉSERVATION ÉVÉNEMENT – {restaurant}', wa_contact_confirm: 'Merci de me contacter pour confirmer les détails !',
     },
     en: {
         status_open: 'Open', status_closed: 'Closed', status_loading: 'Loading...',
@@ -1874,6 +1896,20 @@ window.translations = {
         ticket_order_no: 'Order No', ticket_date: 'Date', ticket_total: 'TOTAL',
         ticket_service: 'Mode', ticket_client: 'Client', ticket_addr: 'Address',
         ticket_footer: 'Please show this ticket at the counter.',
+        social_instagram: 'Instagram', social_facebook: 'Facebook', social_tiktok: 'TikTok', social_tripadvisor: 'TripAdvisor', social_whatsapp: 'WhatsApp',
+        history_button_title: 'History', history_title: 'History', history_empty: 'No recent orders.', history_delete_title: 'Delete', history_delete_confirm: 'Delete this ticket from history?',
+        landing_map_title: 'View on map', landing_call_title: 'Call', landing_social_title: 'Our social media', landing_wifi_title: 'WiFi code', landing_home_title: 'Home',
+        game_rule_1: 'Wait for your turn and open a box.', game_rule_2: 'Try to avoid finding the X sign.', game_rule_3: 'If you find the X, pay the check.',
+        game_players_label: 'Number of Players', game_start_button: 'START GAME', game_board_subtitle: 'The one who finds the X pays the check!', game_loss_text: 'Player {player}, you found the X sign.', game_loss_title: 'Pay the check!',
+        promo_empty: '🔥 Discover our daily promos soon!', promo_offer_badge: 'OFFER', promo_small_badge: 'PROMO', promo_add_short: 'ADD',
+        price_from: 'From', dish_promo_suffix: ' (PROMO)', dish_default_desc: 'A carefully prepared dish made with our best ingredients.',
+        cart_clear: 'Clear', cart_clear_confirm: 'Clear the cart?', cart_items_count: '{count} item(s)', cart_delivery_label: '📍 Delivery address', cart_delivery_placeholder: 'Ex: Apartment 12, residence, neighborhood...', cart_total_label: 'Total', cart_confirm_order: 'CONFIRM MY ORDER',
+        service_onsite: 'On site', service_takeaway: 'Take away', service_delivery: 'Delivery',
+        ticket_delivery_required: 'Please enter your delivery address.', ticket_number_prefix: 'TICKET', ticket_type_label: 'Type', ticket_total_prefix: 'TOTAL:', ticket_edit: 'EDIT', ticket_order: 'ORDER', ticket_validate: 'VALIDATE ORDER', ticket_helper: 'Click to save and show it to the server', ticket_saved: 'ORDER SAVED ✔', ticket_saved_help: 'Ticket saved. Click to close.',
+        confirm_back: '← Back', confirm_cart_label: 'Your cart', confirm_complement_title: 'Complement your order', confirm_service_prompt: 'Select the type of service:', confirm_name_placeholder: 'Your name...', confirm_address_placeholder: 'Delivery address...', confirm_phone_placeholder: 'Phone number...', confirm_whatsapp: 'Confirm on WhatsApp', confirm_add_items: '🛒 Add some items first!',
+        contact_whatsapp_title: 'WhatsApp', wifi_ssid_label: 'SSID', wifi_password_label: 'Password', wifi_password_copied: 'Password copied!',
+        toast_item_added: '✅ {item} added!', event_booking_name_label: 'Your name', event_booking_phone_label: 'Phone', event_booking_name_placeholder: 'Ex: Ahmed Alaoui', event_booking_phone_placeholder: 'Ex: 0612345678', event_booking_submit: '📩 Send on WhatsApp', event_booking_name_required: 'Please enter your name.', event_booking_phone_required: 'Please enter your phone number.', event_booking_title_prefix: 'Book: {type}',
+        wa_new_order_title: 'NEW ORDER – {restaurant}', wa_service_label: 'Service', wa_client_label: 'Client', wa_phone_label: 'Phone', wa_order_label: 'ORDER', wa_total_label: 'TOTAL', wa_thanks: 'Thank you at *{restaurant}*!', wa_event_title: 'EVENT BOOKING – {restaurant}', wa_contact_confirm: 'Please contact me to confirm the details!',
     },
     ar: {
         status_open: 'مفتوح', status_closed: 'مغلق', status_loading: 'جاري التحميل...',
@@ -1941,6 +1977,20 @@ window.translations = {
         ticket_order_no: 'طلب رقم', ticket_date: 'التاريخ', ticket_total: 'المجموع',
         ticket_service: 'الخدمة', ticket_client: 'الزبون', ticket_addr: 'العنوان',
         ticket_footer: 'يرجى تقديم هذه التذكرة عند الكاشير.',
+        social_instagram: 'Instagram', social_facebook: 'Facebook', social_tiktok: 'TikTok', social_tripadvisor: 'TripAdvisor', social_whatsapp: 'WhatsApp',
+        history_button_title: 'السجل', history_title: 'السجل', history_empty: 'لا توجد طلبات أخيرة.', history_delete_title: 'حذف', history_delete_confirm: 'هل تريد حذف هذه التذكرة من السجل؟',
+        landing_map_title: 'عرض على الخريطة', landing_call_title: 'اتصال', landing_social_title: 'حساباتنا الاجتماعية', landing_wifi_title: 'رمز الواي فاي', landing_home_title: 'الرئيسية',
+        game_rule_1: 'انتظر دورك ثم افتح صندوقاً.', game_rule_2: 'حاول تجنب اكتشاف علامة X.', game_rule_3: 'إذا وجدت علامة X فأنت من سيدفع الفاتورة.',
+        game_players_label: 'عدد اللاعبين', game_start_button: 'ابدأ اللعبة', game_board_subtitle: 'من يجد علامة X هو من سيدفع الفاتورة!', game_loss_text: 'اللاعب {player}، لقد وجدت علامة X.', game_loss_title: 'ادفع الفاتورة!',
+        promo_empty: '🔥 اكتشف عروضنا اليومية قريباً!', promo_offer_badge: 'عرض', promo_small_badge: 'برومو', promo_add_short: 'أضف',
+        price_from: 'يبدأ من', dish_promo_suffix: ' (برومو)', dish_default_desc: 'تحضير متقن بأفضل المكونات.',
+        cart_clear: 'إفراغ', cart_clear_confirm: 'هل تريد إفراغ السلة؟', cart_items_count: '{count} عنصر', cart_delivery_label: '📍 عنوان التوصيل', cart_delivery_placeholder: 'مثال: شقة 12، إقامة، حي...', cart_total_label: 'المجموع', cart_confirm_order: 'تأكيد طلبي',
+        service_onsite: 'داخل المطعم', service_takeaway: 'سفري', service_delivery: 'توصيل',
+        ticket_delivery_required: 'يرجى إدخال عنوان التوصيل.', ticket_number_prefix: 'تذكرة', ticket_type_label: 'النوع', ticket_total_prefix: 'المجموع:', ticket_edit: 'تعديل', ticket_order: 'اطلب', ticket_validate: 'تأكيد الطلب', ticket_helper: 'اضغط للحفظ وإظهاره إلى النادل', ticket_saved: 'تم حفظ الطلب ✔', ticket_saved_help: 'تم تأكيد التذكرة. اضغط للإغلاق.',
+        confirm_back: '← رجوع', confirm_cart_label: 'سلتك', confirm_complement_title: 'أكمل طلبك', confirm_service_prompt: 'اختر نوع الخدمة:', confirm_name_placeholder: 'اسمك...', confirm_address_placeholder: 'عنوان التوصيل...', confirm_phone_placeholder: 'رقم الهاتف...', confirm_whatsapp: 'أكد عبر واتساب', confirm_add_items: '🛒 أضف بعض الأطباق أولاً!',
+        contact_whatsapp_title: 'WhatsApp', wifi_ssid_label: 'SSID', wifi_password_label: 'كلمة المرور', wifi_password_copied: 'تم نسخ كلمة المرور!',
+        toast_item_added: '✅ تمت إضافة {item}!', event_booking_name_label: 'اسمك', event_booking_phone_label: 'الهاتف', event_booking_name_placeholder: 'مثال: Ahmed Alaoui', event_booking_phone_placeholder: 'مثال: 0612345678', event_booking_submit: '📩 أرسل عبر واتساب', event_booking_name_required: 'يرجى إدخال الاسم.', event_booking_phone_required: 'يرجى إدخال رقم الهاتف.', event_booking_title_prefix: 'احجز: {type}',
+        wa_new_order_title: 'طلب جديد – {restaurant}', wa_service_label: 'الخدمة', wa_client_label: 'الزبون', wa_phone_label: 'الهاتف', wa_order_label: 'الطلب', wa_total_label: 'المجموع', wa_thanks: 'شكراً لديكم من *{restaurant}*!', wa_event_title: 'حجز فعالية – {restaurant}', wa_contact_confirm: 'يرجى التواصل معي لتأكيد التفاصيل!',
     }
 };
 

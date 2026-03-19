@@ -97,6 +97,16 @@ function getSuperCategories() {
     return Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [];
 }
 
+function t(key, fallback, vars) {
+    if (typeof window.formatTranslation === 'function') {
+        return window.formatTranslation(key, fallback, vars);
+    }
+    if (typeof window.getTranslation === 'function') {
+        return window.getTranslation(key, fallback);
+    }
+    return fallback;
+}
+
 
 let navigationStack = []; // stack: 'landing', 'supercats', 'subcats:NAME', 'items:CAT'
 let currentSuperCat = null;
@@ -333,9 +343,7 @@ function renderLandingSocialLinks() {
     }
 
     if (links.length === 1) {
-        const emptyText = typeof window.getTranslation === 'function'
-            ? window.getTranslation('social_empty', 'No links configured yet.')
-            : 'No links configured yet.';
+        const emptyText = t('social_empty', 'No links configured yet.');
         links.push(`<span class="social-links-empty">${emptyText}</span>`);
     }
 
@@ -344,9 +352,9 @@ function renderLandingSocialLinks() {
 
 function openWiFiModal() {
     const config = window.restaurantConfig;
-    const wifiTitle = window.getTranslation('wifi_connect_title', 'Connect to WiFi');
-    const networkLabel = window.getTranslation('wifi_network_label', 'Network');
-    const closeLabel = window.getTranslation('modal_close', 'CLOSE');
+    const wifiTitle = t('wifi_connect_title', 'Connect to WiFi');
+    const networkLabel = t('wifi_network_label', 'Network');
+    const closeLabel = t('modal_close', 'CLOSE');
     const content = `
         <div class="modal-body menu-modal-body is-centered">
             <div class="menu-modal-icon">📶</div>
@@ -366,9 +374,9 @@ function openWiFiModal() {
 
 function openSocialModal() {
     const config = window.restaurantConfig;
-    const title = window.getTranslation('social_modal_title', 'Our social media');
-    const closeLabel = window.getTranslation('modal_close', 'CLOSE');
-    const emptyText = window.getTranslation('social_empty', 'No links configured yet.');
+    const title = t('social_modal_title', 'Our social media');
+    const closeLabel = t('modal_close', 'CLOSE');
+    const emptyText = t('social_empty', 'No links configured yet.');
     const whatsappNumber = window.getWhatsAppNumber();
     config.socials = config.socials || {};
     config.socials.instagram = window.getSafeExternalUrl(config.socials.instagram);
@@ -376,11 +384,11 @@ function openSocialModal() {
     config.socials.tiktok = window.getSafeExternalUrl(config.socials.tiktok);
     config.socials.tripadvisor = window.getSafeExternalUrl(config.socials.tripadvisor);
     const socials = [
-        config.socials.instagram ? `<a href="${config.socials.instagram}" target="_blank" class="social-item"><span class="social-item-icon">📸</span> <strong>Instagram</strong></a>` : '',
-        config.socials.facebook ? `<a href="${config.socials.facebook}" target="_blank" class="social-item"><span class="social-item-icon">📘</span> <strong>Facebook</strong></a>` : '',
-        config.socials.tiktok ? `<a href="${config.socials.tiktok}" target="_blank" class="social-item"><span class="social-item-icon">🎵</span> <strong>TikTok</strong></a>` : '',
-        config.socials.tripadvisor ? `<a href="${config.socials.tripadvisor}" target="_blank" class="social-item"><span class="social-item-icon">⭐</span> <strong>TripAdvisor</strong></a>` : '',
-        whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="social-item"><span class="social-item-icon">📞</span> <strong>WhatsApp</strong></a>` : ''
+        config.socials.instagram ? `<a href="${config.socials.instagram}" target="_blank" class="social-item"><span class="social-item-icon">📸</span> <strong>${t('social_instagram', 'Instagram')}</strong></a>` : '',
+        config.socials.facebook ? `<a href="${config.socials.facebook}" target="_blank" class="social-item"><span class="social-item-icon">📘</span> <strong>${t('social_facebook', 'Facebook')}</strong></a>` : '',
+        config.socials.tiktok ? `<a href="${config.socials.tiktok}" target="_blank" class="social-item"><span class="social-item-icon">🎵</span> <strong>${t('social_tiktok', 'TikTok')}</strong></a>` : '',
+        config.socials.tripadvisor ? `<a href="${config.socials.tripadvisor}" target="_blank" class="social-item"><span class="social-item-icon">⭐</span> <strong>${t('social_tripadvisor', 'TripAdvisor')}</strong></a>` : '',
+        whatsappNumber ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" class="social-item"><span class="social-item-icon">📞</span> <strong>${t('social_whatsapp', 'WhatsApp')}</strong></a>` : ''
     ].filter(Boolean).join('');
     const content = `
         <div class="modal-body menu-modal-body">
@@ -409,7 +417,7 @@ function renderPromoCarousel() {
     const promoItems = menu.filter(m => promoIds.includes(m.id));
 
     if (promoItems.length === 0) {
-        container.innerHTML = `<div class="promo-empty-msg">🔥 Découvrez nos promos du jour bientôt !</div>`;
+        container.innerHTML = `<div class="promo-empty-msg">${t('promo_empty', '🔥 Découvrez nos promos du jour bientôt !')}</div>`;
         scheduleMenuMotionRefresh();
         return;
     }
@@ -418,7 +426,7 @@ function renderPromoCarousel() {
         const discountedPrice = window.getItemPrice(item);
         return `
             <div class="promo-card-vibrant menu-reveal-observe" onclick="openDishPage(${item.id})">
-                <span class="promo-tag-glow">OFFRE</span>
+                <span class="promo-tag-glow">${t('promo_offer_badge', 'OFFRE')}</span>
                 <span class="promo-discount-badge">-20%</span>
                 <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => p.id === ${item.id}))">
                     ${imgTag(item)}
@@ -432,7 +440,7 @@ function renderPromoCarousel() {
                     </div>
                 </div>
                 <button class="promo-add-vibrant" onclick="event.stopPropagation();addToCart(${item.id})">
-                    AJOUTER
+                    ${t('promo_add_short', 'AJOUTER')}
                 </button>
             </div>
         `;
@@ -698,11 +706,11 @@ function renderMenu() {
                                 ❤️<span class="love-count">${window.getLikeCount(item.id)}</span>
                              </button>
                             <div class="menu-item-info">
-                                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? '<span class="promo-tag-small">PROMO</span>' : ''}</div>
+                                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
                                 <div class="menu-item-desc">${window.getLocalizedMenuDescription(item)}</div>
                                 <div class="menu-item-price">
                                     ${item.hasSizes
-                ? `<span style="font-size:0.7em; opacity:0.7;">À partir de</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
+                ? `<span style="font-size:0.7em; opacity:0.7;">${t('price_from', 'À partir de')}</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
                 : (window.isItemInPromo(item.id)
                     ? `<span class="price-discounted">${window.getItemPrice(item).toFixed(0)} MAD</span> <span class="price-original-item">${item.price.toFixed(0)} MAD</span>`
                     : `${item.price.toFixed(0)} MAD`)}
@@ -815,9 +823,9 @@ function openDishPage(id) {
         imgEl.onclick = null;
     }
 
-    if (nameEl) nameEl.textContent = window.getLocalizedMenuName(item) + (window.isItemInPromo(item.id) ? ' (PROMO)' : '');
+    if (nameEl) nameEl.textContent = window.getLocalizedMenuName(item) + (window.isItemInPromo(item.id) ? t('dish_promo_suffix', ' (PROMO)') : '');
     updateSizePrice();
-    if (descEl) descEl.textContent = window.getLocalizedMenuDescription(item, 'Une préparation soignée avec les meilleurs ingrédients.');
+    if (descEl) descEl.textContent = window.getLocalizedMenuDescription(item, t('dish_default_desc', 'Une préparation soignée avec les meilleurs ingrédients.'));
 
     if (addBtn) {
         addBtn.onclick = () => { addToCart(item.id, selectedSize); closeDishPage(); };
@@ -1016,6 +1024,11 @@ function renderDrawer() {
         { key: 'takeaway', icon: '🛍️', label: 'À Emporter' },
         { key: 'delivery', icon: '🛵', label: 'Livraison' }
     ];
+    serviceOptions.forEach((option) => {
+        if (option.key === 'onsite') option.label = t('service_onsite', option.label);
+        if (option.key === 'takeaway') option.label = t('service_takeaway', option.label);
+        if (option.key === 'delivery') option.label = t('service_delivery', option.label);
+    });
 
     content.innerHTML = `
         <div class="cart-drawer-body">
@@ -1024,8 +1037,8 @@ function renderDrawer() {
                     ${restaurantName}
                 </div>
                 <div class="cart-drawer-meta">
-                    <button onclick="if(confirm('Vider le panier ?')) { cart=[]; saveCart(); updateCartUI(); closeAllModals(); }" class="cart-drawer-clear">Vider</button>
-                    <div class="cart-drawer-count">${cart.length} items</div>
+                    <button onclick="if(confirm('${t('cart_clear_confirm', 'Vider le panier ?')}')) { cart=[]; saveCart(); updateCartUI(); closeAllModals(); }" class="cart-drawer-clear">${t('cart_clear', 'Vider')}</button>
+                    <div class="cart-drawer-count">${t('cart_items_count', '{count} item(s)', { count: cart.length })}</div>
                 </div>
             </div>
             <div class="cart-items-list">
@@ -1055,17 +1068,17 @@ function renderDrawer() {
             </div>
             ${serviceType === 'delivery' ? `
             <div class="cart-delivery-block">
-                <label class="cart-delivery-label">📍 Adresse de livraison</label>
-                <textarea id="deliveryAddress" rows="2" placeholder="Ex: Appartement 12, résidence, quartier..." oninput="window.currentDeliveryAddress = this.value" class="cart-delivery-input">${window.currentDeliveryAddress || ''}</textarea>
+                <label class="cart-delivery-label">${t('cart_delivery_label', '📍 Adresse de livraison')}</label>
+                <textarea id="deliveryAddress" rows="2" placeholder="${t('cart_delivery_placeholder', 'Ex : Appartement 12, résidence, quartier...')}" oninput="window.currentDeliveryAddress = this.value" class="cart-delivery-input">${window.currentDeliveryAddress || ''}</textarea>
             </div>
             ` : ''}
             <div class="cart-total-card">
                 <div class="cart-total-row">
-                    <span>Total</span><span>${total.toFixed(2)} MAD</span>
+                    <span>${t('cart_total_label', 'Total')}</span><span>${total.toFixed(2)} MAD</span>
                 </div>
             </div>
             <button onclick="generateTicket()" class="cart-confirm-btn">
-                CONFIRMER MA COMMANDE
+                ${t('cart_confirm_order', 'CONFIRMER MA COMMANDE')}
             </button>
         </div>
     `;
@@ -1095,17 +1108,17 @@ function renderHistory() {
     const container = document.getElementById('historyContent');
     if (!container) return;
     container.innerHTML = history.length === 0
-        ? '<p class="history-empty">Aucune commande récente.</p>'
+        ? `<p class="history-empty">${t('history_empty', 'Aucune commande récente.')}</p>`
         : history.map((t, i) => `
             <div class="history-ticket history-ticket-wrap">
                 ${t}
-                <button onclick="deleteHistoryItem(${i})" class="history-delete-btn" title="Supprimer">🗑️</button>
+                <button onclick="deleteHistoryItem(${i})" class="history-delete-btn" title="${t('history_delete_title', 'Supprimer')}">🗑️</button>
             </div>
         `).join('');
 }
 
 function deleteHistoryItem(index) {
-    if (!confirm('Supprimer ce ticket de l\'historique ?')) return;
+    if (!confirm(t('history_delete_confirm', 'Supprimer ce ticket de l\'historique ?'))) return;
     let h = typeof window.getStoredHistory === 'function'
         ? window.getStoredHistory()
         : [];
@@ -1146,7 +1159,7 @@ function updateHistoryBadge() {
 // ═══════════════════════ TICKET ═══════════════════════
 function generateTicket() {
     if (serviceType === 'delivery' && (!window.currentDeliveryAddress || window.currentDeliveryAddress.trim() === '')) {
-        alert('Veuillez saisir votre adresse de livraison.');
+        alert(t('ticket_delivery_required', 'Veuillez saisir votre adresse de livraison.'));
         return;
     }
     const total = cart.reduce((s, c) => s + (c.price * c.qty), 0);
@@ -1162,9 +1175,9 @@ function generateTicket() {
         : '';
 
     const serviceLabels = {
-        'onsite': 'Sur place',
-        'takeaway': 'À Emporter',
-        'delivery': 'Livraison'
+        onsite: t('service_onsite', 'Sur place'),
+        takeaway: t('service_takeaway', 'À emporter'),
+        delivery: t('service_delivery', 'Livraison')
     };
     const serviceLabel = serviceLabels[serviceType];
 
@@ -1176,9 +1189,9 @@ function generateTicket() {
                 <div class="ticket-brand-address">${restaurantAddress}</div>
             </div>
             <div class="ticket-summary">
-                <div class="ticket-number">TICKET #${orderNo}</div>
+                <div class="ticket-number">${t('ticket_number_prefix', 'TICKET')} #${orderNo}</div>
                 <div class="ticket-datetime">${now.toLocaleDateString()} — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                <div class="ticket-service">${serviceLabel}</div>
+                <div class="ticket-service">${t('ticket_type_label', 'Type')}: ${serviceLabel}</div>
                 ${serviceType === 'delivery' ? `<div class="ticket-delivery-address">📍 ${window.currentDeliveryAddress}</div>` : ''}
             </div>
             <div class="ticket-items">
@@ -1191,7 +1204,7 @@ function generateTicket() {
             </div>
             <div class="ticket-total-wrap">
                 <div class="ticket-total-box">
-                    TOTAL : ${total.toFixed(0)} dhs
+                    ${t('ticket_total_prefix', 'TOTAL :')} ${total.toFixed(0)} dhs
                 </div>
             </div>
             
@@ -1199,20 +1212,20 @@ function generateTicket() {
                 <div class="ticket-actions-grid">
                     <button onclick="document.getElementById('ticketModal').classList.remove('open'); document.getElementById('cartDrawer').classList.add('open');"
                             class="ticket-action-btn is-outline">
-                        MODIFIER
+                        ${t('ticket_edit', 'MODIFIER')}
                     </button>
                     <button onclick="sendOrderViaWhatsApp('${orderNo}', ${total.toFixed(2)}, '${serviceLabel}')"
                             class="ticket-action-btn is-primary">
-                        COMMANDER
+                        ${t('ticket_order', 'COMMANDER')}
                     </button>
                 </div>
             ` : `
                 <div id="ticketActions_${orderNo}" class="ticket-actions-single">
                     <button onclick="finalizeOrderSilent('${orderNo}', ${total.toFixed(2)}, '${serviceLabel}', this)"
                             class="ticket-action-btn is-dark">
-                        VALIDER LA COMMANDE
+                        ${t('ticket_validate', 'VALIDER LA COMMANDE')}
                     </button>
-                    <div class="ticket-helper">Cliquez pour enregistrer et montrer au serveur</div>
+                    <div class="ticket-helper">${t('ticket_helper', 'Cliquez pour enregistrer et montrer au serveur')}</div>
                 </div>
             `}
         </div>
@@ -1224,7 +1237,7 @@ function generateTicket() {
 
 function finalizeOrder(orderNo, total, serviceLabel) {
     const now = new Date();
-    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\n${serviceType === 'delivery' ? 'Adresse: ' + window.currentDeliveryAddress.trim() + '\n' : ''}Total: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
+    const historyText = `${t('ticket_number_prefix', 'TICKET')} #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\n${t('ticket_type_label', 'Type')}: ${serviceLabel}\n${serviceType === 'delivery' ? `${t('ticket_addr', 'Adresse')}: ${window.currentDeliveryAddress.trim()}\n` : ''}${t('ticket_total', 'TOTAL')}: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
     saveToHistory(historyText);
 
     // Clear and return home
@@ -1242,7 +1255,7 @@ function finalizeOrder(orderNo, total, serviceLabel) {
  */
 function finalizeOrderSilent(orderNo, total, serviceLabel, btn) {
     const now = new Date();
-    const historyText = `TICKET #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\nType: ${serviceLabel}\nTotal: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
+    const historyText = `${t('ticket_number_prefix', 'TICKET')} #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\n${t('ticket_type_label', 'Type')}: ${serviceLabel}\n${t('ticket_total', 'TOTAL')}: ${total.toFixed(0)} MAD\n---\n${cart.map(i => i.qty + 'x ' + window.getLocalizedMenuName(i)).join('\n')}`;
     saveToHistory(historyText);
 
     // Clear background data
@@ -1256,29 +1269,29 @@ function finalizeOrderSilent(orderNo, total, serviceLabel, btn) {
     parent.innerHTML = `
         <button onclick="closeAllModals(); showLanding();"
                 class="ticket-action-btn is-success">
-            COMMANDE ENREGISTRÉE ✔
+            ${t('ticket_saved', 'COMMANDE ENREGISTRÉE ✔')}
         </button>
-        <div class="ticket-helper is-success">Ticket validé ! Cliquez pour fermer.</div>
+        <div class="ticket-helper is-success">${t('ticket_saved_help', 'Ticket validé ! Cliquez pour fermer.')}</div>
     `;
 }
 
 function sendOrderViaWhatsApp(orderNo, total, serviceLabel) {
     // WhatsApp formatting
-    let waText = `*NOUVELLE COMMANDE #${orderNo}*\n`;
-    waText += `Type: ${serviceLabel}\n`;
+    let waText = `*${t('wa_new_order_title', 'NOUVELLE COMMANDE – {restaurant}', { restaurant: `#${orderNo}` })}*\n`;
+    waText += `${t('ticket_type_label', 'Type')}: ${serviceLabel}\n`;
     if (serviceType === 'delivery') {
-        waText += `📍 Adresse: ${window.currentDeliveryAddress.trim()}\n`;
+        waText += `📍 ${t('ticket_addr', 'Adresse')}: ${window.currentDeliveryAddress.trim()}\n`;
     }
     waText += `---------------------------\n`;
     cart.forEach(item => {
         waText += `${item.qty}x ${window.getLocalizedMenuName(item)} - ${(item.price * item.qty).toFixed(0)} dhs\n`;
     });
     waText += `---------------------------\n`;
-    waText += `*TOTAL: ${total.toFixed(0)} dhs*\n`;
+    waText += `*${t('wa_total_label', 'TOTAL')}: ${total.toFixed(0)} dhs*\n`;
 
     const phone = window.getWhatsAppNumber();
     if (!phone) {
-        window.showToast(window.getTranslation('social_empty', 'Aucun lien configuré.'));
+        window.showToast(t('social_empty', 'Aucun lien configuré.'));
         return;
     }
 

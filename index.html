@@ -46,7 +46,7 @@
       </div>
       <div class="top-contact">
         <span id="topPhoneDisplay">📞 05393-007 07</span>
-        <span id="topAddressDisplay">📍 Adresse du restaurant</span>
+        <span id="topAddressDisplay"></span>
       </div>
     </div>
   </div>
@@ -280,7 +280,7 @@
         <div class="contact-card" id="contactAddressCard">
           <div class="contact-icon">📍</div>
           <h3 data-i18n="contact_address_title">Adresse</h3>
-          <p id="contactAddressText">Adresse du restaurant</p>
+          <p id="contactAddressText"></p>
         </div>
         <div class="contact-card">
           <div class="contact-icon">📞</div>
@@ -289,15 +289,11 @@
         </div>
         <div class="contact-card">
           <div class="contact-icon">💬</div>
-          <h3>WhatsApp</h3>
+          <h3 data-i18n="contact_whatsapp_title">WhatsApp</h3>
           <p><a href="tel:+212600000000" id="contactWALink">+212 600 000 000</a></p>
         </div>
       </div>
-      <div class="social-links" id="contactSocialLinks">
-        <a href="#" class="social-btn">📸 Instagram</a>
-        <a href="#" class="social-btn">📘 Facebook</a>
-        <a href="#" class="social-btn">⭐ TripAdvisor</a>
-      </div>
+      <div class="social-links" id="contactSocialLinks"></div>
     </div>
   </section>
 
@@ -305,25 +301,25 @@
   <div class="confirm-overlay" id="confirmOverlay" onclick="closeConfirm()"></div>
   <div class="confirm-page" id="confirmPage">
     <div class="confirm-top">
-      <button class="confirm-back" onclick="closeConfirm()">← Back</button>
-      <div class="confirm-cart-info">Your cart <strong id="confirmTotal">MAD 0</strong></div>
+      <button class="confirm-back" onclick="closeConfirm()" data-i18n="confirm_back">← Back</button>
+      <div class="confirm-cart-info"><span data-i18n="confirm_cart_label">Your cart</span> <strong id="confirmTotal">MAD 0</strong></div>
     </div>
     <div class="confirm-items" id="confirmItems"></div>
     <div class="complement-section" id="complementSection">
-      <h3>Complement your order</h3>
+      <h3 data-i18n="confirm_complement_title">Complement your order</h3>
       <div class="complement-scroll" id="complementScroll"></div>
     </div>
     <div class="service-section">
-      <p>Select the type of service:</p>
+      <p data-i18n="confirm_service_prompt">Select the type of service:</p>
       <div class="service-btns">
-        <button class="svc-btn active" data-svc="onsite" onclick="selectService('onsite',this)">🍽️ On Site</button>
-        <button class="svc-btn" data-svc="takeaway" onclick="selectService('takeaway',this)">🛍️ Take Away</button>
-        <button class="svc-btn" data-svc="delivery" onclick="selectService('delivery',this)">🚚 Delivery</button>
+        <button class="svc-btn active" data-svc="onsite" onclick="selectService('onsite',this)">🍽️ <span data-i18n="service_onsite">On Site</span></button>
+        <button class="svc-btn" data-svc="takeaway" onclick="selectService('takeaway',this)">🛍️ <span data-i18n="service_takeaway">Take Away</span></button>
+        <button class="svc-btn" data-svc="delivery" onclick="selectService('delivery',this)">🚚 <span data-i18n="service_delivery">Delivery</span></button>
       </div>
       <div class="delivery-fields" id="deliveryFields" style="display:none">
-        <input id="cName" placeholder="Votre nom..." class="cf-input" />
-        <input id="cAddr" placeholder="Adresse de livraison..." class="cf-input" />
-        <input id="cPhone" placeholder="Numéro de téléphone..." class="cf-input" />
+        <input id="cName" placeholder="Votre nom..." data-i18n-placeholder="confirm_name_placeholder" class="cf-input" />
+        <input id="cAddr" placeholder="Adresse de livraison..." data-i18n-placeholder="confirm_address_placeholder" class="cf-input" />
+        <input id="cPhone" placeholder="Numéro de téléphone..." data-i18n-placeholder="confirm_phone_placeholder" class="cf-input" />
       </div>
     </div>
     <div class="confirm-footer">
@@ -334,7 +330,7 @@
           <path
             d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.533 5.859L.057 23.743a.75.75 0 0 0 .943.882l6.066-1.587A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.694-.498-5.25-1.369L2.5 21.75l1.133-4.146A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
         </svg>
-        Confirmer sur WhatsApp
+        <span data-i18n="confirm_whatsapp">Confirmer sur WhatsApp</span>
       </button>
     </div>
   </div>
@@ -343,7 +339,7 @@
   <footer class="footer" id="footer">
     <div class="footer-inner">
       <div class="footer-brand"><span id="footerBrandIcon">🍽️</span> <strong id="footerBrandName">Restaurant</strong></div>
-      <p id="footerAddressText">Adresse du restaurant</p>
+      <p id="footerAddressText"></p>
       <p id="footerNoteText" data-i18n="footer_note">Cuisine sincère, service chaleureux et accueil de proximité.</p>
       <div class="footer-social" id="footerSocial"></div>
       <p class="footer-copy" id="footerCopyText">© 2026 Restaurant — Tous droits réservés.</p>
@@ -361,8 +357,8 @@
       <div class="wifi-modal-icon">📶</div>
       <h2 data-i18n="wifi_title">WiFi Gratuit</h2>
       <div class="wifi-modal-box">
-        <p id="wifiSSIDDisplay"><strong>SSID:</strong> <span>Chargement...</span></p>
-        <p><strong>Password:</strong> <code id="wifiPass">...</code> <button class="copy-wifi-btn"
+        <p id="wifiSSIDDisplay"><strong data-i18n="wifi_ssid_label">SSID</strong>: <span data-i18n="status_loading">Chargement...</span></p>
+        <p><strong data-i18n="wifi_password_label">Password</strong>: <code id="wifiPass">...</code> <button class="copy-wifi-btn"
             onclick="copyWifi()">📋</button></p>
       </div>
       <div class="qr-container">
@@ -397,8 +393,8 @@
         <div class="thumb-strip" id="thumbStrip"></div>
       </div>
       <div class="product-modal-info">
-        <h2 id="detailName">Nom du Produit</h2>
-        <p class="detail-desc" id="detailDesc">Description courte...</p>
+        <h2 id="detailName"></h2>
+        <p class="detail-desc" id="detailDesc"></p>
         <div class="detail-price" id="detailPrice">MAD 0.00</div>
 
         <div class="detail-ingredients" id="detailIngredientsWrap">
@@ -419,20 +415,20 @@
     <button class="event-booking-close" onclick="closeEventModal()">✕</button>
     <div class="event-booking-header">
       <div class="event-booking-icon" id="eventBookingIcon">📅</div>
-      <h2 id="eventBookingTitle">Réserver un Événement</h2>
-      <p id="eventBookingSubtitle">Parlez-nous de votre projet</p>
+      <h2 id="eventBookingTitle"></h2>
+      <p id="eventBookingSubtitle" data-i18n="event_booking_subtitle">Parlez-nous de votre projet</p>
     </div>
     <div class="event-booking-form">
       <div class="booking-field">
-        <label for="eventCustName">Votre Nom</label>
-        <input type="text" id="eventCustName" placeholder="Ex: Ahmed Alaoui" class="booking-input" />
+        <label for="eventCustName" data-i18n="event_booking_name_label">Votre Nom</label>
+        <input type="text" id="eventCustName" placeholder="Ex: Ahmed Alaoui" data-i18n-placeholder="event_booking_name_placeholder" class="booking-input" />
       </div>
       <div class="booking-field">
-        <label for="eventCustPhone">Téléphone</label>
-        <input type="tel" id="eventCustPhone" placeholder="Ex: 0612345678" class="booking-input" />
+        <label for="eventCustPhone" data-i18n="event_booking_phone_label">Téléphone</label>
+        <input type="tel" id="eventCustPhone" placeholder="Ex: 0612345678" data-i18n-placeholder="event_booking_phone_placeholder" class="booking-input" />
       </div>
       <button class="booking-submit-btn" onclick="sendEventWA()">
-        📩 Envoyer sur WhatsApp
+        <span data-i18n="event_booking_submit">📩 Envoyer sur WhatsApp</span>
       </button>
     </div>
   </div>
