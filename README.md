@@ -9,6 +9,7 @@ It is now a seller-oriented white-label restaurant website template with:
 - a protected admin panel
 - multilingual content support for French / English / Arabic
 - admin shell i18n for login, seller tools, readiness, and security surfaces
+- admin form i18n for the main menu/category/branding/landing configuration surfaces
 - branding, hero, and media management
 - support for multiple homepage hero slide images
 - preset-aware branding controls for colors, surfaces, text, and menu mood

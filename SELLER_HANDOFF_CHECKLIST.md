@@ -98,6 +98,7 @@ Before publishing the menu:
 - review category names and super-category labels in FR / EN / AR
 - review menu landing labels, cart/ticket flow, social/WiFi modals, and game/event prompts in FR / EN / AR
 - review admin seller-facing screens in FR / EN / AR too: login, sidebar, Seller Tools, Launch Readiness, handoff summary, and security text
+- review the main admin setup forms in FR / EN / AR too: menu item editor, categories, branding, landing, WiFi, and business overview labels/placeholders
 - confirm prices
 - confirm promo flags
 - confirm featured flags
