@@ -474,7 +474,21 @@
       "cats": [
         "Entrées",
         "Plats"
-      ]
+      ],
+      "translations": {
+        "fr": {
+          "name": "Cuisine maison",
+          "desc": "Entrées et recettes signatures"
+        },
+        "en": {
+          "name": "House kitchen",
+          "desc": "Starters and signature recipes"
+        },
+        "ar": {
+          "name": "مطبخ المنزل",
+          "desc": "مقبلات ووصفات مميزة"
+        }
+      }
     },
     {
       "id": "signatures",
@@ -483,7 +497,21 @@
       "emoji": "⭐",
       "cats": [
         "Signatures"
-      ]
+      ],
+      "translations": {
+        "fr": {
+          "name": "Suggestions maison",
+          "desc": "Assiettes, sandwichs et recettes flexibles"
+        },
+        "en": {
+          "name": "House suggestions",
+          "desc": "Plates, sandwiches, and flexible house recipes"
+        },
+        "ar": {
+          "name": "اقتراحات المنزل",
+          "desc": "أطباق وسندويشات ووصفات منزلية مرنة"
+        }
+      }
     },
     {
       "id": "desserts",
@@ -492,7 +520,21 @@
       "emoji": "🍰",
       "cats": [
         "Desserts"
-      ]
+      ],
+      "translations": {
+        "fr": {
+          "name": "Douceurs",
+          "desc": "Desserts pour finir en beauté"
+        },
+        "en": {
+          "name": "Sweet treats",
+          "desc": "Desserts to finish beautifully"
+        },
+        "ar": {
+          "name": "حلويات",
+          "desc": "حلويات لنهاية جميلة"
+        }
+      }
     },
     {
       "id": "boissons",
@@ -501,7 +543,21 @@
       "emoji": "🥤",
       "cats": [
         "Boissons"
-      ]
+      ],
+      "translations": {
+        "fr": {
+          "name": "Boissons",
+          "desc": "Boissons fraîches et boissons chaudes"
+        },
+        "en": {
+          "name": "Drinks",
+          "desc": "Cold drinks and hot beverages"
+        },
+        "ar": {
+          "name": "المشروبات",
+          "desc": "مشروبات باردة ومشروبات ساخنة"
+        }
+      }
     }
   ],
   "hours": [

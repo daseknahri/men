@@ -49,6 +49,29 @@ function cloneStarterMenuItem(item) {
     };
 }
 
+function repairPossibleMojibake(value) {
+    let result = typeof value === 'string' ? value : '';
+    for (let i = 0; i < 2; i += 1) {
+        if (!/[ÃØÙðâ]/.test(result)) break;
+        try {
+            const repaired = decodeURIComponent(escape(result));
+            if (!repaired || repaired === result) break;
+            result = repaired;
+        } catch (_error) {
+            break;
+        }
+    }
+    return result;
+}
+
+function canonicalMenuLookupKey(value) {
+    const repaired = repairPossibleMojibake(String(value || '').trim());
+    return repaired
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
 window.whiteLabelStarterSeed = {
     menu: [
         {
@@ -297,28 +320,48 @@ window.whiteLabelStarterSeed = {
             name: "Cuisine maison",
             desc: "Entrées et recettes signatures",
             emoji: "🍽️",
-            cats: ["Entrées", "Plats"]
+            cats: ["Entrées", "Plats"],
+            translations: {
+                fr: { name: "Cuisine maison", desc: "Entrées et recettes signatures" },
+                en: { name: "House kitchen", desc: "Starters and signature recipes" },
+                ar: { name: "مطبخ المنزل", desc: "مقبلات ووصفات مميزة" }
+            }
         },
         {
             id: "signatures",
             name: "Signatures",
             desc: "Assiettes, sandwichs et recettes maison",
             emoji: "⭐",
-            cats: ["Signatures"]
+            cats: ["Signatures"],
+            translations: {
+                fr: { name: "Suggestions maison", desc: "Assiettes, sandwichs et recettes flexibles" },
+                en: { name: "House suggestions", desc: "Plates, sandwiches, and flexible house recipes" },
+                ar: { name: "اقتراحات المنزل", desc: "أطباق وسندويشات ووصفات منزلية مرنة" }
+            }
         },
         {
             id: "desserts",
             name: "Douceurs",
             desc: "Desserts pour finir en beauté",
             emoji: "🍰",
-            cats: ["Desserts"]
+            cats: ["Desserts"],
+            translations: {
+                fr: { name: "Douceurs", desc: "Desserts pour finir en beauté" },
+                en: { name: "Sweet treats", desc: "Desserts to finish beautifully" },
+                ar: { name: "حلويات", desc: "حلويات لنهاية جميلة" }
+            }
         },
         {
             id: "boissons",
             name: "Boissons",
             desc: "Boissons fraîches et boissons chaudes",
             emoji: "🥤",
-            cats: ["Boissons"]
+            cats: ["Boissons"],
+            translations: {
+                fr: { name: "Boissons", desc: "Boissons fraîches et boissons chaudes" },
+                en: { name: "Drinks", desc: "Cold drinks and hot beverages" },
+                ar: { name: "المشروبات", desc: "مشروبات باردة ومشروبات ساخنة" }
+            }
         }
     ]
 };
@@ -328,6 +371,57 @@ window.defaultMenu = window.whiteLabelStarterSeed.menu.map(cloneStarterMenuItem)
 window.defaultCatEmojis = { ...window.whiteLabelStarterSeed.catEmojis };
 window.defaultCategoryTranslations = cloneStarterTranslationMap(window.whiteLabelStarterSeed.categoryTranslations);
 window.defaultSuperCategories = window.whiteLabelStarterSeed.superCategories.map(cloneStarterSuperCategory);
+
+const STARTER_CATEGORY_TRANSLATION_FALLBACKS = {
+    entrees: {
+        fr: { name: "Entrées" },
+        en: { name: "Starters" },
+        ar: { name: "المقبلات" }
+    },
+    plats: {
+        fr: { name: "Plats" },
+        en: { name: "Mains" },
+        ar: { name: "الأطباق الرئيسية" }
+    },
+    signatures: {
+        fr: { name: "Signatures" },
+        en: { name: "Signatures" },
+        ar: { name: "الأطباق المميزة" }
+    },
+    desserts: {
+        fr: { name: "Desserts" },
+        en: { name: "Desserts" },
+        ar: { name: "الحلويات" }
+    },
+    boissons: {
+        fr: { name: "Boissons" },
+        en: { name: "Drinks" },
+        ar: { name: "المشروبات" }
+    }
+};
+
+const STARTER_SUPERCATEGORY_TRANSLATION_FALLBACKS = {
+    cuisine: {
+        fr: { name: "Cuisine maison", desc: "Entrées et recettes signatures" },
+        en: { name: "House kitchen", desc: "Starters and signature recipes" },
+        ar: { name: "مطبخ المنزل", desc: "مقبلات ووصفات مميزة" }
+    },
+    signatures: {
+        fr: { name: "Suggestions maison", desc: "Assiettes, sandwichs et recettes flexibles" },
+        en: { name: "House suggestions", desc: "Plates, sandwiches, and flexible house recipes" },
+        ar: { name: "اقتراحات المنزل", desc: "أطباق وسندويشات ووصفات منزلية مرنة" }
+    },
+    desserts: {
+        fr: { name: "Douceurs", desc: "Desserts pour finir en beauté" },
+        en: { name: "Sweet treats", desc: "Desserts to finish beautifully" },
+        ar: { name: "حلويات", desc: "حلويات لنهاية جميلة" }
+    },
+    boissons: {
+        fr: { name: "Boissons", desc: "Boissons fraîches et boissons chaudes" },
+        en: { name: "Drinks", desc: "Cold drinks and hot beverages" },
+        ar: { name: "المشروبات", desc: "مشروبات باردة ومشروبات ساخنة" }
+    }
+};
 
 const starterCategoryKeys = Object.keys(window.defaultCatEmojis);
 if (!window.defaultCategoryTranslations[starterCategoryKeys[0]]) {
@@ -1175,10 +1269,32 @@ function normalizeEntityTranslations(input) {
 function normalizeCategoryTranslations(input) {
     const source = input && typeof input === 'object' ? input : {};
     const out = {};
+    const knownCategoryEntries = Object.keys(window.defaultCatEmojis || {}).map((key) => ({
+        raw: key,
+        canonical: canonicalMenuLookupKey(key)
+    }));
 
     Object.entries(source).forEach(([key, value]) => {
         if (typeof key !== 'string' || !key.trim()) return;
-        out[key.trim()] = normalizeEntityTranslations(value);
+        const trimmedKey = key.trim();
+        const canonicalKey = canonicalMenuLookupKey(trimmedKey);
+        const knownMatch = knownCategoryEntries.find((entry) => entry.canonical === canonicalKey);
+        const targetKey = knownMatch ? knownMatch.raw : repairPossibleMojibake(trimmedKey);
+        out[targetKey] = normalizeEntityTranslations(value);
+    });
+
+    knownCategoryEntries.forEach(({ raw, canonical }) => {
+        if (!out[raw]) {
+            out[raw] = normalizeEntityTranslations(STARTER_CATEGORY_TRANSLATION_FALLBACKS[canonical]);
+            return;
+        }
+
+        const fallback = normalizeEntityTranslations(STARTER_CATEGORY_TRANSLATION_FALLBACKS[canonical]);
+        ['fr', 'en', 'ar'].forEach((lang) => {
+            if (!out[raw][lang].name && fallback[lang].name) {
+                out[raw][lang].name = fallback[lang].name;
+            }
+        });
     });
 
     return out;
@@ -1188,8 +1304,20 @@ function normalizeSuperCategories(input) {
     const source = Array.isArray(input) ? input : [];
     return source.map((group) => ({
         ...(group && typeof group === 'object' ? group : {}),
-        cats: Array.isArray(group?.cats) ? group.cats.filter(Boolean) : [],
-        translations: normalizeEntityTranslations(group?.translations)
+        name: repairPossibleMojibake(group?.name || ''),
+        desc: repairPossibleMojibake(group?.desc || ''),
+        cats: Array.isArray(group?.cats) ? group.cats.filter(Boolean).map((value) => repairPossibleMojibake(value)) : [],
+        translations: (() => {
+            const fallback = normalizeEntityTranslations(
+                STARTER_SUPERCATEGORY_TRANSLATION_FALLBACKS[String(group?.id || '').trim()] || {}
+            );
+            const current = normalizeEntityTranslations(group?.translations);
+            ['fr', 'en', 'ar'].forEach((lang) => {
+                if (!current[lang].name && fallback[lang].name) current[lang].name = fallback[lang].name;
+                if (!current[lang].desc && fallback[lang].desc) current[lang].desc = fallback[lang].desc;
+            });
+            return current;
+        })()
     }));
 }
 
@@ -1290,15 +1418,19 @@ window.getLocalizedMenuField = function (item, field, fallback = '') {
 
 window.getLocalizedCategoryName = function (categoryKey, fallback = '') {
     const rawKey = typeof categoryKey === 'string' ? categoryKey : '';
-    const translations = window.restaurantConfig?.categoryTranslations?.[rawKey];
+    const categoryMap = window.restaurantConfig?.categoryTranslations || {};
+    const direct = categoryMap[rawKey];
+    const canonicalKey = canonicalMenuLookupKey(rawKey);
+    const aliasKey = Object.keys(categoryMap).find((key) => canonicalMenuLookupKey(key) === canonicalKey);
+    const translations = direct || (aliasKey ? categoryMap[aliasKey] : undefined);
     const lang = window.currentLang || document.documentElement.lang || 'fr';
     const translated = translations?.[lang]?.name;
 
     if (typeof translated === 'string' && translated.trim()) {
-        return translated.trim();
+        return repairPossibleMojibake(translated.trim());
     }
     if (rawKey.trim()) {
-        return rawKey.trim();
+        return repairPossibleMojibake(rawKey.trim());
     }
     return fallback;
 };
@@ -1309,12 +1441,12 @@ window.getLocalizedSuperCategoryField = function (superCategory, field, fallback
     const translated = superCategory.translations?.[lang]?.[field];
 
     if (typeof translated === 'string' && translated.trim()) {
-        return translated.trim();
+        return repairPossibleMojibake(translated.trim());
     }
 
     const baseValue = superCategory[field];
     if (typeof baseValue === 'string' && baseValue.trim()) {
-        return baseValue.trim();
+        return repairPossibleMojibake(baseValue.trim());
     }
 
     return fallback;
