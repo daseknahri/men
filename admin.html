@@ -2760,8 +2760,8 @@
                 <div class="tool-card tool-card--accent tool-card--wide">
                     <div class="tool-card-eyebrow">Importer</div>
                     <h4>AI Import Studio</h4>
-                    <p>Upload menu images plus optional logo and venue photos. This first seller-only importer generates a reviewable draft for menu data, categories, super-categories, translations, and starter branding suggestions before anything is applied live.</p>
-                    <p class="muted-copy">Current scope: image-based drafts only. Use up to 8 menu images and 6 venue photos per run. PDF ingestion comes next.</p>
+                    <p>Upload menu images or a menu PDF plus optional logo and venue photos. This seller-only importer generates a reviewable draft for menu data, categories, super-categories, translations, and starter branding suggestions before anything is applied live.</p>
+                    <p class="muted-copy">Current scope: up to 8 total menu files and 6 venue photos per run. Every run is also saved into a local seller job folder for review and retry.</p>
                     <div class="form-group">
                         <label for="importStudioRestaurantName">Restaurant Name</label>
                         <input type="text" id="importStudioRestaurantName" placeholder="e.g. Matsco" />
@@ -2771,8 +2771,8 @@
                         <input type="text" id="importStudioShortName" placeholder="e.g. Matsco" />
                     </div>
                     <div class="form-group">
-                        <label for="importStudioMenuFiles">Menu Images</label>
-                        <input type="file" id="importStudioMenuFiles" accept="image/*" multiple />
+                        <label for="importStudioMenuFiles">Menu Images / PDF</label>
+                        <input type="file" id="importStudioMenuFiles" accept="image/*,.pdf,application/pdf" multiple />
                     </div>
                     <div class="form-group">
                         <label for="importStudioLogoFile">Logo Image (optional)</label>

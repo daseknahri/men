@@ -16,8 +16,16 @@ const { ensureStorage, readData, resetToBundledData, uploadsDir, writeData } = r
 const {
   approveLibraryAsset,
   ensureMediaLibraryStructure,
+  findApprovedProductAssetForMenuItem,
   registerLibraryAsset
 } = require("./media-library/library");
+const {
+  copyFileIntoSellerJob,
+  createSellerJob,
+  ensureSellerJobsStructure,
+  writeSellerJobJson,
+  writeSellerJobText
+} = require("./seller-jobs/jobs");
 
 const DEFAULT_ADMIN_USER = "admin";
 const DEFAULT_ADMIN_PASS = "foody2026";
@@ -388,6 +396,7 @@ function guessMimeType(filePath) {
   if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
   if (ext === ".webp") return "image/webp";
   if (ext === ".gif") return "image/gif";
+  if (ext === ".pdf") return "application/pdf";
   return "";
 }
 
@@ -415,12 +424,51 @@ function buildInputImageFromUploadUrl(value) {
   const filePath = resolveLocalUploadPath(value);
   if (!filePath || !fs.existsSync(filePath)) return null;
   const mimeType = guessMimeType(filePath);
-  if (!mimeType) return null;
+  if (!mimeType || !mimeType.startsWith("image/")) return null;
   const base64 = fs.readFileSync(filePath).toString("base64");
   return {
     type: "input_image",
     image_url: `data:${mimeType};base64,${base64}`
   };
+}
+
+function buildInputFileFromUploadUrl(value) {
+  const filePath = resolveLocalUploadPath(value);
+  if (!filePath || !fs.existsSync(filePath)) return null;
+  const mimeType = guessMimeType(filePath);
+  if (mimeType !== "application/pdf") return null;
+  const base64 = fs.readFileSync(filePath).toString("base64");
+  return {
+    type: "input_file",
+    filename: path.basename(filePath),
+    file_data: `data:${mimeType};base64,${base64}`
+  };
+}
+
+function copyUploadUrlsToSellerJob(jobId, relativeDir, urls = []) {
+  const copied = [];
+  urls.forEach((url, index) => {
+    const sourcePath = resolveLocalUploadPath(url);
+    if (!sourcePath || !fs.existsSync(sourcePath)) return;
+    const targetPath = copyFileIntoSellerJob(jobId, relativeDir, sourcePath, `${String(index + 1).padStart(2, "0")}-${path.basename(sourcePath)}`);
+    copied.push(targetPath);
+  });
+  return copied;
+}
+
+function materializeLibraryAssetToUpload(asset) {
+  const relativePath = typeof asset?.filepath === "string" ? asset.filepath.trim() : "";
+  if (!relativePath) return "";
+
+  const sourcePath = path.join(__dirname, relativePath.replace(/\//g, path.sep));
+  if (!fs.existsSync(sourcePath)) return "";
+
+  const extension = path.extname(sourcePath).toLowerCase() || ".png";
+  const filename = `library_${Date.now()}_${crypto.randomBytes(6).toString("hex")}${extension}`;
+  const outputPath = path.join(uploadsDir, filename);
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.copyFileSync(sourcePath, outputPath);
+  return `/uploads/${filename}`;
 }
 
 function saveGeneratedImage(base64Data, prefix = "generated") {
@@ -1018,6 +1066,55 @@ async function generateSellerMediaImage(input) {
   };
 }
 
+function applyImporterProductLibraryMatches(draft) {
+  const nextDraft = draft && typeof draft === "object" ? JSON.parse(JSON.stringify(draft)) : {};
+  const restaurantData = nextDraft.restaurantData && typeof nextDraft.restaurantData === "object"
+    ? nextDraft.restaurantData
+    : {};
+  const menuItems = Array.isArray(restaurantData.menu) ? restaurantData.menu : [];
+  const assetUrlCache = new Map();
+  let matchedCount = 0;
+
+  restaurantData.menu = menuItems.map((item) => {
+    const primaryImage = typeof item?.img === "string" && item.img.trim()
+      ? item.img.trim()
+      : (Array.isArray(item?.images) ? item.images.find((value) => typeof value === "string" && value.trim()) : "");
+    if (primaryImage) return item;
+
+    const matchedAsset = findApprovedProductAssetForMenuItem(item);
+    if (!matchedAsset) return item;
+
+    let uploadUrl = assetUrlCache.get(matchedAsset.assetId);
+    if (!uploadUrl) {
+      uploadUrl = materializeLibraryAssetToUpload(matchedAsset);
+      if (!uploadUrl) return item;
+      assetUrlCache.set(matchedAsset.assetId, uploadUrl);
+    }
+
+    matchedCount += 1;
+    return {
+      ...item,
+      img: uploadUrl,
+      images: [uploadUrl]
+    };
+  });
+
+  nextDraft.restaurantData = restaurantData;
+
+  const review = nextDraft.review && typeof nextDraft.review === "object" ? nextDraft.review : {};
+  const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
+  if (matchedCount > 0) {
+    warnings.push(`Local media library matched ${matchedCount} menu item image(s) before seller apply.`);
+  }
+  nextDraft.review = {
+    ...review,
+    warnings,
+    mediaLibraryMatches: matchedCount
+  };
+
+  return { draft: nextDraft, matchedCount };
+}
+
 async function generateImporterDraft(input) {
   if (!process.env.OPENAI_API_KEY) {
     const error = new Error("openai_not_configured");
@@ -1026,107 +1123,152 @@ async function generateImporterDraft(input) {
   }
 
   const menuImageUrls = Array.isArray(input.menuImageUrls) ? input.menuImageUrls.slice(0, IMPORTER_MAX_MENU_IMAGES) : [];
+  const menuPdfUrls = Array.isArray(input.menuPdfUrls) ? input.menuPdfUrls.slice(0, IMPORTER_MAX_MENU_IMAGES) : [];
   const restaurantPhotoUrls = Array.isArray(input.restaurantPhotoUrls) ? input.restaurantPhotoUrls.slice(0, IMPORTER_MAX_VENUE_IMAGES) : [];
   const logoImageUrl = typeof input.logoImageUrl === "string" ? input.logoImageUrl.trim() : "";
   const restaurantName = typeof input.restaurantName === "string" ? input.restaurantName.trim() : "";
   const shortName = typeof input.shortName === "string" ? input.shortName.trim() : "";
   const notes = typeof input.notes === "string" ? input.notes.trim() : "";
+  const job = createSellerJob("import");
 
-  const imageInputs = [
-    ...menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean),
-    ...(logoImageUrl ? [buildInputImageFromUploadUrl(logoImageUrl)].filter(Boolean) : []),
-    ...restaurantPhotoUrls.map(buildInputImageFromUploadUrl).filter(Boolean)
-  ];
+  try {
+    writeSellerJobJson(job.jobId, "input/request.json", {
+      restaurantName,
+      shortName,
+      notes,
+      menuImageUrls,
+      menuPdfUrls,
+      logoImageUrl,
+      restaurantPhotoUrls,
+      model: OPENAI_IMPORT_MODEL
+    });
+    copyUploadUrlsToSellerJob(job.jobId, "input/menu-images", menuImageUrls);
+    copyUploadUrlsToSellerJob(job.jobId, "input/menu-pdfs", menuPdfUrls);
+    copyUploadUrlsToSellerJob(job.jobId, "input/logo", logoImageUrl ? [logoImageUrl] : []);
+    copyUploadUrlsToSellerJob(job.jobId, "input/venue", restaurantPhotoUrls);
 
-  if (!imageInputs.length) {
-    const error = new Error("no_import_images");
-    error.statusCode = 400;
-    throw error;
-  }
+    const imageInputs = [
+      ...menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean),
+      ...(logoImageUrl ? [buildInputImageFromUploadUrl(logoImageUrl)].filter(Boolean) : []),
+      ...restaurantPhotoUrls.map(buildInputImageFromUploadUrl).filter(Boolean)
+    ];
+    const fileInputs = [
+      ...menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean)
+    ];
 
-  const userContext = [
-    `Restaurant name: ${restaurantName || "(not provided)"}`,
-    `Short brand name: ${shortName || "(not provided)"}`,
-    `Menu image count: ${menuImageUrls.length}`,
-    `Logo provided: ${logoImageUrl ? "yes" : "no"}`,
-    `Restaurant photo count: ${restaurantPhotoUrls.length}`,
-    `Seller notes: ${notes || "(none)"}`
-  ].join("\n");
+    if (!imageInputs.length && !fileInputs.length) {
+      const error = new Error("no_import_assets");
+      error.statusCode = 400;
+      throw error;
+    }
 
-  const response = await fetch(OPENAI_RESPONSES_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: OPENAI_IMPORT_MODEL,
-      instructions: IMPORTER_SYSTEM_PROMPT,
-      input: [
-        {
-          role: "user",
-          content: [
-            { type: "input_text", text: userContext },
-            ...imageInputs
-          ]
-        }
-      ],
-      text: {
-        format: IMPORTER_TEXT_FORMAT
+    const userContext = [
+      `Restaurant name: ${restaurantName || "(not provided)"}`,
+      `Short brand name: ${shortName || "(not provided)"}`,
+      `Menu image count: ${menuImageUrls.length}`,
+      `Menu PDF count: ${menuPdfUrls.length}`,
+      `Logo provided: ${logoImageUrl ? "yes" : "no"}`,
+      `Restaurant photo count: ${restaurantPhotoUrls.length}`,
+      `Seller notes: ${notes || "(none)"}`
+    ].join("\n");
+
+    const response = await fetch(OPENAI_RESPONSES_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
-      store: false,
-      temperature: 0.2,
-      max_output_tokens: 6000
-    })
-  });
+      body: JSON.stringify({
+        model: OPENAI_IMPORT_MODEL,
+        instructions: IMPORTER_SYSTEM_PROMPT,
+        input: [
+          {
+            role: "user",
+            content: [
+              { type: "input_text", text: userContext },
+              ...fileInputs,
+              ...imageInputs
+            ]
+          }
+        ],
+        text: {
+          format: IMPORTER_TEXT_FORMAT
+        },
+        store: false,
+        temperature: 0.2,
+        max_output_tokens: 6000
+      })
+    });
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = payload?.error?.message || payload?.message || "openai_request_failed";
-    const error = new Error(message);
-    error.statusCode = response.status || 502;
-    throw error;
-  }
+    const payload = await response.json().catch(() => ({}));
+    writeSellerJobJson(job.jobId, "extraction/openai-response.json", payload);
 
-  const rawText = extractResponseText(payload);
-  if (!rawText) {
-    const error = new Error(payload?.status === "incomplete" ? "incomplete_openai_response" : "empty_openai_response");
-    error.statusCode = 502;
-    throw error;
-  }
+    if (!response.ok) {
+      const message = payload?.error?.message || payload?.message || "openai_request_failed";
+      const error = new Error(message);
+      error.statusCode = response.status || 502;
+      throw error;
+    }
 
-  let parsed;
-  try {
-    parsed = JSON.parse(rawText);
-  } catch (_error) {
-    console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
-    const error = new Error("invalid_json_from_openai");
-    error.statusCode = 502;
-    throw error;
-  }
+    const rawText = extractResponseText(payload);
+    if (!rawText) {
+      const error = new Error(payload?.status === "incomplete" ? "incomplete_openai_response" : "empty_openai_response");
+      error.statusCode = 502;
+      throw error;
+    }
+    writeSellerJobText(job.jobId, "extraction/raw-output.txt", rawText);
 
-  const skeleton = buildImporterDraftSkeleton({
-    restaurantName,
-    shortName,
-    menuImageUrls,
-    logoImageUrl,
-    restaurantPhotoUrls
-  });
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (_error) {
+      console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
+      const error = new Error("invalid_json_from_openai");
+      error.statusCode = 502;
+      throw error;
+    }
 
-  let enrichedDraft = normalizeStructuredImporterDraft(parsed);
-  enrichedDraft = applyImporterMediaFallbacks(enrichedDraft, { logoImageUrl, restaurantPhotoUrls });
+    const skeleton = buildImporterDraftSkeleton({
+      restaurantName,
+      shortName,
+      menuImageUrls,
+      logoImageUrl,
+      restaurantPhotoUrls
+    });
 
-  try {
-    enrichedDraft = await completeImporterTranslations(enrichedDraft);
+    let enrichedDraft = normalizeStructuredImporterDraft(parsed);
+    enrichedDraft = applyImporterMediaFallbacks(enrichedDraft, { logoImageUrl, restaurantPhotoUrls });
+
+    try {
+      enrichedDraft = await completeImporterTranslations(enrichedDraft);
+    } catch (error) {
+      console.error("IMPORTER TRANSLATION COMPLETION ERROR:", error);
+      const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
+      const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
+      warnings.push(`Translation completion fallback used: ${error.message}`);
+      enrichedDraft.review = { ...review, warnings };
+    }
+
+    let mergedDraft = deepMerge(skeleton, enrichedDraft);
+    const matchedMedia = applyImporterProductLibraryMatches(mergedDraft);
+    mergedDraft = matchedMedia.draft;
+
+    writeSellerJobJson(job.jobId, "final/draft.json", mergedDraft);
+
+    return {
+      draft: mergedDraft,
+      jobId: job.jobId,
+      mediaLibraryMatches: matchedMedia.matchedCount
+    };
   } catch (error) {
-    console.error("IMPORTER TRANSLATION COMPLETION ERROR:", error);
-    const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
-    const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
-    warnings.push(`Translation completion fallback used: ${error.message}`);
-    enrichedDraft.review = { ...review, warnings };
+    error.jobId = job.jobId;
+    writeSellerJobJson(job.jobId, "review/error.json", {
+      message: error.message,
+      statusCode: error.statusCode || 500,
+      at: new Date().toISOString()
+    });
+    throw error;
   }
-
-  return deepMerge(skeleton, enrichedDraft);
 }
 
 function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
@@ -1296,6 +1438,7 @@ if (currentCreds.usesDefaultCredentials) {
 
 ensureStorage();
 ensureMediaLibraryStructure();
+ensureSellerJobsStructure();
 
 app.use(express.json({ limit: MAX_JSON_BYTES }));
 
@@ -1457,13 +1600,14 @@ app.post("/api/data/import", requireAuth, (req, res) => {
 app.post("/api/importer/draft", requireAuth, async (req, res) => {
   try {
     const payload = req.body && typeof req.body === "object" ? req.body : {};
-    const draft = await generateImporterDraft(payload);
-    res.json({ ok: true, draft });
+    const result = await generateImporterDraft(payload);
+    res.json({ ok: true, ...result });
   } catch (error) {
     console.error("IMPORTER DRAFT ERROR:", error);
     res.status(error.statusCode || 500).json({
       ok: false,
-      error: error.message || "importer_draft_failed"
+      error: error.message || "importer_draft_failed",
+      jobId: error.jobId || ""
     });
   }
 });

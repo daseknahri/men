@@ -4,6 +4,7 @@ let categoryTranslations = window.defaultCategoryTranslations || {};
 let restaurantConfig = window.restaurantConfig || window.defaultConfig || {};
 let promoIds = [];
 let lastImporterDraft = null;
+let lastImporterDraftMeta = null;
 let lastGeneratedMedia = null;
 const IMPORT_STUDIO_MAX_MENU_IMAGES = 8;
 const IMPORT_STUDIO_MAX_VENUE_IMAGES = 6;
@@ -2504,6 +2505,7 @@ function renderImporterDraftOutputs(draft) {
     const untranslatedItems = Array.isArray(review.untranslatedItems) ? review.untranslatedItems : [];
 
     summaryEl.value = [
+        `Job id: ${lastImporterDraftMeta?.jobId || 'n/a'}`,
         `Summary: ${review.summary || 'No summary returned.'}`,
         `Menu items: ${menuItems.length}`,
         `Categories: ${Object.keys(restaurantData.catEmojis || {}).length}`,
@@ -2511,6 +2513,7 @@ function renderImporterDraftOutputs(draft) {
         `Blockers: ${blockers.length}`,
         `Warnings: ${warnings.length}`,
         `Untranslated items: ${untranslatedItems.length}`,
+        `Library image matches: ${lastImporterDraftMeta?.mediaLibraryMatches || review.mediaLibraryMatches || 0}`,
         `Menu extraction confidence: ${review.confidence?.menuExtraction || 'unknown'}`,
         `Translation confidence: ${review.confidence?.translations || 'unknown'}`,
         `Media confidence: ${review.confidence?.mediaMatching || 'unknown'}`,
@@ -2570,6 +2573,13 @@ function getCurrentMediaStudioReferenceUrls() {
         .forEach((value) => urls.push(value.trim()));
 
     return [...new Set(urls)];
+}
+
+function isPdfImportFile(file) {
+    const source = file || {};
+    const name = typeof source.name === 'string' ? source.name.trim().toLowerCase() : '';
+    const type = typeof source.type === 'string' ? source.type.trim().toLowerCase() : '';
+    return type === 'application/pdf' || name.endsWith('.pdf');
 }
 
 async function uploadFilesForImporter(fileList, label) {
@@ -2664,20 +2674,22 @@ function buildImporterApplyPayload(draft) {
 }
 
 window.generateImporterDraft = async function () {
-    const menuFiles = document.getElementById('importStudioMenuFiles')?.files;
+    const menuFiles = Array.from(document.getElementById('importStudioMenuFiles')?.files || []);
     const logoFile = document.getElementById('importStudioLogoFile')?.files?.[0] || null;
     const venueFiles = document.getElementById('importStudioVenueFiles')?.files;
     const restaurantName = (document.getElementById('importStudioRestaurantName')?.value || '').trim();
     const shortName = (document.getElementById('importStudioShortName')?.value || '').trim();
     const notes = (document.getElementById('importStudioNotes')?.value || '').trim();
+    const menuImageFiles = menuFiles.filter((file) => !isPdfImportFile(file));
+    const menuPdfFiles = menuFiles.filter((file) => isPdfImportFile(file));
 
-    if (!menuFiles || !menuFiles.length) {
-        showToast('Add at least one menu image first.');
+    if (!menuFiles.length) {
+        showToast('Add at least one menu image or PDF first.');
         return;
     }
 
     if (menuFiles.length > IMPORT_STUDIO_MAX_MENU_IMAGES) {
-        showToast(`Use up to ${IMPORT_STUDIO_MAX_MENU_IMAGES} menu images per draft.`);
+        showToast(`Use up to ${IMPORT_STUDIO_MAX_MENU_IMAGES} menu files per draft.`);
         return;
     }
 
@@ -2688,7 +2700,8 @@ window.generateImporterDraft = async function () {
 
     try {
         showToast('Uploading import assets...');
-        const menuImageUrls = await uploadFilesForImporter(menuFiles, 'menu image');
+        const menuImageUrls = await uploadFilesForImporter(menuImageFiles, 'menu image');
+        const menuPdfUrls = await uploadFilesForImporter(menuPdfFiles, 'menu PDF');
         const restaurantPhotoUrls = await uploadFilesForImporter(venueFiles, 'restaurant photo');
         const logoImageUrl = logoFile ? await uploadImageToServer(logoFile) : '';
 
@@ -2702,6 +2715,7 @@ window.generateImporterDraft = async function () {
                 shortName,
                 notes,
                 menuImageUrls,
+                menuPdfUrls,
                 logoImageUrl,
                 restaurantPhotoUrls
             })
@@ -2713,6 +2727,10 @@ window.generateImporterDraft = async function () {
         }
 
         lastImporterDraft = data.draft;
+        lastImporterDraftMeta = {
+            jobId: data.jobId || '',
+            mediaLibraryMatches: Number(data.mediaLibraryMatches) || 0
+        };
         renderImporterDraftOutputs(lastImporterDraft);
         showToast('AI import draft generated.');
     } catch (error) {

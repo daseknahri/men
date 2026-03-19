@@ -215,6 +215,7 @@ At this stage of the product:
 - use the admin for normal client edits
 - use export/import for cloning and recovery
 - keep AI workflows private and internal
+- keep importer job artifacts private and local under the seller workflow
 - keep one deployable instance per restaurant
 
 That is the safest and fastest way to sell the first wave of websites while the internal launcher and importer are still being designed.

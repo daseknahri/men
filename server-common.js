@@ -7,7 +7,7 @@ const { uploadsDir } = require("./site-store");
 
 const MAX_JSON_BYTES = "1mb";
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-const ALLOWED_UPLOAD_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "svg"]);
+const ALLOWED_UPLOAD_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "svg", "pdf"]);
 const SESSION_COOKIE = "restaurant_admin_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 

@@ -62,6 +62,8 @@ Already working in the codebase:
 - hashed admin credentials with throttling and security status
 - safer public handling for broken URLs and missing images
 - seller-side AI menu import drafts from uploaded menu images plus optional logo/venue photos
+- seller-side AI menu import support for menu PDFs as well as menu images
+- local seller job folders that preserve importer inputs and draft artifacts for review/retry
 - local seller-side media-library catalog foundation for reusable hero, gallery, and future product assets
 
 Still not finished:
@@ -88,6 +90,7 @@ Still not finished:
 - `data.json`: persisted restaurant data
 - `uploads/`: uploaded assets
 - `media-library/`: seller-side reusable asset catalog and reusable media store
+- `seller-jobs/`: seller-side job workspace for importer and future bundle-generation runs
 - `scripts/smoke-check.js`: lightweight end-to-end sanity test
 - `scripts/media-library-check.js`: validates the local seller media catalog structure and prints counts
 

@@ -8,6 +8,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 
 ### Latest Progress
 
+- The seller-only importer now accepts menu PDFs as well as menu images, persists each run into a local `seller-jobs/` workspace, and can prefill imported menu items with approved local-library product images before seller apply
 - The seller-side local media-library foundation now exists: generated hero/gallery images are registered into a reusable local catalog under `media-library/`, and applying one in `AI Media Studio` marks that asset approved for future reuse instead of leaving it only in `/uploads`
 - A new `LOCAL_IMAGE_LIBRARY_PLAN.md` now captures the concrete architecture for deterministic local asset reuse, recipe-key matching, approval states, and controlled AI generation so future contributors can continue the image-library path without re-deciding the model
 - A new `SELLER_BUNDLE_PIPELINE.md` now defines the correct multi-stage seller workflow: intake, extraction, normalization, brand pack, product-image resolution, review gate, apply, and library reuse
@@ -370,10 +371,10 @@ Long term:
 
 ## Immediate Next Recommended Slices
 
-1. Validate the local media-library registration and approval flow end to end on the live deployment with real seller-generated hero/gallery assets
-2. Extend the importer from image-only ingestion to menu PDF support while keeping the same review-first seller workflow
-3. Expand the curated image library and move product-image matching from `shared.js` placeholders onto the local catalog before broad AI dish generation
-4. Introduce seller-only capability gating so AI/import/image-library tools stay out of the client-facing admin surface by default
+1. Validate the new seller-job importer flow end to end on the live deployment with real menu PDFs, menu images, and seller-generated hero/gallery assets
+2. Expand the curated image library and move product-image matching from `shared.js` placeholders onto the local catalog before broad AI dish generation
+3. Introduce seller-only capability gating so AI/import/image-library tools stay out of the client-facing admin surface by default
+4. Add a stronger importer review UI around job artifacts, diff visibility, and partial apply instead of relying only on summary + raw JSON
 5. Browser-QA the refreshed public site and admin on the live Coolify deployment, focusing on desktop spacing, motion restraint, and the rewritten seller-facing surfaces
 6. Define the exact seller packages, what is customized manually, and what stays admin-editable after delivery
 
