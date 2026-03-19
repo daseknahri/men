@@ -35,6 +35,7 @@ The current goal is to turn this into a dependable first sellable product that c
 - [MEDIA_IMPORT_BASIS.md](./MEDIA_IMPORT_BASIS.md): future-facing basis for seller-side asset libraries, static media assignment, and PDF/image import
 - [IMPORTER_PAYLOAD_SPEC.md](./IMPORTER_PAYLOAD_SPEC.md): implementable importer contract against the live restaurant schema
 - [SELLER_IMAGE_PIPELINE.md](./SELLER_IMAGE_PIPELINE.md): seller-only image sourcing and generation workflow for hero, gallery, and product imagery
+- [SELLER_BUNDLE_PIPELINE.md](./SELLER_BUNDLE_PIPELINE.md): staged seller-only job flow for turning menu/logo/venue files into a reviewable website bundle
 - [LOCAL_IMAGE_LIBRARY_PLAN.md](./LOCAL_IMAGE_LIBRARY_PLAN.md): deeper architecture plan for deterministic local asset reuse and controlled AI generation
 
 ## Current Product Status
