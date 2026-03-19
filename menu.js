@@ -513,9 +513,9 @@ function renderFeaturedSlider(items, containerId) {
     container.style.display = 'block';
     container.innerHTML = `
         <div class="featured-header-sexy menu-reveal-observe">
-            <span class="featured-header-label" data-i18n="featured_label">Selection Signature</span>
+            <span class="featured-header-label">${t('featured_label', 'Sélection Signature')}</span>
             <h2 class="featured-header-title">
-                <span data-i18n="featured_best">Nos Coups de Coeur</span> ✨
+                <span>${t('featured_best', 'Nos Coups de Coeur')}</span> ✨
             </h2>
         </div>
         <div class="featured-slider">
@@ -967,7 +967,9 @@ window.addToCart = function (id, size) {
     saveCart();
     updateCartUI();
     const sizeLabel = size ? ` (${size.charAt(0).toUpperCase()})` : '';
-    window.showToast?.(`✅ ${window.getLocalizedMenuName(item)}${sizeLabel} ajouté!`);
+    window.showToast?.(t('toast_item_added', '✅ {item} ajouté !', {
+        item: `${window.getLocalizedMenuName(item)}${sizeLabel}`
+    }));
 };
 
 window.removeFromCart = function (cartId) {
@@ -1020,15 +1022,10 @@ function renderDrawer() {
         ? window.getRestaurantDisplayName()
         : 'Restaurant';
     const serviceOptions = [
-        { key: 'onsite', icon: '🍽️', label: 'Sur place' },
-        { key: 'takeaway', icon: '🛍️', label: 'À Emporter' },
-        { key: 'delivery', icon: '🛵', label: 'Livraison' }
+        { key: 'onsite', icon: '🍽️', label: t('service_onsite', 'Sur place') },
+        { key: 'takeaway', icon: '🛍️', label: t('service_takeaway', 'À Emporter') },
+        { key: 'delivery', icon: '🛵', label: t('service_delivery', 'Livraison') }
     ];
-    serviceOptions.forEach((option) => {
-        if (option.key === 'onsite') option.label = t('service_onsite', option.label);
-        if (option.key === 'takeaway') option.label = t('service_takeaway', option.label);
-        if (option.key === 'delivery') option.label = t('service_delivery', option.label);
-    });
 
     content.innerHTML = `
         <div class="cart-drawer-body">
