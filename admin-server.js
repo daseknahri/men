@@ -64,6 +64,14 @@ const IMPORTER_SYSTEM_PROMPT = [
   "Follow the JSON schema exactly."
 ].join("\n");
 
+const IMPORTER_REPAIR_SYSTEM_PROMPT = [
+  "You repair malformed seller-side restaurant draft output into valid JSON.",
+  "The input may contain near-JSON, markdown fences, extra commentary, or partially malformed structure.",
+  "Return only valid JSON that follows the provided schema exactly.",
+  "Do not add new facts that were not present in the source text.",
+  "If a value is missing or uncertain, use empty strings, empty arrays, null, or warnings instead of inventing data."
+].join("\n");
+
 const IMPORTER_TRANSLATION_BUCKET_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -966,6 +974,57 @@ function parseModelJsonText(rawText) {
   throw new Error("invalid_json_from_openai");
 }
 
+async function repairImporterJsonText(rawText) {
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: OPENAI_IMPORT_MODEL,
+      instructions: IMPORTER_REPAIR_SYSTEM_PROMPT,
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: rawText
+            }
+          ]
+        }
+      ],
+      text: {
+        format: IMPORTER_TEXT_FORMAT
+      },
+      store: false,
+      temperature: 0,
+      max_output_tokens: 6000
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || "openai_import_repair_failed";
+    const error = new Error(message);
+    error.statusCode = response.status || 502;
+    throw error;
+  }
+
+  const repairedText = extractResponseText(payload);
+  if (!repairedText) {
+    const error = new Error(payload?.status === "incomplete" ? "incomplete_import_repair_response" : "empty_import_repair_response");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return {
+    rawText: repairedText,
+    parsed: parseModelJsonText(repairedText)
+  };
+}
+
 function extractGeneratedImageBase64(payload) {
   const output = Array.isArray(payload?.output) ? payload.output : [];
   const imageCall = output.find((entry) => entry?.type === "image_generation_call" && typeof entry?.result === "string" && entry.result.trim());
@@ -1256,9 +1315,16 @@ async function generateImporterDraft(input) {
       parsed = parseModelJsonText(rawText);
     } catch (_error) {
       console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
-      const error = new Error("invalid_json_from_openai");
-      error.statusCode = 502;
-      throw error;
+      try {
+        const repaired = await repairImporterJsonText(rawText);
+        writeSellerJobText(job.jobId, "extraction/repaired-output.txt", repaired.rawText);
+        parsed = repaired.parsed;
+      } catch (repairError) {
+        console.error("IMPORTER JSON REPAIR ERROR:", repairError);
+        const error = new Error("invalid_json_from_openai");
+        error.statusCode = 502;
+        throw error;
+      }
     }
 
     const skeleton = buildImporterDraftSkeleton({
