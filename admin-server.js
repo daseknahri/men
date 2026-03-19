@@ -902,7 +902,7 @@ async function completeImporterTranslations(draft) {
 
   let parsed;
   try {
-    parsed = JSON.parse(rawText);
+    parsed = parseModelJsonText(rawText);
   } catch (_error) {
     console.error("IMPORTER RAW TRANSLATION TEXT:", rawText.slice(0, 1200));
     const error = new Error("invalid_translation_json_from_openai");
@@ -931,6 +931,39 @@ function extractResponseText(payload) {
   });
 
   return parts.join("").trim();
+}
+
+function parseModelJsonText(rawText) {
+  const source = typeof rawText === "string" ? rawText.trim() : "";
+  const candidates = [];
+
+  if (source) {
+    candidates.push(source);
+  }
+
+  const fencedMatch = source.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fencedMatch?.[1]) {
+    candidates.push(fencedMatch[1].trim());
+  }
+
+  const firstBraceIndex = source.indexOf("{");
+  const lastBraceIndex = source.lastIndexOf("}");
+  if (firstBraceIndex !== -1 && lastBraceIndex > firstBraceIndex) {
+    candidates.push(source.slice(firstBraceIndex, lastBraceIndex + 1).trim());
+  }
+
+  const seen = new Set();
+  for (const candidate of candidates) {
+    if (!candidate || seen.has(candidate)) continue;
+    seen.add(candidate);
+    try {
+      return JSON.parse(candidate);
+    } catch (_error) {
+      // Keep trying weaker recovery candidates.
+    }
+  }
+
+  throw new Error("invalid_json_from_openai");
 }
 
 function extractGeneratedImageBase64(payload) {
@@ -1220,7 +1253,7 @@ async function generateImporterDraft(input) {
 
     let parsed;
     try {
-      parsed = JSON.parse(rawText);
+      parsed = parseModelJsonText(rawText);
     } catch (_error) {
       console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
       const error = new Error("invalid_json_from_openai");
