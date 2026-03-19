@@ -729,7 +729,7 @@ function renderConfirm() {
     document.getElementById('confirmItems').innerHTML = cart.map(c => `
     <div class="conf-item">
       <div class="conf-img">${imgTag(c)}</div>
-      <div class="conf-info"><div class="conf-name">${c.name}</div><div class="conf-price">MAD ${(c.price * c.qty).toFixed(2)}</div></div>
+      <div class="conf-info"><div class="conf-name">${window.getLocalizedMenuName(c)}</div><div class="conf-price">MAD ${(c.price * c.qty).toFixed(2)}</div></div>
       <div class="conf-actions">
         <button class="conf-del" onclick="confRemove(${c.id})">🗑</button>
         <span class="conf-qty">${c.qty}</span>
@@ -779,7 +779,7 @@ function sendWA() {
         msg += `👤 *${t('wa_client_label', 'Client')}:* ${n}\n📍 *${t('ticket_addr', 'Adresse')}:* ${a}\n`; if (p) msg += `📱 *${t('wa_phone_label', 'Tél')}:* ${p}\n`;
     }
     msg += `━━━━━━━━━━━━━━━━\n\n🛒 *${t('wa_order_label', 'COMMANDE')}:*\n\n`;
-    cart.forEach((c, i) => { msg += `${i + 1}. *${c.name}* × ${c.qty}\n   💰 ${(c.price * c.qty).toFixed(2)} MAD\n\n`; });
+    cart.forEach((c, i) => { msg += `${i + 1}. *${window.getLocalizedMenuName(c)}* × ${c.qty}\n   💰 ${(c.price * c.qty).toFixed(2)} MAD\n\n`; });
     msg += `━━━━━━━━━━━━━━━━\n💵 *${t('wa_total_label', 'TOTAL')}: ${total.toFixed(2)} MAD*\n━━━━━━━━━━━━━━━━\n\n🙏 ${t('wa_thanks', 'Merci chez *{restaurant}*!', { restaurant: restaurantName })}`;
     const waNum = typeof window.getWhatsAppNumber === 'function'
         ? window.getWhatsAppNumber()
