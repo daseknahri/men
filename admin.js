@@ -570,13 +570,13 @@ function buildCategoryTranslations(baseName) {
     return next;
 }
 
-function setSuperCategoryTranslationFields(input) {
+function setSuperCategoryTranslationFields(input, fallbackName = '', fallbackDesc = '') {
     const translations = normalizeEntityTranslations(input);
     ['fr', 'en', 'ar'].forEach((lang) => {
         const nameInput = document.getElementById(`scName${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
         const descInput = document.getElementById(`scDesc${lang.charAt(0).toUpperCase()}${lang.slice(1)}`);
-        if (nameInput) nameInput.value = translations[lang].name || '';
-        if (descInput) descInput.value = translations[lang].desc || '';
+        if (nameInput) nameInput.value = translations[lang].name || (lang === 'fr' ? fallbackName : '');
+        if (descInput) descInput.value = translations[lang].desc || (lang === 'fr' ? fallbackDesc : '');
     });
 }
 
@@ -2314,7 +2314,7 @@ function editSuperCat(id) {
     document.getElementById('scEmoji').value = sc.emoji;
     document.getElementById('scDesc').value = sc.desc;
     document.getElementById('scTime').value = sc.time || '';
-    setSuperCategoryTranslationFields(sc.translations);
+    setSuperCategoryTranslationFields(sc.translations, sc.name, sc.desc);
 
     const checks = document.querySelectorAll('.sc-cat-check');
     checks.forEach(cb => cb.checked = sc.cats.includes(cb.value));

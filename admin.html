@@ -2146,7 +2146,7 @@
             <form id="catForm">
                 <div style="display:grid; grid-template-columns: 1fr 100px; gap: 15px;">
                     <div class="form-group">
-                        <label data-i18n="admin.categories.name">Category Name</label>
+                        <label>Fallback / Internal Category Key</label>
                         <input type="text" id="catName" placeholder="e.g. Hot Drinks" data-i18n-placeholder="admin.categories.name_placeholder" required />
                     </div>
                     <div class="form-group">
@@ -2154,7 +2154,8 @@
                         <input type="text" id="catEmoji" placeholder="☕" required />
                     </div>
                 </div>
-                                <div class="translation-grid" style="margin-top:16px;">
+                <p class="translation-hint">The website uses the translated category names below. This top field is the stable fallback key used internally and whenever a translation is missing.</p>
+                <div class="translation-grid" style="margin-top:16px;">
                     <div class="translation-card">
                         <h4 data-i18n="admin.lang.french">French</h4>
                         <label for="catNameFr" data-i18n="admin.categories.name_fr">Category Name</label>
@@ -2552,7 +2553,7 @@
             <form id="superCatForm" class="panel-soft">
                 <div class="form-grid form-grid-name-emoji">
                     <div class="form-group">
-                        <label>Name</label>
+                        <label>Fallback Name</label>
                         <input type="text" id="scName" placeholder="e.g. Petit-Déjeuner" required />
                     </div>
                     <div class="form-group">
@@ -2561,14 +2562,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
+                    <label>Fallback Description</label>
                     <input type="text" id="scDesc" placeholder="e.g. Paninis, Sandwichs Froids & Salades" required />
                 </div>
                 <div class="form-group">
                     <label>Time Slot (Optional Display)</label>
                     <input type="text" id="scTime" placeholder="e.g. 07:00 – 12:00" />
                 </div>
-                                <div class="translation-grid">
+                <p class="translation-hint">Customer-facing super-category titles and descriptions come from the FR / EN / AR fields below. These fallback fields only appear when a translation is missing.</p>
+                <div class="translation-grid">
                     <div class="translation-card">
                         <h4>French</h4>
                         <label for="scNameFr">Name</label>
