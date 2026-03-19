@@ -109,15 +109,8 @@ const IMPORTER_TEXT_FORMAT = {
           "menu",
           "categories",
           "superCategories",
-          "wifi",
-          "social",
           "branding",
-          "landing",
-          "contentTranslations",
-          "promoIds",
-          "gallery",
-          "hours",
-          "hoursNote"
+          "contentTranslations"
         ],
         properties: {
           menu: {
@@ -125,7 +118,7 @@ const IMPORTER_TEXT_FORMAT = {
             items: {
               type: "object",
               additionalProperties: false,
-              required: ["id", "cat", "name", "desc", "price", "ingredients", "badge", "featured", "img", "images", "translations"],
+              required: ["id", "cat", "name", "desc", "price", "translations"],
               properties: {
                 id: { type: ["string", "number", "null"] },
                 cat: { type: "string" },
@@ -166,7 +159,7 @@ const IMPORTER_TEXT_FORMAT = {
             items: {
               type: "object",
               additionalProperties: false,
-              required: ["id", "name", "desc", "emoji", "time", "cats", "translations"],
+              required: ["id", "name", "desc", "cats", "translations"],
               properties: {
                 id: { type: "string" },
                 name: { type: "string" },
@@ -205,7 +198,7 @@ const IMPORTER_TEXT_FORMAT = {
           branding: {
             type: "object",
             additionalProperties: false,
-            required: ["presetId", "restaurantName", "shortName", "tagline", "primaryColor", "secondaryColor", "accentColor", "heroImage", "heroSlides", "logoImage"],
+            required: ["presetId", "restaurantName", "shortName", "tagline", "primaryColor", "secondaryColor", "accentColor"],
             properties: {
               presetId: { type: "string" },
               restaurantName: { type: "string" },
@@ -248,7 +241,6 @@ const IMPORTER_TEXT_FORMAT = {
               fr: {
                 type: "object",
                 additionalProperties: false,
-                required: ["homeTitle", "homeSubtitle", "aboutTitle", "aboutText", "footerNote", "footerRights"],
                 properties: {
                   homeTitle: { type: "string" },
                   homeSubtitle: { type: "string" },
@@ -261,7 +253,6 @@ const IMPORTER_TEXT_FORMAT = {
               en: {
                 type: "object",
                 additionalProperties: false,
-                required: ["homeTitle", "homeSubtitle", "aboutTitle", "aboutText", "footerNote", "footerRights"],
                 properties: {
                   homeTitle: { type: "string" },
                   homeSubtitle: { type: "string" },
@@ -274,7 +265,6 @@ const IMPORTER_TEXT_FORMAT = {
               ar: {
                 type: "object",
                 additionalProperties: false,
-                required: ["homeTitle", "homeSubtitle", "aboutTitle", "aboutText", "footerNote", "footerRights"],
                 properties: {
                   homeTitle: { type: "string" },
                   homeSubtitle: { type: "string" },
