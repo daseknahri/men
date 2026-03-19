@@ -1461,7 +1461,7 @@ window.applyBranding = function () {
     if (hasAdminShell && titleBase) {
         document.title = `${titleBase} - Admin`;
     } else if (document.body?.classList.contains('menu-page')) {
-        document.title = `Menu | ${titleBase}`;
+        document.title = `${window.getTranslation('nav_menu', 'Menu')} | ${titleBase}`;
     } else if (titleBase) {
         document.title = `${titleBase} - ${window.getTranslation('site_title_suffix', 'Commandez en ligne')}`;
     }
@@ -2346,7 +2346,9 @@ Object.assign(window.translations.fr, {
     'admin.landing.facility_terrace': 'Terrasse',
     'admin.landing.facility_family': 'Espace famille',
     'menu_select_title': 'Sélectionner un menu',
-    'game_how_to_play': 'Comment jouer ?'
+    'game_how_to_play': 'Comment jouer ?',
+    'game_logo_who': 'QUI',
+    'game_logo_pays': 'PAIE ?'
 });
 
 Object.assign(window.translations.en, {
@@ -2703,7 +2705,9 @@ Object.assign(window.translations.en, {
     'admin.landing.facility_terrace': 'Terrace seating',
     'admin.landing.facility_family': 'Family-friendly area',
     'menu_select_title': 'Select a Menu',
-    'game_how_to_play': 'How to play?'
+    'game_how_to_play': 'How to play?',
+    'game_logo_who': 'WHO',
+    'game_logo_pays': 'PAYS?'
 });
 
 Object.assign(window.translations.ar, {
@@ -2892,7 +2896,9 @@ Object.assign(window.translations.ar, {
     'admin.landing.facility_terrace': 'جلسات خارجية',
     'admin.landing.facility_family': 'منطقة عائلية',
     'menu_select_title': 'اختر قائمة',
-    'game_how_to_play': 'كيف تلعب؟'
+    'game_how_to_play': 'كيف تلعب؟',
+    'game_logo_who': 'من',
+    'game_logo_pays': 'يدفع؟'
 });
 
 Object.assign(window.translations.ar, {
