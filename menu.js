@@ -12,11 +12,32 @@ let serviceType = 'onsite';
 
 // Global comparison to detect changes
 let lastDataVersion = "";
+let syncInFlight = null;
+const PUBLIC_DATA_TIMEOUT_MS = 8000;
+
+async function fetchPublicDataWithTimeout() {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller
+        ? setTimeout(() => controller.abort(), PUBLIC_DATA_TIMEOUT_MS)
+        : null;
+
+    try {
+        return await fetch('/api/data', {
+            cache: 'no-store',
+            signal: controller ? controller.signal : undefined
+        });
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+    }
+}
 
 // ═══ SYNC DATA FROM SERVER ═══
 async function syncDataFromServer() {
+    if (syncInFlight) return syncInFlight;
+
+    syncInFlight = (async () => {
     try {
-        const res = await fetch('/api/data');
+        const res = await fetchPublicDataWithTimeout();
         if (!res.ok) return;
         const data = await res.json();
         const dataStr = JSON.stringify(data);
@@ -84,7 +105,12 @@ async function syncDataFromServer() {
         }
     } catch (e) {
         console.warn('[SYNC] Failed to fetch data:', e);
+    } finally {
+        syncInFlight = null;
     }
+    })();
+
+    return syncInFlight;
 }
 
 // Start real-time sync (poll every 2 seconds for "instant" feel)
@@ -175,9 +201,8 @@ function scheduleMenuMotionRefresh() {
 // ═══════════════════════ INIT ═══════════════════════
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Initial sync
-    await syncDataFromServer();
     initMenuApp();
+    syncDataFromServer();
 });
 
 function initMenuApp() {

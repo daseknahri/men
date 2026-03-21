@@ -46,6 +46,7 @@ let categories = [];
 let cart = [];
 let serviceType = 'onsite';
 let currentSlide = 0;
+const PUBLIC_DATA_TIMEOUT_MS = 8000;
 
 function t(key, fallback, vars) {
     if (typeof window.formatTranslation === 'function') {
@@ -110,7 +111,19 @@ function applySiteData(data) {
 
 async function loadSiteData() {
     try {
-        const res = await fetch('/api/data');
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timeoutId = controller
+            ? setTimeout(() => controller.abort(), PUBLIC_DATA_TIMEOUT_MS)
+            : null;
+        let res;
+        try {
+            res = await fetch('/api/data', {
+                cache: 'no-store',
+                signal: controller ? controller.signal : undefined
+            });
+        } finally {
+            if (timeoutId) clearTimeout(timeoutId);
+        }
         if (!res.ok) throw new Error('Server returned ' + res.status);
         applySiteData(await res.json());
     } catch (error) {
