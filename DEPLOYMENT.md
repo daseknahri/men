@@ -166,6 +166,13 @@ Minimum manual browser validation:
 - one admin save action
 - one uploaded image display
 
+Build verification:
+
+- check `https://<public-domain>/health` and `https://<admin-domain>/health`
+- confirm both return a `build` value
+- if the public site still behaves like an older deploy, compare `https://<public-domain>/build.json` and `https://<admin-domain>/build.json`
+- stale public behavior with a mismatched `build` means the website service or domain routing is not on the same deploy as admin
+
 ## Security Requirements
 
 Before considering a deployment ready:

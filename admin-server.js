@@ -6,10 +6,12 @@ const path = require("path");
 const {
   MAX_JSON_BYTES,
   clearSessionCookie,
+  createBuildFingerprint,
   createSessionManager,
   createUploadMiddleware,
   getSessionToken,
   parsePort,
+  setStaticAssetHeaders,
   setSessionCookie
 } = require("./server-common");
 const { ensureStorage, readData, resetToBundledData, uploadsDir, writeData } = require("./site-store");
@@ -46,6 +48,13 @@ const app = express();
 const port = parsePort(process.env.PORT, 3102);
 const upload = createUploadMiddleware();
 const sessions = createSessionManager(path.join(__dirname, "sessions.json"));
+const build = createBuildFingerprint([
+  path.join(__dirname, "admin-server.js"),
+  path.join(__dirname, "admin.html"),
+  path.join(__dirname, "admin.js"),
+  path.join(__dirname, "shared.js"),
+  path.join(__dirname, "style.css")
+]);
 const dataRoot = process.env.DATA_FILE
   ? path.dirname(process.env.DATA_FILE)
   : __dirname;
@@ -1530,7 +1539,12 @@ function requireAuth(req, res, next) {
 }
 
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "admin" });
+  res.json({ status: "ok", service: "admin", build });
+});
+
+app.get("/build.json", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.json({ status: "ok", service: "admin", build });
 });
 
 app.post("/api/admin/login", (req, res) => {
@@ -1648,6 +1662,7 @@ app.post("/api/admin/logout", (req, res) => {
 });
 
 app.get("/api/data", requireAuth, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.json(readData());
 });
 
@@ -1758,18 +1773,23 @@ app.post("/api/upload", requireAuth, (req, res, next) => {
 app.use("/uploads", express.static(uploadsDir));
 
 app.get(["/", "/admin", "/admin.html"], (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
 app.get("/admin.js", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(path.join(__dirname, "admin.js"));
 });
 
 app.get("/shared.js", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(path.join(__dirname, "shared.js"));
 });
 
-app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "images"), {
+  setHeaders: setStaticAssetHeaders
+}));
 
 app.use((_req, res) => {
   res.status(404).type("text/plain").send("Not Found");

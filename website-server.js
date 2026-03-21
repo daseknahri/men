@@ -1,11 +1,24 @@
 const express = require("express");
 const path = require("path");
 
-const { parsePort } = require("./server-common");
+const {
+  createBuildFingerprint,
+  parsePort,
+  setStaticAssetHeaders
+} = require("./server-common");
 const { ensureStorage, readData, uploadsDir } = require("./site-store");
 
 const app = express();
 const port = parsePort(process.env.PORT, 3002);
+const build = createBuildFingerprint([
+  path.join(__dirname, "website-server.js"),
+  path.join(__dirname, "index.html"),
+  path.join(__dirname, "menu.html"),
+  path.join(__dirname, "app.js"),
+  path.join(__dirname, "menu.js"),
+  path.join(__dirname, "shared.js"),
+  path.join(__dirname, "style.css")
+]);
 
 ensureStorage();
 
@@ -29,16 +42,23 @@ const DENY_PUBLIC_FILES = new Set([
 ]);
 
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "website" });
+  res.json({ status: "ok", service: "website", build });
+});
+
+app.get("/build.json", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.json({ status: "ok", service: "website", build });
 });
 
 app.get("/api/data", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.json(readData());
 });
 
 app.use("/uploads", express.static(uploadsDir));
 
 app.get("/", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
@@ -50,7 +70,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(__dirname, { index: false }));
+app.use(express.static(__dirname, {
+  index: false,
+  setHeaders: setStaticAssetHeaders
+}));
 
 app.use((_req, res) => {
   res.status(404).type("text/plain").send("Not Found");

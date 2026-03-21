@@ -10,6 +10,7 @@ const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const ALLOWED_UPLOAD_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "svg", "pdf"]);
 const SESSION_COOKIE = "restaurant_admin_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const NO_STORE_EXTENSIONS = new Set([".html", ".js", ".css"]);
 
 function parsePort(value, fallback) {
   const parsed = Number.parseInt(value || "", 10);
@@ -198,12 +199,38 @@ function createUploadMiddleware() {
   });
 }
 
+function createBuildFingerprint(filePaths) {
+  const hash = crypto.createHash("sha1");
+
+  filePaths.forEach((filePath) => {
+    try {
+      if (!fs.existsSync(filePath)) return;
+      hash.update(path.basename(filePath));
+      hash.update(fs.readFileSync(filePath));
+    } catch (error) {
+      hash.update(`${path.basename(filePath)}:missing`);
+    }
+  });
+
+  return hash.digest("hex").slice(0, 12);
+}
+
+function setStaticAssetHeaders(res, filePath) {
+  const extension = path.extname(filePath || "").toLowerCase();
+  if (!NO_STORE_EXTENSIONS.has(extension)) return;
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+}
+
 module.exports = {
   MAX_JSON_BYTES,
   clearSessionCookie,
+  createBuildFingerprint,
   createSessionManager,
   createUploadMiddleware,
   getSessionToken,
   parsePort,
+  setStaticAssetHeaders,
   setSessionCookie
 };
