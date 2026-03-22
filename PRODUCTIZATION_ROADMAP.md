@@ -9,6 +9,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 ### Latest Progress
 
 - The menu builder is being converted from always-open forms into a drill-down owner flow: the admin now starts from a super-category table, drills into categories, then drills into items, with add/edit forms opening in a modal instead of filling the whole page
+- The drill-down item table now keeps the core product controls visible instead of hiding them behind the old legacy list: likes remain visible as a signal, promo and featured toggles stay inline, and image management stays in the item actions column
 - The new menu builder modals are being trimmed down for owner use: translations and advanced/media fields now sit behind disclosure panels, the primary form actions are reduced to save/cancel, and the old owner-facing `Reset All Data` action is no longer exposed inside the item editor
 - The owner-facing admin is being collapsed into three top-level areas instead of a spread of separate pages: `Menu`, `Info`, and `Branding`. The menu builder now stages super-categories, categories, and items inside one workspace, while hours, WiFi, contact/access, and gallery are being regrouped under simpler owner flows
 - Branding save now accepts bundled local asset paths like `images/...` in addition to absolute URLs and `/uploads/...`, so saving a new logo no longer fails just because the current hero image still points at a packaged default asset

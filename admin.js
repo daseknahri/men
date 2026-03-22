@@ -977,7 +977,7 @@ function renderMenuBuilder() {
             ? window.getLocalizedCategoryName(menuBuilderSelectedCategoryKey, menuBuilderSelectedCategoryKey)
             : 'Items';
         rows = getMenuBuilderCurrentItems();
-        columns = ['Item', 'Price', 'Actions'];
+        columns = ['Item', 'Price', 'Likes', 'Promo', 'Featured', 'Actions'];
         addLabel = 'Add Item';
         emptyText = 'No items in this category yet.';
         title.textContent = `${categoryLabel} / Items`;
@@ -1044,16 +1044,29 @@ function renderMenuBuilder() {
         const inlineId = toInlineJsString(item.id);
         const displayName = getAdminItemDisplayName(item);
         const price = Number(item.price) || 0;
+        const previewImage = (Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : item.img) || '';
+        const likes = Number(item.likes) || 0;
         return `
             <tr onclick='editItem(${inlineId})'>
                 <td>
-                    <strong>${escapeHtml(displayName)}</strong>
-                    <div class="menu-builder-row-copy">${escapeHtml(getAdminItemDisplayDescription(item))}</div>
+                    <div class="menu-builder-item-main">
+                        <div class="menu-builder-item-thumb">${previewImage ? `<img src="${escapeHtml(previewImage)}" alt="${escapeHtml(displayName)}" />` : ''}</div>
+                        <div class="menu-builder-item-meta">
+                            <strong>${escapeHtml(displayName)}</strong>
+                            <div class="menu-builder-row-copy">${escapeHtml(getAdminItemDisplayDescription(item))}</div>
+                        </div>
+                    </div>
                 </td>
                 <td><span class="menu-builder-row-meta">MAD ${price.toFixed(2)}</span></td>
+                <td><span class="menu-builder-likes">💗 ${likes}</span></td>
+                <td><button type="button" class="promo-star action-btn menu-builder-toggle ${promoIds.includes(item.id) ? 'promo-active' : ''}" onclick='event.stopPropagation(); togglePromo(${inlineId})'>⭐</button></td>
+                <td><button type="button" class="promo-star action-btn menu-builder-toggle ${item.featured ? 'promo-active' : ''}" onclick='event.stopPropagation(); toggleFeatured(${inlineId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">✨</button></td>
                 <td>
-                    <button type="button" class="action-btn" onclick='event.stopPropagation(); editItem(${inlineId})'>✏️</button>
-                    <button type="button" class="action-btn" onclick='event.stopPropagation(); deleteItem(${inlineId})'>🗑️</button>
+                    <div class="menu-builder-item-actions">
+                        <button type="button" class="action-btn" onclick='event.stopPropagation(); editItem(${inlineId})'>✏️</button>
+                        <button type="button" class="action-btn" onclick='event.stopPropagation(); openImageModal(${inlineId})'>🖼️</button>
+                        <button type="button" class="action-btn" onclick='event.stopPropagation(); deleteItem(${inlineId})'>🗑️</button>
+                    </div>
                 </td>
             </tr>
         `;
