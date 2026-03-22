@@ -5,6 +5,7 @@
 
 let menu = window.defaultMenu || [];
 let catEmojis = window.defaultCatEmojis || {};
+window.catEmojis = catEmojis;
 let cart = typeof window.getStoredCart === 'function'
     ? window.getStoredCart()
     : [];
@@ -48,6 +49,7 @@ async function syncDataFromServer() {
         // Update local variables
         menu = Array.isArray(data.menu) ? data.menu : menu;
         catEmojis = data.catEmojis || catEmojis;
+        window.catEmojis = catEmojis;
 
         // Update global config object
         if (typeof window.mergeRestaurantConfig === 'function') {
@@ -120,6 +122,9 @@ setInterval(syncDataFromServer, 2000);
 const config = window.restaurantConfig;
 
 function getSuperCategories() {
+    if (typeof window.getEffectiveSuperCategories === 'function') {
+        return window.getEffectiveSuperCategories(menu, window.restaurantConfig);
+    }
     return Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [];
 }
 

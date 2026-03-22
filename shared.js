@@ -1321,6 +1321,71 @@ function normalizeSuperCategories(input) {
     }));
 }
 
+window.getEffectiveSuperCategories = function (menuItems, config = window.restaurantConfig) {
+    const items = Array.isArray(menuItems) ? menuItems : [];
+    const runtimeConfig = config && typeof config === 'object' ? config : {};
+    const currentCategories = [...new Set(
+        items
+            .map((item) => (typeof item?.cat === 'string' ? repairPossibleMojibake(item.cat.trim()) : ''))
+            .filter(Boolean)
+    )];
+
+    if (!currentCategories.length) {
+        return Array.isArray(runtimeConfig.superCategories) ? runtimeConfig.superCategories : [];
+    }
+
+    const categoryTranslations = runtimeConfig.categoryTranslations && typeof runtimeConfig.categoryTranslations === 'object'
+        ? runtimeConfig.categoryTranslations
+        : {};
+    const categoryEmojiMap = window.catEmojis && typeof window.catEmojis === 'object'
+        ? window.catEmojis
+        : (window.defaultCatEmojis || {});
+    const savedGroups = Array.isArray(runtimeConfig.superCategories) ? runtimeConfig.superCategories : [];
+    const validGroups = [];
+    const coveredCategories = new Set();
+
+    savedGroups.forEach((group, index) => {
+        const cats = Array.isArray(group?.cats)
+            ? [...new Set(group.cats
+                .map((value) => (typeof value === 'string' ? repairPossibleMojibake(value.trim()) : ''))
+                .filter((value) => value && currentCategories.includes(value)))]
+            : [];
+        if (!cats.length) return;
+        cats.forEach((value) => coveredCategories.add(value));
+        validGroups.push({
+            ...(group && typeof group === 'object' ? group : {}),
+            id: typeof group?.id === 'string' && group.id.trim() ? group.id.trim() : `runtime-super-${index + 1}`,
+            cats
+        });
+    });
+
+    const missingCategories = currentCategories.filter((cat) => !coveredCategories.has(cat));
+    if (!validGroups.length || missingCategories.length) {
+        const fallbackGroups = missingCategories.map((cat, index) => {
+            const translations = normalizeEntityTranslations(categoryTranslations[cat]);
+            const fallbackName = translations.fr.name || repairPossibleMojibake(cat);
+            const fallbackDesc = translations.fr.desc || '';
+            return {
+                id: `runtime-${canonicalMenuLookupKey(cat) || index + 1}`,
+                name: fallbackName,
+                desc: fallbackDesc,
+                emoji: categoryEmojiMap[cat] || '🍴',
+                time: '',
+                cats: [cat],
+                translations: {
+                    fr: { name: translations.fr.name || fallbackName, desc: translations.fr.desc || fallbackDesc },
+                    en: { name: translations.en.name || fallbackName, desc: translations.en.desc || fallbackDesc },
+                    ar: { name: translations.ar.name || fallbackName, desc: translations.ar.desc || fallbackDesc }
+                }
+            };
+        });
+
+        return validGroups.length ? [...validGroups, ...fallbackGroups] : fallbackGroups;
+    }
+
+    return validGroups;
+};
+
 window.mergeRestaurantConfig = function (patch) {
     const source = patch && typeof patch === 'object' ? patch : {};
     const current = window.restaurantConfig || {};
