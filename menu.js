@@ -163,7 +163,13 @@ function sameMenuItemId(left, right) {
 }
 
 function serializeInlineId(value) {
-    return JSON.stringify(String(value ?? ''));
+    const raw = String(value ?? '');
+    const escaped = raw
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n');
+    return `'${escaped}'`;
 }
 
 
@@ -775,7 +781,7 @@ function renderMenu() {
                     : `${item.price.toFixed(0)} MAD`)}
                                 </div>
                             </div>
-                            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${JSON.stringify(cat)}), ${itemIndex})">
+                            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
                                 ${imgTag(item)}
                             </div>
                             <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
