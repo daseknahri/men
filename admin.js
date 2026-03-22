@@ -2639,17 +2639,17 @@ function renderImporterDraftOutputs(draft) {
         `Menu items: ${menuItems.length}`,
         `Categories: ${Object.keys(restaurantData.catEmojis || {}).length}`,
         `Super categories: ${superCategories.length}`,
-        `Blockers: ${blockers.length}`,
-        `Warnings: ${warnings.length}`,
+        `Blockers: ${reviewReport.blockers.length}`,
+        `Warnings: ${reviewReport.warnings.length}`,
         `Untranslated items: ${untranslatedItems.length}`,
         `Library image matches: ${lastImporterDraftMeta?.mediaLibraryMatches || review.mediaLibraryMatches || 0}`,
         `Menu extraction confidence: ${review.confidence?.menuExtraction || 'unknown'}`,
         `Translation confidence: ${review.confidence?.translations || 'unknown'}`,
         `Media confidence: ${review.confidence?.mediaMatching || 'unknown'}`,
         '',
-        blockers.length ? `Blockers:\n- ${blockers.join('\n- ')}` : 'Blockers:\n- none',
+        reviewReport.blockers.length ? `Blockers:\n- ${reviewReport.blockers.join('\n- ')}` : 'Blockers:\n- none',
         '',
-        warnings.length ? `Warnings:\n- ${warnings.join('\n- ')}` : 'Warnings:\n- none'
+        reviewReport.warnings.length ? `Warnings:\n- ${reviewReport.warnings.join('\n- ')}` : 'Warnings:\n- none'
     ].join('\n');
 
     jsonEl.value = JSON.stringify(draft, null, 2);
@@ -2660,7 +2660,7 @@ function renderImporterDraftOutputs(draft) {
             { value: reviewReport.categoryCount, label: 'Categories' },
             { value: reviewReport.superCategoryCount, label: 'Super Categories' },
             { value: reviewReport.missingPriceCount, label: 'Missing Prices' },
-            { value: reviewReport.missingTranslationCount, label: 'Missing Names' },
+            { value: reviewReport.missingTranslationCount + reviewReport.weakTranslationCount, label: 'Translation Issues' },
             { value: reviewReport.uncategorizedCount, label: 'Unmapped Items' }
         ].map((entry) => `
             <div class="importer-review-stat">
@@ -2700,6 +2700,25 @@ function getImporterReviewReport(draft) {
         ? restaurantData.categoryTranslations
         : {};
     const superCategories = Array.isArray(restaurantData.superCategories) ? restaurantData.superCategories : [];
+    const hasArabicScript = (value) => /[\u0600-\u06FF]/.test(typeof value === 'string' ? value : '');
+    const normalizeCompare = (value) => (typeof value === 'string' ? value.trim().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '');
+    const isWeakTranslation = (item) => {
+        const translations = normalizeMenuItemTranslations(item?.translations);
+        const baseName = typeof item?.name === 'string' ? item.name.trim() : '';
+        const frName = translations.fr?.name || '';
+        const enName = translations.en?.name || '';
+        const arName = translations.ar?.name || '';
+        const baseNorm = normalizeCompare(baseName);
+        const frNorm = normalizeCompare(frName);
+        const enNorm = normalizeCompare(enName);
+        const arNorm = normalizeCompare(arName);
+
+        if (!frName || !enName || !arName) return true;
+        if (!hasArabicScript(arName)) return true;
+        if (frNorm && enNorm && frNorm === enNorm && frNorm !== 'sushi' && frNorm !== 'pizza' && frNorm !== 'burger') return true;
+        if (baseNorm && frNorm === baseNorm && enNorm === baseNorm && arNorm === baseNorm) return true;
+        return false;
+    };
 
     const missingPriceCount = menuItems.filter((item) => item?.price === null || item?.price === '' || typeof item?.price === 'undefined').length;
     const missingTranslationCount = menuItems.filter((item) => {
@@ -2720,20 +2739,49 @@ function getImporterReviewReport(draft) {
         return cat && !currentCategoryKeys.includes(cat);
     }).length;
     const categoryKeys = Object.keys(catMap);
+    const weakTranslationCount = menuItems.filter((item) => isWeakTranslation(item)).length;
+    const duplicateIdCount = (() => {
+        const ids = menuItems.map((item) => typeof item?.id === 'string' || typeof item?.id === 'number' ? String(item.id).trim() : '').filter(Boolean);
+        return ids.length - new Set(ids).size;
+    })();
+    const duplicateNameCount = (() => {
+        const seen = new Set();
+        let duplicates = 0;
+        menuItems.forEach((item) => {
+            const key = `${normalizeCompare(item?.cat)}|${normalizeCompare(item?.name)}`;
+            if (!key || key === '|') return;
+            if (seen.has(key)) {
+                duplicates += 1;
+                return;
+            }
+            seen.add(key);
+        });
+        return duplicates;
+    })();
+    const orphanSuperCategoryRefCount = superCategories.reduce((total, entry) => {
+        const cats = Array.isArray(entry?.cats) ? entry.cats : [];
+        return total + cats.filter((cat) => typeof cat === 'string' && cat.trim() && !catMap[cat.trim()]).length;
+    }, 0);
 
     const derivedBlockers = [];
     if (!menuItems.length) derivedBlockers.push('No menu items were extracted.');
     if (!categoryKeys.length) derivedBlockers.push('No categories were extracted.');
     if (uncategorizedCount > 0) derivedBlockers.push(`${uncategorizedCount} menu item(s) are not mapped to a valid category.`);
+    if (duplicateIdCount > 0) derivedBlockers.push(`${duplicateIdCount} duplicate menu item id(s) remain in the draft.`);
+    if (duplicateNameCount > 0) derivedBlockers.push(`${duplicateNameCount} duplicate menu item name(s) remain inside the same category.`);
+    if (orphanSuperCategoryRefCount > 0) derivedBlockers.push(`${orphanSuperCategoryRefCount} super-category reference(s) point to missing categories.`);
 
     const baseBlockers = Array.isArray(review.blockers) ? review.blockers.filter(Boolean) : [];
     const warnings = [
         ...(Array.isArray(review.warnings) ? review.warnings.filter(Boolean) : []),
         ...(missingPriceCount > 0 ? [`${missingPriceCount} item(s) still miss a price.`] : []),
         ...(missingTranslationCount > 0 ? [`${missingTranslationCount} item(s) still miss one or more translated names.`] : []),
+        ...(weakTranslationCount > 0 ? [`${weakTranslationCount} item(s) still look like fallback translations and should be reviewed before apply.`] : []),
         ...(missingDescriptionCount > 0 ? [`${missingDescriptionCount} item(s) still miss a description.`] : []),
         ...(menuOnlyCategoryMismatchCount > 0 ? [`${menuOnlyCategoryMismatchCount} item(s) use categories that do not exist in the current site. Use "Menu + category structure" instead of "Menu only".`] : [])
     ];
+
+    const blockers = [...baseBlockers, ...derivedBlockers];
 
     return {
         menuItemCount: menuItems.length,
@@ -2741,13 +2789,17 @@ function getImporterReviewReport(draft) {
         superCategoryCount: superCategories.length,
         missingPriceCount,
         missingTranslationCount,
+        weakTranslationCount,
         missingDescriptionCount,
         uncategorizedCount,
         menuOnlyCategoryMismatchCount,
-        blockers: [...baseBlockers, ...derivedBlockers],
+        duplicateIdCount,
+        duplicateNameCount,
+        orphanSuperCategoryRefCount,
+        blockers,
         warnings,
-        canApplyMenuOnly: menuItems.length > 0 && menuOnlyCategoryMismatchCount === 0,
-        canApplyMenuStructure: menuItems.length > 0 && categoryKeys.length > 0 && uncategorizedCount === 0
+        canApplyMenuOnly: menuItems.length > 0 && menuOnlyCategoryMismatchCount === 0 && blockers.length === 0,
+        canApplyMenuStructure: menuItems.length > 0 && categoryKeys.length > 0 && uncategorizedCount === 0 && blockers.length === 0
     };
 }
 

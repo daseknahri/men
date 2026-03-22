@@ -382,6 +382,228 @@ function fillTranslationSet(translations, fallbackName = "", fallbackDesc = "") 
   };
 }
 
+function repairPossibleImporterMojibake(value) {
+  let result = asImporterString(value);
+  if (!result) return "";
+
+  for (let index = 0; index < 2; index += 1) {
+    if (!/[ÃØÙðâ]/.test(result)) break;
+
+    try {
+      const repairedLatin1 = Buffer.from(result, "latin1").toString("utf8");
+      if (repairedLatin1 && repairedLatin1 !== result) {
+        result = repairedLatin1;
+        continue;
+      }
+    } catch (_error) {
+      // Fall through to the browser-style repair attempt.
+    }
+
+    try {
+      const repairedEscaped = decodeURIComponent(escape(result));
+      if (!repairedEscaped || repairedEscaped === result) break;
+      result = repairedEscaped;
+    } catch (_error) {
+      break;
+    }
+  }
+
+  return result;
+}
+
+function normalizeImporterWhitespace(value) {
+  return repairPossibleImporterMojibake(value)
+    .replace(/[\u200B-\u200D\uFEFF]/g, " ")
+    .replace(/[•·▪●◦■►]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function trimImporterSeparators(value) {
+  return asImporterString(value)
+    .replace(/^[\s\-–—:;|.,/\\]+/, "")
+    .replace(/[\s\-–—:;|.,/\\]+$/, "")
+    .trim();
+}
+
+function normalizeImporterText(value) {
+  return trimImporterSeparators(normalizeImporterWhitespace(value));
+}
+
+function slugifyImporterKey(value) {
+  const clean = canonicalImporterLookup(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return clean || "entry";
+}
+
+function parsePossiblePriceToken(value) {
+  if (typeof value === "number" && Number.isFinite(value) && value > 0 && value <= 5000) {
+    return Math.round(value * 100) / 100;
+  }
+
+  const raw = asImporterString(value).replace(/\s+/g, "");
+  if (!raw) return null;
+
+  let normalized = raw;
+  if (normalized.includes(",") && !normalized.includes(".")) {
+    normalized = normalized.replace(",", ".");
+  } else {
+    normalized = normalized.replace(/,/g, "");
+  }
+
+  const number = Number.parseFloat(normalized);
+  if (!Number.isFinite(number) || number <= 0 || number > 5000) return null;
+  return Math.round(number * 100) / 100;
+}
+
+function extractTrailingPrice(text) {
+  const source = normalizeImporterText(text);
+  if (!source) {
+    return { text: "", price: null };
+  }
+
+  const match = source.match(/^(.*?)(?:\s*[.\-–—|:]\s*|\s+)(\d{1,4}(?:[.,]\d{1,2})?)\s*(?:mad|dh|dhs|da|eur|usd|€|\$|درهم|د\.?\s*م)?$/iu);
+  if (!match) {
+    return { text: source, price: null };
+  }
+
+  const price = parsePossiblePriceToken(match[2]);
+  if (!Number.isFinite(price)) {
+    return { text: source, price: null };
+  }
+
+  return {
+    text: normalizeImporterText(match[1]),
+    price
+  };
+}
+
+function normalizeImporterPrice(explicitPrice, ...fallbackTexts) {
+  const direct = parsePossiblePriceToken(explicitPrice);
+  if (Number.isFinite(direct)) return direct;
+
+  for (const text of fallbackTexts) {
+    const source = normalizeImporterText(text);
+    if (!source) continue;
+
+    const trailing = extractTrailingPrice(source);
+    if (Number.isFinite(trailing.price)) {
+      return trailing.price;
+    }
+
+    const matches = [...source.matchAll(/(\d{1,4}(?:[.,]\d{1,2})?)\s*(?:mad|dh|dhs|da|eur|usd|€|\$|درهم|د\.?\s*م)?/giu)];
+    for (let index = matches.length - 1; index >= 0; index -= 1) {
+      const candidate = parsePossiblePriceToken(matches[index][1]);
+      if (Number.isFinite(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
+function splitInlineNameAndDesc(name, desc) {
+  let nextName = normalizeImporterText(name);
+  let nextDesc = normalizeImporterText(desc);
+
+  if (!nextName && nextDesc) {
+    nextName = nextDesc;
+    nextDesc = "";
+  }
+
+  nextName = extractTrailingPrice(nextName).text || nextName;
+
+  if (!nextDesc) {
+    const separatorMatch = nextName.match(/^(.+?)\s(?:-|–|—|:|\|)\s(.+)$/);
+    if (separatorMatch?.[1] && separatorMatch?.[2] && separatorMatch[2].length >= 8) {
+      nextName = normalizeImporterText(separatorMatch[1]);
+      nextDesc = normalizeImporterText(separatorMatch[2]);
+    }
+  }
+
+  if (!nextDesc) {
+    const parentheticalMatch = nextName.match(/^(.+?)\s*\((.{8,})\)$/);
+    if (parentheticalMatch?.[1] && parentheticalMatch?.[2]) {
+      nextName = normalizeImporterText(parentheticalMatch[1]);
+      nextDesc = normalizeImporterText(parentheticalMatch[2]);
+    }
+  }
+
+  return {
+    name: nextName,
+    desc: nextDesc
+  };
+}
+
+function guessImporterCategoryEmoji(value) {
+  const source = canonicalImporterLookup(value);
+  if (!source) return "🍴";
+  if (/(drink|boisson|jus|smooth|cafe|coffee|tea|the|cocktail|mocktail|soda|juice)/.test(source)) return "🥤";
+  if (/(dessert|sweet|gateau|cake|tarte|fondant|glace|ice cream|bakery|patis|viennois)/.test(source)) return "🍰";
+  if (/(pizza|burger|sandwich|tacos|wrap|street|snack)/.test(source)) return "🍔";
+  if (/(poisson|fish|seafood|crevette|shrimp|salmon|thon|tuna|sushi|maki|sashimi)/.test(source)) return "🍣";
+  if (/(salad|salade|starter|entree|soup|soupe|appetizer|mezze|mezza)/.test(source)) return "🥗";
+  if (/(grill|bbq|poulet|chicken|beef|steak|meat|viande|plat|main|pasta|pate|rice|riz|tajine)/.test(source)) return "🍽️";
+  return "🍴";
+}
+
+function chooseRicherImporterItem(current, candidate) {
+  const currentDesc = normalizeImporterText(current?.desc);
+  const candidateDesc = normalizeImporterText(candidate?.desc);
+  const currentImageCount = Array.isArray(current?.images) ? current.images.length : 0;
+  const candidateImageCount = Array.isArray(candidate?.images) ? candidate.images.length : 0;
+  const currentTranslationScore = ["fr", "en", "ar"].reduce((total, key) => total + (asImporterString(current?.translations?.[key]?.name) ? 1 : 0), 0);
+  const candidateTranslationScore = ["fr", "en", "ar"].reduce((total, key) => total + (asImporterString(candidate?.translations?.[key]?.name) ? 1 : 0), 0);
+  const currentScore = (currentDesc ? 2 : 0) + (Number.isFinite(current?.price) ? 2 : 0) + currentImageCount + currentTranslationScore;
+  const candidateScore = (candidateDesc ? 2 : 0) + (Number.isFinite(candidate?.price) ? 2 : 0) + candidateImageCount + candidateTranslationScore;
+  return candidateScore > currentScore ? candidate : current;
+}
+
+function dedupeImporterMenuItems(items) {
+  const seen = new Map();
+  let removedCount = 0;
+
+  items.forEach((item) => {
+    const key = [
+      canonicalImporterLookup(item?.cat),
+      canonicalImporterLookup(item?.name),
+      Number.isFinite(item?.price) ? String(item.price) : ""
+    ].join("|");
+
+    if (!key || key === "||") return;
+
+    if (!seen.has(key)) {
+      seen.set(key, item);
+      return;
+    }
+
+    removedCount += 1;
+    seen.set(key, chooseRicherImporterItem(seen.get(key), item));
+  });
+
+  return {
+    items: [...seen.values()],
+    removedCount
+  };
+}
+
+function buildFallbackSuperCategories(categoryTranslations, catEmojis) {
+  return Object.keys(categoryTranslations || {}).map((key, index) => {
+    const translations = fillTranslationSet(categoryTranslations[key], key, "");
+    return {
+      id: `super-${slugifyImporterKey(key)}-${index + 1}`,
+      name: asImporterString(translations?.fr?.name) || key,
+      desc: asImporterString(translations?.fr?.desc),
+      emoji: asImporterString(catEmojis?.[key]) || guessImporterCategoryEmoji(key),
+      time: "",
+      cats: [key],
+      translations
+    };
+  });
+}
+
 function buildImporterDraftSkeleton(input) {
   const menuImageUrls = Array.isArray(input.menuImageUrls) ? input.menuImageUrls : [];
   const menuPdfUrls = Array.isArray(input.menuPdfUrls) ? input.menuPdfUrls : [];
@@ -500,18 +722,28 @@ function normalizeStructuredImporterDraft(parsed) {
   const restaurantData = draft.restaurantData && typeof draft.restaurantData === "object"
     ? draft.restaurantData
     : {};
+  const review = draft.review && typeof draft.review === "object"
+    ? draft.review
+    : {};
   const menu = Array.isArray(restaurantData.menu) ? restaurantData.menu : [];
   const categories = Array.isArray(restaurantData.categories) ? restaurantData.categories : [];
   const aliasMap = new Map();
   const catEmojis = {};
   const categoryTranslations = {};
+  const reviewWarnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
+  const reviewBlockers = Array.isArray(review.blockers) ? review.blockers.slice() : [];
+  let normalizedPriceCount = 0;
+  let fallbackCategoryCount = 0;
+  let derivedCategoryCount = 0;
+  let derivedSuperCategoryCount = 0;
+  let duplicateIdCount = 0;
 
   const derivedCategories = categories.length
     ? categories
-    : [...new Set(menu.map((item) => asImporterString(item?.cat)).filter(Boolean))].map((key) => ({
+    : [...new Set(menu.map((item) => normalizeImporterText(item?.cat)).filter(Boolean))].map((key) => ({
       key,
       name: key,
-      emoji: "🍴",
+      emoji: guessImporterCategoryEmoji(key),
       translations: {
         fr: { name: key, desc: "" },
         en: { name: key, desc: "" },
@@ -523,18 +755,20 @@ function normalizeStructuredImporterDraft(parsed) {
     const translations = category?.translations && typeof category.translations === "object"
       ? category.translations
       : {};
-    const key = asImporterString(category?.key)
-      || asImporterString(translations?.fr?.name)
-      || asImporterString(category?.name)
+    const normalizedName = normalizeImporterText(category?.name);
+    const normalizedFrName = normalizeImporterText(translations?.fr?.name);
+    const key = normalizeImporterText(category?.key)
+      || normalizedFrName
+      || normalizedName
       || `category-${index + 1}`;
-    const categoryTranslationSet = fillTranslationSet(translations, asImporterString(category?.name) || key, "");
+    const categoryTranslationSet = fillTranslationSet(translations, normalizedName || key, "");
 
-    catEmojis[key] = asImporterString(category?.emoji) || "🍴";
+    catEmojis[key] = asImporterString(category?.emoji) || guessImporterCategoryEmoji(key);
     categoryTranslations[key] = categoryTranslationSet;
 
     [
       key,
-      category?.name,
+      normalizedName,
       categoryTranslationSet?.fr?.name,
       categoryTranslationSet?.en?.name,
       categoryTranslationSet?.ar?.name
@@ -549,28 +783,97 @@ function normalizeStructuredImporterDraft(parsed) {
       ? item.images.filter((value) => typeof value === "string" && value.trim())
       : [];
     const img = asImporterString(item?.img) || images[0] || "";
-    const catValue = asImporterString(item?.cat);
-    const normalizedCat = aliasMap.get(canonicalImporterLookup(catValue)) || catValue || `category-${index + 1}`;
+    const splitText = splitInlineNameAndDesc(item?.name, item?.desc);
+    const catValue = normalizeImporterText(item?.cat);
+    let normalizedCat = aliasMap.get(canonicalImporterLookup(catValue)) || catValue || "";
+    if (!normalizedCat) {
+      normalizedCat = "Menu";
+      fallbackCategoryCount += 1;
+    }
+
+    const normalizedPrice = normalizeImporterPrice(item?.price, item?.name, item?.desc);
+    if (!Number.isFinite(parsePossiblePriceToken(item?.price)) && Number.isFinite(normalizedPrice)) {
+      normalizedPriceCount += 1;
+    }
 
     return {
       ...item,
+      id: asImporterString(item?.id) || `item-${slugifyImporterKey(normalizedCat)}-${index + 1}`,
       cat: normalizedCat,
+      name: splitText.name,
+      desc: splitText.desc,
+      price: Number.isFinite(normalizedPrice) ? normalizedPrice : null,
       img,
       images: img && !images.length ? [img] : images,
-      translations: fillTranslationSet(item?.translations, asImporterString(item?.name), asImporterString(item?.desc))
+      translations: fillTranslationSet(item?.translations, splitText.name, splitText.desc),
+      ingredients: Array.isArray(item?.ingredients)
+        ? item.ingredients.map((value) => normalizeImporterText(value)).filter(Boolean)
+        : []
+    };
+  }).filter((item) => item.name);
+
+  if (!categories.length) {
+    derivedCategoryCount = Object.keys(categoryTranslations).length;
+  }
+
+  if (!categoryTranslations.Menu && restaurantData.menu.some((item) => item.cat === "Menu")) {
+    catEmojis.Menu = guessImporterCategoryEmoji("Menu");
+    categoryTranslations.Menu = fillTranslationSet({}, "Menu", "");
+    aliasMap.set(canonicalImporterLookup("Menu"), "Menu");
+    derivedCategoryCount += 1;
+  }
+
+  const dedupedMenu = dedupeImporterMenuItems(restaurantData.menu);
+  restaurantData.menu = dedupedMenu.items;
+  if (dedupedMenu.removedCount > 0) {
+    reviewWarnings.push(`Removed ${dedupedMenu.removedCount} duplicate menu item(s) during import cleanup.`);
+  }
+
+  const usedMenuIds = new Set();
+  restaurantData.menu = restaurantData.menu.map((item, index) => {
+    let nextId = asImporterString(item?.id) || `item-${slugifyImporterKey(item?.cat)}-${slugifyImporterKey(item?.name)}-${index + 1}`;
+    if (usedMenuIds.has(nextId)) {
+      duplicateIdCount += 1;
+      nextId = `${nextId}-${index + 1}`;
+    }
+    usedMenuIds.add(nextId);
+    return {
+      ...item,
+      id: nextId
     };
   });
 
-  restaurantData.superCategories = (Array.isArray(restaurantData.superCategories) ? restaurantData.superCategories : []).map((entry, index) => ({
-    ...entry,
-    id: asImporterString(entry?.id) || `super-category-${index + 1}`,
-    cats: Array.isArray(entry?.cats)
-      ? entry.cats
-        .map((value) => aliasMap.get(canonicalImporterLookup(value)) || asImporterString(value))
-        .filter(Boolean)
-      : [],
-    translations: fillTranslationSet(entry?.translations, asImporterString(entry?.name), asImporterString(entry?.desc))
-  }));
+  const coveredSuperCategoryCats = new Set();
+  const normalizedSuperCategories = (Array.isArray(restaurantData.superCategories) ? restaurantData.superCategories : []).map((entry, index) => {
+    const cats = Array.isArray(entry?.cats)
+      ? [...new Set(entry.cats
+        .map((value) => aliasMap.get(canonicalImporterLookup(value)) || normalizeImporterText(value))
+        .filter((value) => Boolean(value) && categoryTranslations[value]))]
+      : [];
+    cats.forEach((value) => coveredSuperCategoryCats.add(value));
+    const fallbackName = normalizeImporterText(entry?.name)
+      || (cats.length === 1 ? asImporterString(categoryTranslations[cats[0]]?.fr?.name) || cats[0] : `Super Category ${index + 1}`);
+    const fallbackDesc = normalizeImporterText(entry?.desc)
+      || (cats.length === 1 ? asImporterString(categoryTranslations[cats[0]]?.fr?.desc) : "");
+
+    return {
+      ...entry,
+      id: normalizeImporterText(entry?.id) || `super-${slugifyImporterKey(fallbackName)}-${index + 1}`,
+      name: fallbackName,
+      desc: fallbackDesc,
+      emoji: asImporterString(entry?.emoji) || (cats.length === 1 ? asImporterString(catEmojis[cats[0]]) : "🍽️"),
+      time: normalizeImporterText(entry?.time),
+      cats,
+      translations: fillTranslationSet(entry?.translations, fallbackName, fallbackDesc)
+    };
+  }).filter((entry) => entry.name && entry.cats.length);
+
+  const fallbackSuperCategories = buildFallbackSuperCategories(categoryTranslations, catEmojis)
+    .filter((entry) => !coveredSuperCategoryCats.has(entry.cats[0]));
+  derivedSuperCategoryCount = fallbackSuperCategories.length;
+  restaurantData.superCategories = normalizedSuperCategories.length
+    ? [...normalizedSuperCategories, ...fallbackSuperCategories]
+    : fallbackSuperCategories;
 
   if (restaurantData.branding && typeof restaurantData.branding === "object") {
     const heroSlides = Array.isArray(restaurantData.branding.heroSlides)
@@ -586,6 +889,34 @@ function normalizeStructuredImporterDraft(parsed) {
   restaurantData.catEmojis = catEmojis;
   restaurantData.categoryTranslations = categoryTranslations;
   draft.restaurantData = restaurantData;
+
+  review.summary = asImporterString(review.summary)
+    || `Extracted ${restaurantData.menu.length} menu item(s) across ${Object.keys(categoryTranslations).length} category(ies).`;
+  if (normalizedPriceCount > 0) {
+    reviewWarnings.push(`Recovered ${normalizedPriceCount} price value(s) from extracted menu text.`);
+  }
+  if (fallbackCategoryCount > 0) {
+    reviewWarnings.push(`Grouped ${fallbackCategoryCount} item(s) into a fallback Menu category because no category label was extracted.`);
+  }
+  if (derivedCategoryCount > 0) {
+    reviewWarnings.push(`Derived ${derivedCategoryCount} category record(s) from extracted menu items.`);
+  }
+  if (derivedSuperCategoryCount > 0) {
+    reviewWarnings.push(`Generated ${derivedSuperCategoryCount} fallback super-category record(s) to keep the public menu navigable.`);
+  }
+  if (duplicateIdCount > 0) {
+    reviewWarnings.push(`Rebuilt ${duplicateIdCount} duplicate menu item id(s) during import normalization.`);
+  }
+  if (!restaurantData.menu.length) {
+    reviewBlockers.push("No valid menu items were extracted after import cleanup.");
+  }
+  if (!Object.keys(categoryTranslations).length) {
+    reviewBlockers.push("No valid categories were extracted after import cleanup.");
+  }
+  review.warnings = [...new Set(reviewWarnings.filter(Boolean))];
+  review.blockers = [...new Set(reviewBlockers.filter(Boolean))];
+  review.untranslatedItems = Array.isArray(review.untranslatedItems) ? review.untranslatedItems.filter(Boolean) : [];
+  draft.review = review;
 
   return draft;
 }
