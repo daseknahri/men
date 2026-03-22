@@ -2066,7 +2066,10 @@ function isValidAbsoluteUrl(value) {
 function isValidAssetUrl(value) {
     const raw = typeof value === 'string' ? value.trim() : '';
     if (!raw) return true;
-    return raw.startsWith('/') || isValidAbsoluteUrl(raw);
+    return raw.startsWith('/')
+        || raw.startsWith('images/')
+        || raw.startsWith('uploads/')
+        || isValidAbsoluteUrl(raw);
 }
 
 function isLikelyPhoneNumber(value) {

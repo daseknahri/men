@@ -8,6 +8,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 
 ### Latest Progress
 
+- Branding save now accepts bundled local asset paths like `images/...` in addition to absolute URLs and `/uploads/...`, so saving a new logo no longer fails just because the current hero image still points at a packaged default asset
 - The public menu no longer polls `/api/data` every 15 seconds: it now syncs once on load and only refreshes on tab resume/focus with a cooldown, which removes the constant background fetch noise from the live customer-facing page
 - The public history modal no longer crashes on open: `renderHistory()` now keeps the shared `t()` translation helper intact instead of shadowing it with a loop variable, so the history delete title/button can render without throwing `TypeError: t is not a function`
 - The public menu runtime is now safer for imported data: item interactions use string-safe ids instead of assuming numeric ids, so imported dishes can open detail/add-to-cart correctly, and background `/api/data` sync now retries hydration safely while polling less aggressively instead of hammering the server every 2 seconds
