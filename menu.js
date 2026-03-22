@@ -758,7 +758,7 @@ function renderMenu() {
             <section class="menu-section menu-reveal-observe" id="cat-${cat.replace(/\s/g, '-')}">
                 <h2 class="menu-section-title">${catEmojis[cat] || '🍴'} ${window.getLocalizedCategoryName(cat, cat)}</h2>
                 <div class="menu-grid">
-                    ${items.map(item => `
+                    ${items.map((item, itemIndex) => `
                         <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
                              <button class="love-btn ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
                                      onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
@@ -775,7 +775,7 @@ function renderMenu() {
                     : `${item.price.toFixed(0)} MAD`)}
                                 </div>
                             </div>
-                            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === '${cat}'), menu.filter(m => m.cat === '${cat}').indexOf(item))">
+                            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${JSON.stringify(cat)}), ${itemIndex})">
                                 ${imgTag(item)}
                             </div>
                             <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
