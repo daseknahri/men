@@ -1071,12 +1071,12 @@ function renderMenuBuilder() {
             const categoriesCount = Array.isArray(entry.cats) ? entry.cats.length : 0;
             return `
                 <tr onclick='openMenuBuilderRow(${inlineId})'>
-                    <td>
+                    <td data-label="Super Category">
                         <strong>${escapeHtml(entry.emoji || '•')} ${escapeHtml(entry.name || 'Super Category')}</strong>
                         <div class="menu-builder-row-copy">${escapeHtml(entry.desc || '')}</div>
                     </td>
-                    <td><span class="menu-builder-row-meta">${categoriesCount} categories</span></td>
-                    <td>
+                    <td data-label="Includes"><span class="menu-builder-row-meta">${categoriesCount} categories</span></td>
+                    <td data-label="Actions">
                         ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("supercategory", ${inlineId})'>✏️</button>`}
                         ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); deleteSuperCat(${inlineId})'>🗑️</button>`}
                     </td>
@@ -1091,9 +1091,9 @@ function renderMenuBuilder() {
             const inlineKey = toInlineJsString(entry.key);
             return `
                 <tr onclick='openMenuBuilderCategory(${inlineKey})'>
-                    <td><strong>${escapeHtml(entry.emoji)} ${escapeHtml(entry.name)}</strong></td>
-                    <td><span class="menu-builder-row-meta">${entry.itemCount} items</span></td>
-                    <td>
+                    <td data-label="Category"><strong>${escapeHtml(entry.emoji)} ${escapeHtml(entry.name)}</strong></td>
+                    <td data-label="Items"><span class="menu-builder-row-meta">${entry.itemCount} items</span></td>
+                    <td data-label="Actions">
                         <button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("category", ${inlineKey})'>✏️</button>
                         <button type="button" class="action-btn" onclick='event.stopPropagation(); deleteCat(${inlineKey})'>🗑️</button>
                     </td>
@@ -1111,7 +1111,7 @@ function renderMenuBuilder() {
         const likes = Number(item.likes) || 0;
         return `
             <tr onclick='editItem(${inlineId})'>
-                <td>
+                <td data-label="Item">
                     <div class="menu-builder-item-main">
                         <div class="menu-builder-item-thumb">${previewImage ? `<img src="${escapeHtml(previewImage)}" alt="${escapeHtml(displayName)}" />` : ''}</div>
                         <div class="menu-builder-item-meta">
@@ -1120,11 +1120,11 @@ function renderMenuBuilder() {
                         </div>
                     </div>
                 </td>
-                <td><span class="menu-builder-row-meta">MAD ${price.toFixed(2)}</span></td>
-                <td><span class="menu-builder-likes">💗 ${likes}</span></td>
-                <td><button type="button" class="promo-star action-btn menu-builder-toggle ${promoIds.includes(item.id) ? 'promo-active' : ''}" onclick='event.stopPropagation(); togglePromo(${inlineId})'>⭐</button></td>
-                <td><button type="button" class="promo-star action-btn menu-builder-toggle ${item.featured ? 'promo-active' : ''}" onclick='event.stopPropagation(); toggleFeatured(${inlineId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">✨</button></td>
-                <td>
+                <td data-label="Price"><span class="menu-builder-row-meta">MAD ${price.toFixed(2)}</span></td>
+                <td data-label="Likes"><span class="menu-builder-likes">💗 ${likes}</span></td>
+                <td data-label="Promo"><button type="button" class="promo-star action-btn menu-builder-toggle ${promoIds.includes(item.id) ? 'promo-active' : ''}" onclick='event.stopPropagation(); togglePromo(${inlineId})'>⭐</button></td>
+                <td data-label="Featured"><button type="button" class="promo-star action-btn menu-builder-toggle ${item.featured ? 'promo-active' : ''}" onclick='event.stopPropagation(); toggleFeatured(${inlineId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">✨</button></td>
+                <td data-label="Actions">
                     <div class="menu-builder-item-actions">
                         <button type="button" class="action-btn" onclick='event.stopPropagation(); editItem(${inlineId})'>✏️</button>
                         <button type="button" class="action-btn" onclick='event.stopPropagation(); openImageModal(${inlineId})'>🖼️</button>

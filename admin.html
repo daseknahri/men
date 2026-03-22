@@ -2285,9 +2285,198 @@
                 bottom: 88px;
             }
 
-        .floating-action--save {
+            .floating-action--save {
             bottom: 20px;
         }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 14px;
+            }
+
+            .header {
+                gap: 12px;
+            }
+
+            .header h2 {
+                font-size: 1.3rem;
+            }
+
+            .menu-builder-header {
+                gap: 12px;
+            }
+
+            .menu-builder-actions {
+                width: 100%;
+            }
+
+            .menu-builder-actions .primary-btn,
+            .menu-builder-actions .brand-secondary-btn {
+                flex: 1 1 0;
+                width: auto;
+            }
+
+            .menu-builder-breadcrumbs {
+                gap: 6px;
+                font-size: 0.82rem;
+                margin-bottom: 6px;
+            }
+
+            .menu-builder-crumb {
+                padding: 5px 8px;
+            }
+
+            .admin-summary-strip {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin: 14px 0 18px;
+            }
+
+            .admin-summary-card {
+                padding: 14px 16px;
+            }
+
+            #menuBuilderTable {
+                min-width: 0;
+                width: 100%;
+            }
+
+            #menuBuilderTable thead {
+                display: none;
+            }
+
+            #menuBuilderTable tbody,
+            #menuBuilderTable tr,
+            #menuBuilderTable td {
+                display: block;
+                width: 100%;
+            }
+
+            #menuBuilderTable tr {
+                border: 1px solid var(--border);
+                border-radius: 18px;
+                padding: 8px 0;
+                background: #fff;
+                box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+                margin-bottom: 12px;
+            }
+
+            #menuBuilderTable td {
+                min-width: 0;
+                border: none;
+                padding: 10px 14px;
+            }
+
+            #menuBuilderTable td::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 4px;
+                font-size: 0.74rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: var(--text2);
+            }
+
+            .menu-builder-item-main {
+                align-items: flex-start;
+            }
+
+            .menu-builder-item-thumb {
+                width: 52px;
+                height: 52px;
+                flex-basis: 52px;
+            }
+
+            .menu-builder-item-actions {
+                gap: 10px;
+            }
+
+            .menu-builder-toggle {
+                min-width: 46px;
+                height: 46px;
+            }
+
+            .menu-crud-modal-card {
+                width: 100vw;
+                max-width: 100vw;
+                max-height: 100dvh;
+                min-height: 100dvh;
+                border-radius: 0;
+                padding: 20px 16px 28px;
+            }
+
+            .menu-crud-modal-title {
+                font-size: 1.2rem;
+                padding-right: 48px;
+            }
+
+            .menu-crud-close {
+                top: 12px;
+                right: 12px;
+            }
+
+            .owner-section-card,
+            .admin-panel-disclosure summary,
+            .admin-panel-disclosure .admin-disclosure-body {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .brand-preview-hero {
+                min-height: 150px;
+                padding: 14px;
+            }
+
+            .brand-preview-title {
+                font-size: 1.3rem;
+            }
+
+            .brand-preview-body {
+                flex-direction: column;
+            }
+
+            .brand-preview-logo {
+                width: 60px;
+                height: 60px;
+                border-radius: 18px;
+            }
+
+            .landing-copy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-header {
+                padding: 12px 14px;
+            }
+
+            #mobileAdminTitleText {
+                font-size: 1.2rem !important;
+            }
+
+            .section {
+                padding: 16px;
+            }
+
+            .menu-builder-actions {
+                flex-direction: column;
+            }
+
+            .menu-builder-actions .primary-btn,
+            .menu-builder-actions .brand-secondary-btn {
+                width: 100%;
+            }
+
+            .admin-disclosure summary {
+                padding: 14px 16px;
+            }
+
+            .admin-disclosure-body {
+                padding: 0 16px 16px;
+            }
         }
 
         .mobile-header {

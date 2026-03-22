@@ -3456,6 +3456,71 @@ body[data-theme-preset='traditional'] .about-section {
     grid-template-columns: 1fr 1fr
   }
 
+  .top-bar-inner {
+    padding: 8px 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .slide {
+    padding: 18px 14px 44px;
+  }
+
+  .slide-content {
+    max-width: 100%;
+    padding: 16px 16px 14px;
+    border-radius: 20px;
+  }
+
+  .slide-title {
+    font-size: clamp(2.35rem, 12vw, 4rem);
+    letter-spacing: 1px;
+  }
+
+  .about-section,
+  .events-section,
+  .hours-section,
+  .contact-section,
+  .gallery-section {
+    padding: 76px 16px 80px;
+  }
+
+  .about-header {
+    margin-bottom: 34px;
+  }
+
+  .section-tag {
+    font-size: .74rem;
+    letter-spacing: 2px;
+    padding: 7px 12px;
+    gap: 8px;
+  }
+
+  .section-title {
+    font-size: clamp(1.9rem, 9vw, 2.7rem);
+  }
+
+  .hours-card {
+    padding: 34px 20px;
+  }
+
+  .contact-card {
+    padding: 28px 20px;
+  }
+
+  .gallery-grid {
+    margin-top: 30px;
+  }
+
+  .toast {
+    max-width: calc(100vw - 24px);
+    white-space: normal;
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+
   .top-contact {
     display: none
   }
@@ -3490,6 +3555,51 @@ body[data-theme-preset='traditional'] .about-section {
 
   .hours-card {
     padding: 28px 20px
+  }
+
+  .top-bar-inner {
+    padding: 8px 12px;
+  }
+
+  .hero-slider {
+    height: 210px;
+  }
+
+  .slide-content {
+    padding: 14px;
+  }
+
+  .slide-sub {
+    font-size: 0.9rem;
+  }
+
+  .slide-title {
+    font-size: clamp(2rem, 13vw, 3.3rem);
+  }
+
+  .slide-desc {
+    font-size: 0.84rem;
+  }
+
+  .about-section,
+  .events-section,
+  .hours-section,
+  .contact-section,
+  .gallery-section {
+    padding: 64px 12px 68px;
+  }
+
+  .contact-card {
+    border-radius: 18px;
+    padding: 24px 16px;
+  }
+
+  .gallery-grid {
+    gap: 10px;
+  }
+
+  .footer {
+    padding: 42px 16px 36px;
   }
 }
 
