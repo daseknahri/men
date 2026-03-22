@@ -41,10 +41,9 @@ async function syncDataFromServer() {
         const res = await fetchPublicDataWithTimeout();
         if (!res.ok) return;
         const data = await res.json();
-        const dataStr = JSON.stringify(data);
+        const nextDataVersion = JSON.stringify(data);
 
-        if (dataStr === lastDataVersion) return; // No change
-        lastDataVersion = dataStr;
+        if (nextDataVersion === lastDataVersion) return; // No change
 
         // Update local variables
         menu = Array.isArray(data.menu) ? data.menu : menu;
@@ -70,12 +69,21 @@ async function syncDataFromServer() {
         if (data.promoIds) window.promoIds = data.promoIds;
 
         console.log('[SYNC] Data updated from server');
-        window.applyBranding();
+        if (typeof window.applyBranding === 'function') {
+            try {
+                window.applyBranding();
+            } catch (error) {
+                console.error('[SYNC] applyBranding failed:', error);
+                throw error;
+            }
+        }
 
         // Refresh UI
         if (typeof renderMenu === 'function') renderMenu();
         if (typeof renderPromoCarousel === 'function') renderPromoCarousel();
         if (typeof renderLandingInfo === 'function') renderLandingInfo();
+        if (typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
+        if (typeof renderSuperCatPills === 'function') renderSuperCatPills();
 
         // If we are in the items view, refresh the list
         if (navigationStack.length > 0) {
@@ -105,6 +113,8 @@ async function syncDataFromServer() {
                 }
             }
         }
+
+        lastDataVersion = nextDataVersion;
     } catch (e) {
         console.warn('[SYNC] Failed to fetch data:', e);
     } finally {
