@@ -15,6 +15,7 @@ let serviceType = 'onsite';
 let lastDataVersion = "";
 let syncInFlight = null;
 const PUBLIC_DATA_TIMEOUT_MS = 8000;
+const PUBLIC_SYNC_INTERVAL_MS = 15000;
 
 async function fetchPublicDataWithTimeout() {
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -105,9 +106,9 @@ async function syncDataFromServer() {
         const dishPage = document.getElementById('dishPage');
         if (dishPage && dishPage.classList.contains('open')) {
             // Re-open (refresh) the current dish page to show new price/sizes
-            const currentItemId = Number(dishPage.dataset.itemId);
-            if (Number.isFinite(currentItemId)) {
-                const updatedItem = menu.find((item) => Number(item.id) === currentItemId);
+            const currentItemId = String(dishPage.dataset.itemId || '');
+            if (currentItemId) {
+                const updatedItem = menu.find((item) => sameMenuItemId(item.id, currentItemId));
                 if (updatedItem) {
                     openDishPage(updatedItem.id);
                 }
@@ -125,8 +126,17 @@ async function syncDataFromServer() {
     return syncInFlight;
 }
 
-// Start real-time sync (poll every 2 seconds for "instant" feel)
-setInterval(syncDataFromServer, 2000);
+setInterval(() => {
+    if (document.visibilityState === 'visible') {
+        syncDataFromServer();
+    }
+}, PUBLIC_SYNC_INTERVAL_MS);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        syncDataFromServer();
+    }
+});
+window.addEventListener('focus', syncDataFromServer);
 
 // ═══════════════════════ RESTAURANT CONFIG ═══════════════════════
 const config = window.restaurantConfig;
@@ -146,6 +156,14 @@ function t(key, fallback, vars) {
         return window.getTranslation(key, fallback);
     }
     return fallback;
+}
+
+function sameMenuItemId(left, right) {
+    return String(left ?? '') === String(right ?? '');
+}
+
+function serializeInlineId(value) {
+    return JSON.stringify(String(value ?? ''));
 }
 
 
@@ -464,11 +482,12 @@ function renderPromoCarousel() {
 
     container.innerHTML = promoItems.map(item => {
         const discountedPrice = window.getItemPrice(item);
+        const serializedId = serializeInlineId(item.id);
         return `
-            <div class="promo-card-vibrant menu-reveal-observe" onclick="openDishPage(${item.id})">
+            <div class="promo-card-vibrant menu-reveal-observe" onclick="openDishPage(${serializedId})">
                 <span class="promo-tag-glow">${t('promo_offer_badge', 'OFFRE')}</span>
                 <span class="promo-discount-badge">-20%</span>
-                <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => p.id === ${item.id}))">
+                <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => String(p.id) === ${serializedId}))">
                     ${imgTag(item)}
                     <div class="promo-glow-vibrant"></div>
                 </div>
@@ -479,7 +498,7 @@ function renderPromoCarousel() {
                         <span class="price-old">${item.price.toFixed(0)} MAD</span>
                     </div>
                 </div>
-                <button class="promo-add-vibrant" onclick="event.stopPropagation();addToCart(${item.id})">
+                <button class="promo-add-vibrant" onclick="event.stopPropagation();addToCart(${serializedId})">
                     ${t('promo_add_short', 'AJOUTER')}
                 </button>
             </div>
@@ -560,7 +579,7 @@ function renderFeaturedSlider(items, containerId) {
         </div>
         <div class="featured-slider">
             ${items.map(item => `
-                <div class="featured-card menu-reveal-observe" onclick="openDishPage(${item.id})">
+                <div class="featured-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
                     <div class="featured-img-wrap">
                         ${imgTag(item)}
                     </div>
@@ -568,7 +587,7 @@ function renderFeaturedSlider(items, containerId) {
                         <div class="featured-name">${window.getLocalizedMenuName(item)}</div>
                         <div class="featured-price">${window.getItemPrice(item).toFixed(0)} MAD</div>
                     </div>
-                    <button class="featured-add-btn" onclick="event.stopPropagation();addToCart(${item.id})">+</button>
+                    <button class="featured-add-btn" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
                 </div>
             `).join('')}
         </div>
@@ -740,9 +759,9 @@ function renderMenu() {
                 <h2 class="menu-section-title">${catEmojis[cat] || '🍴'} ${window.getLocalizedCategoryName(cat, cat)}</h2>
                 <div class="menu-grid">
                     ${items.map(item => `
-                        <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${item.id})">
+                        <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
                              <button class="love-btn ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
-                                     onclick="event.stopPropagation(); window.handleToggleLike(${item.id}, this)">
+                                     onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
                                 ❤️<span class="love-count">${window.getLikeCount(item.id)}</span>
                              </button>
                             <div class="menu-item-info">
@@ -759,7 +778,7 @@ function renderMenu() {
                             <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === '${cat}'), menu.filter(m => m.cat === '${cat}').indexOf(item))">
                                 ${imgTag(item)}
                             </div>
-                            <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${item.id})">+</button>
+                            <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
                         </div>
                     `).join('')}
                 </div>
@@ -782,7 +801,7 @@ function imgTag(item) {
 // ═══════════════════════ DISH PAGE ═══════════════════════
 
 function openDishPage(id) {
-    const item = menu.find(m => m.id === id);
+    const item = menu.find(m => sameMenuItemId(m.id, id));
     if (!item) return;
 
     const page = document.getElementById('dishPage');
@@ -877,7 +896,7 @@ function openDishPage(id) {
         loveContainer.innerHTML = `
             <button class="love-btn ${window.getLikeCount(item.id) > 0 ? 'loved' : ''}" 
                     style="position:static; width:40px; height:40px; font-size:1.2rem;"
-                    onclick="window.handleToggleLike(${item.id}, this)">
+                    onclick="window.handleToggleLike(${serializeInlineId(item.id)}, this)">
                 ❤️<span class="love-count" style="font-size:0.8rem;">${window.getLikeCount(item.id)}</span>
             </button>
         `;
@@ -986,7 +1005,7 @@ document.addEventListener('click', (e) => {
 // ═══════════════════════ CART ═══════════════════════
 
 window.addToCart = function (id, size) {
-    const item = menu.find(m => m.id === id);
+    const item = menu.find(m => sameMenuItemId(m.id, id));
     if (!item) return;
 
     const cartId = size ? `${id}_${size}` : `${id}`;
@@ -1090,7 +1109,7 @@ function renderDrawer() {
                         <div class="cart-item-controls">
                             <button onclick="removeFromCart('${item.cartId}')" class="cart-qty-btn is-minus">-</button>
                             <span class="cart-item-qty">${item.qty}</span>
-                            <button onclick="addToCart(${item.id}, '${item.selectedSize || ''}');renderDrawer();" class="cart-qty-btn is-plus">+</button>
+                            <button onclick="addToCart(${serializeInlineId(item.id)}, '${item.selectedSize || ''}');renderDrawer();" class="cart-qty-btn is-plus">+</button>
                         </div>
                     </div>
                 `).join('')}
