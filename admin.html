@@ -2805,30 +2805,6 @@
                         <input type="color" id="brandAccentColor" value="#ffd700" />
                     </div>
                     <div class="form-group">
-                        <label data-i18n="admin.branding.surface_color">Surface Color</label>
-                        <input type="color" id="brandSurfaceColor" value="#fff8f0" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.muted_surface">Muted Surface</label>
-                        <input type="color" id="brandSurfaceMuted" value="#f4ebdd" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.text_color">Text Color</label>
-                        <input type="color" id="brandTextColor" value="#261a16" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.muted_text">Muted Text</label>
-                        <input type="color" id="brandTextMuted" value="#75655c" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.menu_background">Menu Background</label>
-                        <input type="color" id="brandMenuBackground" value="#111318" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.menu_surface">Menu Surface</label>
-                        <input type="color" id="brandMenuSurface" value="#1b1f26" />
-                    </div>
-                    <div class="form-group">
                         <label data-i18n="admin.branding.logo_image_url">Logo Image URL</label>
                         <input type="text" id="brandLogoImage" placeholder="/uploads/logo.png or https://..." data-i18n-placeholder="admin.branding.logo_image_placeholder" />
                     </div>
@@ -2837,58 +2813,104 @@
                     <label data-i18n="admin.branding.hero_image_url">Hero Image URL</label>
                     <input type="text" id="brandHeroImage" placeholder="/uploads/cover.jpg or https://..." data-i18n-placeholder="admin.branding.hero_image_placeholder" />
                 </div>
-                <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.hero_slide_2_url">Hero Slide 2 URL</label>
-                        <input type="text" id="brandHeroSlide2" placeholder="/uploads/cover-2.jpg or https://..." data-i18n-placeholder="admin.branding.hero_slide_2_placeholder" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.branding.hero_slide_3_url">Hero Slide 3 URL</label>
-                        <input type="text" id="brandHeroSlide3" placeholder="/uploads/cover-3.jpg or https://..." data-i18n-placeholder="admin.branding.hero_slide_3_placeholder" />
-                    </div>
-                </div>
-                <div class="branding-media-grid">
-                    <div class="brand-asset-card">
-                        <h4 data-i18n="admin.branding.logo_upload">Logo Upload</h4>
-                        <p data-i18n="admin.branding.logo_upload_desc">Use upload for faster delivery, while still keeping the URL field available when needed.</p>
-                        <div class="brand-asset-tools">
-                            <input type="file" id="brandLogoFile" accept="image/*"
-                                onchange="handleBrandAssetUpload('brandLogoImage', this)" />
-                            <button type="button" class="brand-secondary-btn"
-                                onclick="clearBrandAsset('brandLogoImage')" data-i18n="admin.branding.clear_logo">Clear logo</button>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Advanced Theme Colors</span>
+                            <span class="admin-disclosure-copy">Open this only when the default palette needs deeper tuning for the site and menu surfaces.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 6px;">
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.surface_color">Surface Color</label>
+                                <input type="color" id="brandSurfaceColor" value="#fff8f0" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.muted_surface">Muted Surface</label>
+                                <input type="color" id="brandSurfaceMuted" value="#f4ebdd" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.text_color">Text Color</label>
+                                <input type="color" id="brandTextColor" value="#261a16" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.muted_text">Muted Text</label>
+                                <input type="color" id="brandTextMuted" value="#75655c" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.menu_background">Menu Background</label>
+                                <input type="color" id="brandMenuBackground" value="#111318" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.menu_surface">Menu Surface</label>
+                                <input type="color" id="brandMenuSurface" value="#1b1f26" />
+                            </div>
                         </div>
                     </div>
-                    <div class="brand-asset-card">
-                        <h4 data-i18n="admin.branding.hero_upload">Hero Upload</h4>
-                        <p data-i18n="admin.branding.hero_upload_desc">Upload the cover image here and the URL field will be filled automatically.</p>
-                        <div class="brand-asset-tools">
-                            <input type="file" id="brandHeroFile" accept="image/*"
-                                onchange="handleBrandAssetUpload('brandHeroImage', this)" />
-                            <button type="button" class="brand-secondary-btn"
-                                onclick="clearBrandAsset('brandHeroImage')" data-i18n="admin.branding.clear_hero">Clear hero</button>
+                </details>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Logo & Hero Media</span>
+                            <span class="admin-disclosure-copy">Open this for uploads or extra homepage slider images beyond the main hero.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 6px;">
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.hero_slide_2_url">Hero Slide 2 URL</label>
+                                <input type="text" id="brandHeroSlide2" placeholder="/uploads/cover-2.jpg or https://..." data-i18n-placeholder="admin.branding.hero_slide_2_placeholder" />
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.branding.hero_slide_3_url">Hero Slide 3 URL</label>
+                                <input type="text" id="brandHeroSlide3" placeholder="/uploads/cover-3.jpg or https://..." data-i18n-placeholder="admin.branding.hero_slide_3_placeholder" />
+                            </div>
+                        </div>
+                        <div class="branding-media-grid">
+                            <div class="brand-asset-card">
+                                <h4 data-i18n="admin.branding.logo_upload">Logo Upload</h4>
+                                <p data-i18n="admin.branding.logo_upload_desc">Use upload for faster delivery, while still keeping the URL field available when needed.</p>
+                                <div class="brand-asset-tools">
+                                    <input type="file" id="brandLogoFile" accept="image/*"
+                                        onchange="handleBrandAssetUpload('brandLogoImage', this)" />
+                                    <button type="button" class="brand-secondary-btn"
+                                        onclick="clearBrandAsset('brandLogoImage')" data-i18n="admin.branding.clear_logo">Clear logo</button>
+                                </div>
+                            </div>
+                            <div class="brand-asset-card">
+                                <h4 data-i18n="admin.branding.hero_upload">Hero Upload</h4>
+                                <p data-i18n="admin.branding.hero_upload_desc">Upload the cover image here and the URL field will be filled automatically.</p>
+                                <div class="brand-asset-tools">
+                                    <input type="file" id="brandHeroFile" accept="image/*"
+                                        onchange="handleBrandAssetUpload('brandHeroImage', this)" />
+                                    <button type="button" class="brand-secondary-btn"
+                                        onclick="clearBrandAsset('brandHeroImage')" data-i18n="admin.branding.clear_hero">Clear hero</button>
+                                </div>
+                            </div>
+                            <div class="brand-asset-card">
+                                <h4 data-i18n="admin.branding.hero_slide_2_upload">Hero Slide 2 Upload</h4>
+                                <p data-i18n="admin.branding.hero_slide_2_upload_desc">Use a second visual for the homepage slider if the client gives you more than one strong image.</p>
+                                <div class="brand-asset-tools">
+                                    <input type="file" id="brandHeroSlide2File" accept="image/*"
+                                        onchange="handleBrandAssetUpload('brandHeroSlide2', this)" />
+                                    <button type="button" class="brand-secondary-btn"
+                                        onclick="clearBrandAsset('brandHeroSlide2')" data-i18n="admin.branding.clear_slide_2">Clear slide 2</button>
+                                </div>
+                            </div>
+                            <div class="brand-asset-card">
+                                <h4 data-i18n="admin.branding.hero_slide_3_upload">Hero Slide 3 Upload</h4>
+                                <p data-i18n="admin.branding.hero_slide_3_upload_desc">Add a third branded visual so the homepage slider feels fully finished instead of repeated.</p>
+                                <div class="brand-asset-tools">
+                                    <input type="file" id="brandHeroSlide3File" accept="image/*"
+                                        onchange="handleBrandAssetUpload('brandHeroSlide3', this)" />
+                                    <button type="button" class="brand-secondary-btn"
+                                        onclick="clearBrandAsset('brandHeroSlide3')" data-i18n="admin.branding.clear_slide_3">Clear slide 3</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="brand-asset-card">
-                        <h4 data-i18n="admin.branding.hero_slide_2_upload">Hero Slide 2 Upload</h4>
-                        <p data-i18n="admin.branding.hero_slide_2_upload_desc">Use a second visual for the homepage slider if the client gives you more than one strong image.</p>
-                        <div class="brand-asset-tools">
-                            <input type="file" id="brandHeroSlide2File" accept="image/*"
-                                onchange="handleBrandAssetUpload('brandHeroSlide2', this)" />
-                            <button type="button" class="brand-secondary-btn"
-                                onclick="clearBrandAsset('brandHeroSlide2')" data-i18n="admin.branding.clear_slide_2">Clear slide 2</button>
-                        </div>
-                    </div>
-                    <div class="brand-asset-card">
-                        <h4 data-i18n="admin.branding.hero_slide_3_upload">Hero Slide 3 Upload</h4>
-                        <p data-i18n="admin.branding.hero_slide_3_upload_desc">Add a third branded visual so the homepage slider feels fully finished instead of repeated.</p>
-                        <div class="brand-asset-tools">
-                            <input type="file" id="brandHeroSlide3File" accept="image/*"
-                                onchange="handleBrandAssetUpload('brandHeroSlide3', this)" />
-                            <button type="button" class="brand-secondary-btn"
-                                onclick="clearBrandAsset('brandHeroSlide3')" data-i18n="admin.branding.clear_slide_3">Clear slide 3</button>
-                        </div>
-                    </div>
-                </div>
+                </details>
                 <div class="brand-preview-panel" style="margin-top: 18px;">
                     <h4 data-i18n="admin.branding.live_preview">Live Brand Preview</h4>
                     <p data-i18n="admin.branding.live_preview_desc">This preview helps you validate the colors, logo fallback, and hero feel before publishing.</p>
@@ -2990,90 +3012,133 @@
                         <label data-i18n="admin.landing.phone_number">📞 Phone Number</label>
                         <input type="text" id="lpPhone" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" required />
                     </div>
-                    <div class="info-group">
-                        <label data-i18n="admin.landing.instagram">📸 Instagram Username</label>
-                        <input type="text" id="lpInsta" placeholder="@restaurant.officiel" data-i18n-placeholder="admin.landing.instagram_placeholder" />
-                    </div>
-                    <div class="info-group">
-                        <label data-i18n="admin.landing.facebook">📘 Facebook URL</label>
-                        <input type="url" id="lpFb" placeholder="https://facebook.com/..." />
-                    </div>
-                    <div class="info-group">
-                        <label data-i18n="admin.landing.tiktok">🎵 TikTok URL</label>
-                        <input type="url" id="lpTiktok" placeholder="https://tiktok.com/@..." />
-                    </div>
-                    <div class="info-group">
-                        <label data-i18n="admin.landing.tripadvisor">🦉 TripAdvisor URL</label>
-                        <input type="url" id="lpTrip" placeholder="https://tripadvisor.com/..." />
-                    </div>
                 </div>
-                <div class="section-divider">
-                    <h4 class="section-divider-title" data-i18n="admin.landing.payments_facilities">Payments & Facilities</h4>
-                    <p class="section-divider-copy" data-i18n="admin.landing.payments_facilities_desc">
-                        This is informational only for the public site. Use it to show what the restaurant accepts and what guests can expect on-site.
-                    </p>
-                    <div class="selection-grid">
-                        <div class="selection-card">
-                            <h4 data-i18n="admin.landing.accepted_payments">Accepted Payments</h4>
-                            <p data-i18n="admin.landing.accepted_payments_desc">Choose the payment methods you want to display on the homepage.</p>
-                            <div class="selection-options">
-                                <label class="selection-option"><input type="checkbox" id="lpPayCash" /> <span data-i18n="admin.landing.payment_cash">Cash</span></label>
-                                <label class="selection-option"><input type="checkbox" id="lpPayTpe" /> <span data-i18n="admin.landing.payment_tpe">TPE / Card terminal</span></label>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Social & Directory Links</span>
+                            <span class="admin-disclosure-copy">Only open this when the restaurant wants public social links.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="form-grid"
+                            style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:6px;">
+                            <div class="info-group">
+                                <label data-i18n="admin.landing.instagram">📸 Instagram Username</label>
+                                <input type="text" id="lpInsta" placeholder="@restaurant.officiel" data-i18n-placeholder="admin.landing.instagram_placeholder" />
                             </div>
-                        </div>
-                        <div class="selection-card">
-                            <h4 data-i18n="admin.landing.guest_facilities">Guest Facilities</h4>
-                            <p data-i18n="admin.landing.guest_facilities_desc">Pick the facilities or service details the restaurant offers to customers.</p>
-                            <div class="selection-options">
-                                <label class="selection-option"><input type="checkbox" id="lpFacilityWifi" /> <span data-i18n="admin.landing.facility_wifi">WiFi</span></label>
-                                <label class="selection-option"><input type="checkbox" id="lpFacilityAccessible" /> <span data-i18n="admin.landing.facility_accessible">Accessible entrance</span></label>
-                                <label class="selection-option"><input type="checkbox" id="lpFacilityParking" /> <span data-i18n="admin.landing.facility_parking">Parking</span></label>
-                                <label class="selection-option"><input type="checkbox" id="lpFacilityTerrace" /> <span data-i18n="admin.landing.facility_terrace">Terrace seating</span></label>
-                                <label class="selection-option"><input type="checkbox" id="lpFacilityFamily" /> <span data-i18n="admin.landing.facility_family">Family-friendly area</span></label>
+                            <div class="info-group">
+                                <label data-i18n="admin.landing.facebook">📘 Facebook URL</label>
+                                <input type="url" id="lpFb" placeholder="https://facebook.com/..." />
+                            </div>
+                            <div class="info-group">
+                                <label data-i18n="admin.landing.tiktok">🎵 TikTok URL</label>
+                                <input type="url" id="lpTiktok" placeholder="https://tiktok.com/@..." />
+                            </div>
+                            <div class="info-group">
+                                <label data-i18n="admin.landing.tripadvisor">🦉 TripAdvisor URL</label>
+                                <input type="url" id="lpTrip" placeholder="https://tripadvisor.com/..." />
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="section-divider">
-                    <h4 class="section-divider-title">Section Visibility</h4>
-                    <p class="section-divider-copy">
-                        Turn homepage sections on or off depending on what this restaurant wants to show publicly.
-                    </p>
-                    <div class="selection-grid">
-                        <div class="selection-card" style="grid-column: 1 / -1;">
-                            <div class="selection-options" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));">
-                                <label class="selection-option"><input type="checkbox" id="lpSectionAbout" /> About section</label>
-                                <label class="selection-option"><input type="checkbox" id="lpSectionPayments" /> Payment & facilities section</label>
-                                <label class="selection-option"><input type="checkbox" id="lpSectionEvents" /> Events section</label>
-                                <label class="selection-option"><input type="checkbox" id="lpSectionGallery" /> Gallery section</label>
-                                <label class="selection-option"><input type="checkbox" id="lpSectionHours" /> Hours section</label>
-                                <label class="selection-option"><input type="checkbox" id="lpSectionContact" /> Contact section</label>
+                </details>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Guest Facilities & Payments</span>
+                            <span class="admin-disclosure-copy">Open this when the restaurant wants to show amenities or accepted payment methods.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="section-divider">
+                            <h4 class="section-divider-title" data-i18n="admin.landing.payments_facilities">Payments & Facilities</h4>
+                            <p class="section-divider-copy" data-i18n="admin.landing.payments_facilities_desc">
+                                This is informational only for the public site. Use it to show what the restaurant accepts and what guests can expect on-site.
+                            </p>
+                            <div class="selection-grid">
+                                <div class="selection-card">
+                                    <h4 data-i18n="admin.landing.accepted_payments">Accepted Payments</h4>
+                                    <p data-i18n="admin.landing.accepted_payments_desc">Choose the payment methods you want to display on the homepage.</p>
+                                    <div class="selection-options">
+                                        <label class="selection-option"><input type="checkbox" id="lpPayCash" /> <span data-i18n="admin.landing.payment_cash">Cash</span></label>
+                                        <label class="selection-option"><input type="checkbox" id="lpPayTpe" /> <span data-i18n="admin.landing.payment_tpe">TPE / Card terminal</span></label>
+                                    </div>
+                                </div>
+                                <div class="selection-card">
+                                    <h4 data-i18n="admin.landing.guest_facilities">Guest Facilities</h4>
+                                    <p data-i18n="admin.landing.guest_facilities_desc">Pick the facilities or service details the restaurant offers to customers.</p>
+                                    <div class="selection-options">
+                                        <label class="selection-option"><input type="checkbox" id="lpFacilityWifi" /> <span data-i18n="admin.landing.facility_wifi">WiFi</span></label>
+                                        <label class="selection-option"><input type="checkbox" id="lpFacilityAccessible" /> <span data-i18n="admin.landing.facility_accessible">Accessible entrance</span></label>
+                                        <label class="selection-option"><input type="checkbox" id="lpFacilityParking" /> <span data-i18n="admin.landing.facility_parking">Parking</span></label>
+                                        <label class="selection-option"><input type="checkbox" id="lpFacilityTerrace" /> <span data-i18n="admin.landing.facility_terrace">Terrace seating</span></label>
+                                        <label class="selection-option"><input type="checkbox" id="lpFacilityFamily" /> <span data-i18n="admin.landing.facility_family">Family-friendly area</span></label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="section-divider">
-                    <h4 class="section-divider-title">Section Order</h4>
-                    <p class="section-divider-copy">
-                        Reorder the visible homepage sections to match each restaurant's priority. Hero and footer stay fixed.
-                    </p>
-                    <div class="selection-card" style="grid-column: 1 / -1;">
-                        <div class="section-order-list" id="landingSectionOrderList"></div>
+                </details>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Homepage Layout</span>
+                            <span class="admin-disclosure-copy">Use this only when the restaurant wants different homepage sections or a different order.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="section-divider">
+                            <h4 class="section-divider-title">Section Visibility</h4>
+                            <p class="section-divider-copy">
+                                Turn homepage sections on or off depending on what this restaurant wants to show publicly.
+                            </p>
+                            <div class="selection-grid">
+                                <div class="selection-card" style="grid-column: 1 / -1;">
+                                    <div class="selection-options" style="grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));">
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionAbout" /> About section</label>
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionPayments" /> Payment & facilities section</label>
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionEvents" /> Events section</label>
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionGallery" /> Gallery section</label>
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionHours" /> Hours section</label>
+                                        <label class="selection-option"><input type="checkbox" id="lpSectionContact" /> Contact section</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-divider">
+                            <h4 class="section-divider-title">Section Order</h4>
+                            <p class="section-divider-copy">
+                                Reorder the visible homepage sections to match each restaurant's priority. Hero and footer stay fixed.
+                            </p>
+                            <div class="selection-card" style="grid-column: 1 / -1;">
+                                <div class="section-order-list" id="landingSectionOrderList"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="section-divider">
-                    <h4 class="section-divider-title">Homepage Copy Overrides</h4>
-                    <p class="section-divider-copy">
-                        Edit the public homepage text in French, English, and Arabic. This is also the same structure we can later fill automatically with AI from restaurant files.
-                    </p>
-                    <div class="hint-chip-row">
-                        <span class="hint-chip is-fr">FR</span>
-                        <span class="hint-chip is-en">EN</span>
-                        <span class="hint-chip is-ar">AR</span>
-                        <span class="hint-chip">Hero and title fields can keep &lt;span&gt;...&lt;/span&gt;</span>
+                </details>
+                <details class="admin-disclosure">
+                    <summary>
+                        <span>
+                            <span>Homepage Copy</span>
+                            <span class="admin-disclosure-copy">Open only when you need custom homepage text in multiple languages.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div class="section-divider">
+                            <h4 class="section-divider-title">Homepage Copy Overrides</h4>
+                            <p class="section-divider-copy">
+                                Edit the public homepage text in French, English, and Arabic. This is also the same structure we can later fill automatically with AI from restaurant files.
+                            </p>
+                            <div class="hint-chip-row">
+                                <span class="hint-chip is-fr">FR</span>
+                                <span class="hint-chip is-en">EN</span>
+                                <span class="hint-chip is-ar">AR</span>
+                                <span class="hint-chip">Hero and title fields can keep &lt;span&gt;...&lt;/span&gt;</span>
+                            </div>
+                            <div id="landingContentGrid" class="landing-copy-grid"></div>
+                        </div>
                     </div>
-                    <div id="landingContentGrid" class="landing-copy-grid"></div>
-                </div>
+                </details>
                 <button type="submit" class="primary-btn mt-20">💾 Save Landing & Content</button>
             </form>
         </div>
