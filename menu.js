@@ -250,17 +250,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initMenuApp() {
+    const savedLang = typeof window.getStoredLanguage === 'function'
+        ? window.getStoredLanguage()
+        : 'fr';
+    window.setLang(savedLang);
     renderMenu();
     renderSuperCatSheet();
+    renderSuperCatPills();
     renderPromoCarousel();
     renderLandingInfo();
     updateCartUI();
     updateHistoryBadge();
     window.updateStatus();
-    const savedLang = typeof window.getStoredLanguage === 'function'
-        ? window.getStoredLanguage()
-        : 'fr';
-    window.setLang(savedLang);
     window.applyBranding();
     scheduleMenuMotionRefresh();
 }
@@ -728,8 +729,8 @@ function showSubCategoryGrid(sc, addToStack = true) {
 
 // ═══════════════════════ CATEGORY ITEMS ═══════════════════════
 
-function showCategoryItems(cat) {
-    navigationStack.push(`items:${cat}`);
+function showCategoryItems(cat, addToStack = true) {
+    if (addToStack) navigationStack.push(`items:${cat}`);
 
     showMenuNavigationView(window.getLocalizedCategoryName(cat, cat));
 
@@ -753,6 +754,46 @@ function showCategoryItems(cat) {
 
     updateBackBtn();
     scheduleMenuMotionRefresh();
+}
+
+function rerenderCurrentMenuLanguageView() {
+    renderSuperCatSheet();
+    renderSuperCatPills();
+    renderLandingInfo();
+
+    const currentState = navigationStack[navigationStack.length - 1] || '';
+
+    if (currentState.startsWith('items:')) {
+        const categoryKey = currentState.slice('items:'.length);
+        const activeSuperCategory = getSuperCategories().find((entry) => Array.isArray(entry?.cats) && entry.cats.includes(categoryKey));
+        if (activeSuperCategory) currentSuperCat = activeSuperCategory;
+        showCategoryItems(categoryKey, false);
+        return;
+    }
+
+    if (currentState.startsWith('subcats:')) {
+        const superCategoryId = currentState.slice('subcats:'.length);
+        const activeSuperCategory = getSuperCategories().find((entry) => entry?.id === superCategoryId) || currentSuperCat;
+        if (activeSuperCategory) {
+            currentSuperCat = activeSuperCategory;
+            showSubCategoryGrid(activeSuperCategory, false);
+            return;
+        }
+    }
+
+    if (currentState === 'supercats') {
+        openSuperCatSheet();
+    }
+
+    scheduleMenuMotionRefresh();
+}
+
+const baseMenuSetLang = typeof window.setLang === 'function' ? window.setLang.bind(window) : null;
+if (baseMenuSetLang) {
+    window.setLang = function (lang, btn) {
+        baseMenuSetLang(lang, btn);
+        rerenderCurrentMenuLanguageView();
+    };
 }
 
 // ═══════════════════════ RENDERING ═══════════════════════
