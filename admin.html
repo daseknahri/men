@@ -3639,26 +3639,14 @@
                 <div class="tool-card tool-card--accent tool-card--wide">
                     <div class="tool-card-eyebrow">Importer</div>
                     <h4>AI Import Studio</h4>
-                    <p>Upload menu images or a menu PDF. This seller-only importer extracts menu items, prices, categories, super-categories, and FR / EN / AR translations into a reviewable draft before anything is applied live.</p>
-                    <p class="muted-copy">Current scope: menu structure only. Branding, landing copy, gallery, and site identity are not changed by this importer.</p>
-                    <div class="form-group">
-                        <label for="importStudioRestaurantName">Restaurant Name</label>
-                        <input type="text" id="importStudioRestaurantName" placeholder="e.g. Matsco" />
-                    </div>
-                    <div class="form-group">
-                        <label for="importStudioShortName">Short Brand Name</label>
-                        <input type="text" id="importStudioShortName" placeholder="e.g. Matsco" />
-                    </div>
+                    <p>Upload menu images or a menu PDF, then generate a menu draft. The importer extracts dishes, prices, categories, super-categories, and FR / EN / AR translations into a reviewable draft before anything is applied live.</p>
+                    <p class="muted-copy">Current scope: menu structure only. Branding, landing copy, gallery, and site identity stay untouched and continue to use the current admin data.</p>
                     <div class="form-group">
                         <label for="importStudioMenuFiles">Menu Images / PDF</label>
                         <input type="file" id="importStudioMenuFiles" accept="image/*,.pdf,application/pdf" multiple />
                     </div>
-                    <div class="form-group">
-                        <label for="importStudioNotes">Seller Notes (optional)</label>
-                        <textarea id="importStudioNotes" rows="3" placeholder="Add menu context such as cuisine type, language, or how to group ambiguous dishes."></textarea>
-                    </div>
                     <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="generateImporterDraft()">Generate AI Draft</button>
+                        <button type="button" class="primary-btn btn-auto" onclick="generateImporterDraft()">Generate Menu Draft</button>
                         <button type="button" class="brand-secondary-btn" onclick="copyImporterDraftJson()">Copy Draft JSON</button>
                     </div>
                     <div id="importStudioReviewGrid" class="importer-review-grid"></div>
@@ -3687,7 +3675,7 @@
                         </div>
                         <div id="importStudioApplyNote" class="importer-apply-note"></div>
                     </div>
-                    <textarea id="importStudioSummaryOutput" class="summary-output" readonly placeholder="No draft generated yet. Upload menu images, generate a draft, then review blockers and warnings here."></textarea>
+                    <textarea id="importStudioSummaryOutput" class="summary-output" readonly placeholder="No draft generated yet. Upload menu images or a PDF, generate the menu draft, then review blockers and warnings here."></textarea>
                     <textarea id="importStudioJsonOutput" class="summary-output" readonly placeholder="Draft JSON will appear here for seller review before apply."></textarea>
                 </div>
                 <div class="tool-card tool-card--accent tool-card--wide" id="aiMediaStudioCard">

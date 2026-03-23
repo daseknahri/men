@@ -3392,9 +3392,9 @@ function buildImporterApplyPayload(draft, scope = 'menu_only') {
 
 window.generateImporterDraft = async function () {
     const menuFiles = Array.from(document.getElementById('importStudioMenuFiles')?.files || []);
-    const restaurantName = (document.getElementById('importStudioRestaurantName')?.value || '').trim();
-    const shortName = (document.getElementById('importStudioShortName')?.value || '').trim();
-    const notes = (document.getElementById('importStudioNotes')?.value || '').trim();
+    const branding = restaurantConfig?.branding || {};
+    const restaurantName = (branding.restaurantName || window.getRestaurantDisplayName?.() || '').trim();
+    const shortName = (branding.shortName || restaurantName || '').trim();
     const menuImageFiles = menuFiles.filter((file) => !isPdfImportFile(file));
     const menuPdfFiles = menuFiles.filter((file) => isPdfImportFile(file));
 
@@ -3413,7 +3413,7 @@ window.generateImporterDraft = async function () {
         const menuImageUrls = await uploadFilesForImporter(menuImageFiles, 'menu image');
         const menuPdfUrls = await uploadFilesForImporter(menuPdfFiles, 'menu PDF');
 
-        showToast('Generating AI import draft...');
+        showToast('Generating menu draft...');
         const response = await fetch('/api/importer/draft', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -3421,7 +3421,7 @@ window.generateImporterDraft = async function () {
             body: JSON.stringify({
                 restaurantName,
                 shortName,
-                notes,
+                notes: '',
                 menuImageUrls,
                 menuPdfUrls,
                 logoImageUrl: '',
@@ -3440,17 +3440,17 @@ window.generateImporterDraft = async function () {
             mediaLibraryMatches: Number(data.mediaLibraryMatches) || 0
         };
         renderImporterDraftOutputs(lastImporterDraft);
-        showToast('AI import draft generated.');
+        showToast('Menu draft generated.');
     } catch (error) {
         console.error('Importer draft error:', error);
         const message = error?.message === 'openai_not_configured'
             ? 'Set OPENAI_API_KEY on the admin server before using AI Import Studio.'
             : error?.message === 'invalid_json_from_openai'
-                ? 'The model returned an invalid draft. Try fewer/clearer menu images; the server importer was hardened for this path.'
+                ? 'The model returned an invalid menu draft. Try fewer or clearer menu files.'
                 : error?.message === 'incomplete_openai_response'
-                    ? 'The model stopped before finishing the draft. Try fewer images or a clearer menu capture.'
+                    ? 'The model stopped before finishing the menu draft. Try fewer files or a clearer menu capture.'
                     : error.message;
-        showToast(`AI import draft failed: ${message}`);
+        showToast(`Menu draft failed: ${message}`);
     }
 };
 
