@@ -175,9 +175,9 @@ Current importer status:
 
 - PDF and image menu input work through `Seller Tools -> AI Import Studio`
 - the importer is menu-scoped: it extracts dishes, prices, categories, super-categories, and FR / EN / AR translations without overwriting branding or landing identity
+- extraction is now staged: uploaded menu assets are first turned into page-level menu source text, then the structured draft is built from that extracted text, with the older direct multimodal path kept as fallback
 - the server generates a review draft against the live restaurant schema
 - the draft must be reviewed and explicitly applied
-- PDF parsing is still a later slice
 
 Current seller-side media status:
 

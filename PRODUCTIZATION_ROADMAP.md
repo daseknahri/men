@@ -8,6 +8,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 
 ### Latest Progress
 
+- The seller importer now uses a staged extraction path instead of asking the model to OCR and structure everything in one shot: menu images/PDFs are first transcribed into page-level source text, that extracted source is saved into the seller job, and the structured draft is then built from the cleaner text with the older direct multimodal path kept as fallback
 - The menu builder is being converted from always-open forms into a drill-down owner flow: the admin now starts from a super-category table, drills into categories, then drills into items, with add/edit forms opening in a modal instead of filling the whole page
 - The drill-down item table now keeps the core product controls visible instead of hiding them behind the old legacy list: likes remain visible as a signal, promo and featured toggles stay inline, and image management stays in the item actions column
 - The new menu builder modals are being trimmed down for owner use: translations and advanced/media fields now sit behind disclosure panels, the primary form actions are reduced to save/cancel, and the old owner-facing `Reset All Data` action is no longer exposed inside the item editor

@@ -69,7 +69,8 @@ const loginAttempts = new Map();
 
 const IMPORTER_SYSTEM_PROMPT = [
   "You generate seller-side draft JSON for a white-label restaurant website.",
-  "Use the uploaded menu images or PDFs as the source of truth for menu items, prices, categories, and descriptions.",
+  "Use extracted menu source text as the source of truth when it is provided.",
+  "If extracted source text is not provided, use the uploaded menu images or PDFs as the source of truth for menu items, prices, categories, and descriptions.",
   "Infer FR, EN, and AR names and descriptions for menu items, categories, and super-categories when confidence is reasonable.",
   "Do not invent contact details, maps, hours, WiFi, or social links.",
   "Do not invent branding, hero media, gallery media, website copy, or restaurant story content.",
@@ -77,6 +78,16 @@ const IMPORTER_SYSTEM_PROMPT = [
   "Prefer clean restaurant website categories and group them into super-categories only when the grouping is clear.",
   "Flag uncertainty in review.warnings or review.blockers instead of pretending confidence.",
   "Use category keys consistently: restaurantData.categories[].key must match menu[].cat and superCategories[].cats[].",
+  "Follow the JSON schema exactly."
+].join("\n");
+
+const IMPORTER_SOURCE_EXTRACTION_SYSTEM_PROMPT = [
+  "You extract raw restaurant menu source text from uploaded menu images or PDFs.",
+  "Return page-by-page text only.",
+  "Preserve headings, item names, prices, and short descriptions with meaningful line breaks.",
+  "Keep the original language and wording. Do not translate, summarize, group, or normalize the menu.",
+  "Skip clearly decorative non-menu copy when it is obvious.",
+  "If a region is unreadable or ambiguous, omit invented text and record the problem in warnings.",
   "Follow the JSON schema exactly."
 ].join("\n");
 
@@ -196,6 +207,35 @@ const IMPORTER_TEXT_FORMAT = {
             items: { type: "string" }
           }
         }
+      }
+    }
+  }
+};
+
+const IMPORTER_SOURCE_EXTRACTION_FORMAT = {
+  type: "json_schema",
+  name: "restaurant_menu_source",
+  strict: true,
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    required: ["pages", "warnings"],
+    properties: {
+      pages: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["label", "text"],
+          properties: {
+            label: { type: "string" },
+            text: { type: "string" }
+          }
+        }
+      },
+      warnings: {
+        type: "array",
+        items: { type: "string" }
       }
     }
   }
@@ -417,6 +457,34 @@ function normalizeImporterWhitespace(value) {
     .replace(/[•·▪●◦■►]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeImporterSourceText(value) {
+  const raw = repairPossibleImporterMojibake(asImporterString(value))
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  if (!raw) return "";
+
+  const normalizedLines = [];
+  raw.split("\n").forEach((line) => {
+    const cleaned = line
+      .replace(/[\u200B-\u200D\uFEFF]/g, " ")
+      .replace(/[â€¢Â·â–ªâ—â—¦â– â–º]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!cleaned) {
+      if (normalizedLines[normalizedLines.length - 1] !== "") {
+        normalizedLines.push("");
+      }
+      return;
+    }
+
+    normalizedLines.push(cleaned);
+  });
+
+  return normalizedLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function trimImporterSeparators(value) {
@@ -688,6 +756,40 @@ function buildImporterDraftSkeleton(input) {
       }
     }
   };
+}
+
+function normalizeImporterSourceExtraction(parsed) {
+  const source = parsed && typeof parsed === "object" ? parsed : {};
+  const pages = Array.isArray(source.pages)
+    ? source.pages.map((entry, index) => ({
+      label: normalizeImporterText(entry?.label) || `Page ${index + 1}`,
+      text: normalizeImporterSourceText(entry?.text)
+    })).filter((entry) => entry.text)
+    : [];
+
+  return {
+    pages,
+    warnings: Array.isArray(source.warnings)
+      ? source.warnings.map((value) => normalizeImporterText(value)).filter(Boolean)
+      : []
+  };
+}
+
+function formatImporterSourceForPrompt(source) {
+  const pages = Array.isArray(source?.pages) ? source.pages : [];
+  const sections = pages.map((page, index) => {
+    const label = normalizeImporterText(page?.label) || `Page ${index + 1}`;
+    const text = normalizeImporterSourceText(page?.text);
+    return `## ${label}\n${text}`;
+  }).filter(Boolean);
+
+  const warnings = Array.isArray(source?.warnings) ? source.warnings.filter(Boolean) : [];
+
+  return [
+    "Extracted menu source text:",
+    sections.join("\n\n"),
+    warnings.length ? `Source extraction warnings:\n- ${warnings.join("\n- ")}` : ""
+  ].filter(Boolean).join("\n\n");
 }
 
 function deepMerge(target, source) {
@@ -1437,6 +1539,261 @@ function applyImporterProductLibraryMatches(draft) {
   return { draft: nextDraft, matchedCount };
 }
 
+async function extractImporterMenuSource(input) {
+  const menuImageUrls = Array.isArray(input?.menuImageUrls) ? input.menuImageUrls : [];
+  const menuPdfUrls = Array.isArray(input?.menuPdfUrls) ? input.menuPdfUrls : [];
+  const notes = asImporterString(input?.notes);
+  const restaurantName = asImporterString(input?.restaurantName);
+  const shortName = asImporterString(input?.shortName);
+  const imageInputs = menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean);
+  const fileInputs = menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean);
+
+  if (!imageInputs.length && !fileInputs.length) {
+    return { pages: [], warnings: [] };
+  }
+
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: OPENAI_IMPORT_MODEL,
+      instructions: IMPORTER_SOURCE_EXTRACTION_SYSTEM_PROMPT,
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: [
+                `Restaurant name: ${restaurantName || "(not provided)"}`,
+                `Short brand name: ${shortName || "(not provided)"}`,
+                `Seller notes: ${notes || "(none)"}`
+              ].join("\n")
+            },
+            ...fileInputs,
+            ...imageInputs
+          ]
+        }
+      ],
+      text: {
+        format: IMPORTER_SOURCE_EXTRACTION_FORMAT
+      },
+      store: false,
+      temperature: 0,
+      max_output_tokens: 8000
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || "openai_source_extraction_failed";
+    const error = new Error(message);
+    error.statusCode = response.status || 502;
+    throw error;
+  }
+
+  const parsedPayload = extractStructuredParsedOutput(payload);
+  if (parsedPayload) {
+    return normalizeImporterSourceExtraction(parsedPayload);
+  }
+
+  const rawText = extractResponseText(payload);
+  if (!rawText) {
+    const error = new Error(payload?.status === "incomplete" ? "incomplete_source_extraction_response" : "empty_source_extraction_response");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return normalizeImporterSourceExtraction(parseModelJsonText(rawText));
+}
+
+async function buildImporterDraftFromSource(input, sourceExtraction) {
+  const userContext = [
+    `Restaurant name: ${input.restaurantName || "(not provided)"}`,
+    `Short brand name: ${input.shortName || "(not provided)"}`,
+    `Menu image count: ${Array.isArray(input.menuImageUrls) ? input.menuImageUrls.length : 0}`,
+    `Menu PDF count: ${Array.isArray(input.menuPdfUrls) ? input.menuPdfUrls.length : 0}`,
+    `Seller notes: ${input.notes || "(none)"}`
+  ].join("\n");
+
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: OPENAI_IMPORT_MODEL,
+      instructions: IMPORTER_SYSTEM_PROMPT,
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `${userContext}\n\n${formatImporterSourceForPrompt(sourceExtraction)}`
+            }
+          ]
+        }
+      ],
+      text: {
+        format: IMPORTER_TEXT_FORMAT
+      },
+      store: false,
+      temperature: 0.2,
+      max_output_tokens: 6000
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || "openai_request_failed";
+    const error = new Error(message);
+    error.statusCode = response.status || 502;
+    throw error;
+  }
+
+  const parsedPayload = extractStructuredParsedOutput(payload);
+  if (parsedPayload) {
+    return parsedPayload;
+  }
+
+  const rawText = extractResponseText(payload);
+  if (!rawText) {
+    const error = new Error(payload?.status === "incomplete" ? "incomplete_openai_response" : "empty_openai_response");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  return parseModelJsonText(rawText);
+}
+
+async function buildImporterDraftDirectFromAssets(input) {
+  const menuImageUrls = Array.isArray(input?.menuImageUrls) ? input.menuImageUrls : [];
+  const menuPdfUrls = Array.isArray(input?.menuPdfUrls) ? input.menuPdfUrls : [];
+  const restaurantName = asImporterString(input?.restaurantName);
+  const shortName = asImporterString(input?.shortName);
+  const notes = asImporterString(input?.notes);
+  const imageInputs = menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean);
+  const fileInputs = menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean);
+  const userContext = [
+    `Restaurant name: ${restaurantName || "(not provided)"}`,
+    `Short brand name: ${shortName || "(not provided)"}`,
+    `Menu image count: ${menuImageUrls.length}`,
+    `Menu PDF count: ${menuPdfUrls.length}`,
+    `Seller notes: ${notes || "(none)"}`
+  ].join("\n");
+
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: OPENAI_IMPORT_MODEL,
+      instructions: IMPORTER_SYSTEM_PROMPT,
+      input: [
+        {
+          role: "user",
+          content: [
+            { type: "input_text", text: userContext },
+            ...fileInputs,
+            ...imageInputs
+          ]
+        }
+      ],
+      text: {
+        format: IMPORTER_TEXT_FORMAT
+      },
+      store: false,
+      temperature: 0.2,
+      max_output_tokens: 6000
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || "openai_request_failed";
+    const error = new Error(message);
+    error.statusCode = response.status || 502;
+    throw error;
+  }
+
+  const parsedPayload = extractStructuredParsedOutput(payload);
+  if (parsedPayload) {
+    return {
+      payload,
+      parsed: parsedPayload,
+      rawText: JSON.stringify(parsedPayload)
+    };
+  }
+
+  const rawText = extractResponseText(payload);
+  if (!rawText) {
+    const error = new Error(payload?.status === "incomplete" ? "incomplete_openai_response" : "empty_openai_response");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  try {
+    return {
+      payload,
+      parsed: parseModelJsonText(rawText),
+      rawText
+    };
+  } catch (_error) {
+    console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
+    const repaired = await repairImporterJsonText(rawText);
+    return {
+      payload,
+      parsed: repaired.parsed,
+      rawText,
+      repairedRawText: repaired.rawText
+    };
+  }
+}
+
+async function finalizeImporterDraft(parsedDraft, input, extraWarnings = []) {
+  const skeleton = buildImporterDraftSkeleton(input);
+  let enrichedDraft = normalizeStructuredImporterDraft(parsedDraft);
+  enrichedDraft = applyImporterMediaFallbacks(enrichedDraft, {
+    logoImageUrl: input.logoImageUrl,
+    restaurantPhotoUrls: input.restaurantPhotoUrls
+  });
+
+  if (extraWarnings.length) {
+    const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
+    const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
+    enrichedDraft.review = {
+      ...review,
+      warnings: [...warnings, ...extraWarnings].filter(Boolean)
+    };
+  }
+
+  try {
+    enrichedDraft = await completeImporterTranslations(enrichedDraft);
+  } catch (error) {
+    console.error("IMPORTER TRANSLATION COMPLETION ERROR:", error);
+    const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
+    const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
+    warnings.push(`Translation completion fallback used: ${error.message}`);
+    enrichedDraft.review = { ...review, warnings };
+  }
+
+  let mergedDraft = deepMerge(skeleton, enrichedDraft);
+  const matchedMedia = applyImporterProductLibraryMatches(mergedDraft);
+  mergedDraft = matchedMedia.draft;
+
+  return {
+    draft: mergedDraft,
+    mediaLibraryMatches: matchedMedia.matchedCount
+  };
+}
+
 async function generateImporterDraft(input) {
   if (!process.env.OPENAI_API_KEY) {
     const error = new Error("openai_not_configured");
@@ -1469,162 +1826,70 @@ async function generateImporterDraft(input) {
     copyUploadUrlsToSellerJob(job.jobId, "input/logo", logoImageUrl ? [logoImageUrl] : []);
     copyUploadUrlsToSellerJob(job.jobId, "input/venue", restaurantPhotoUrls);
 
-    const imageInputs = [
-      ...menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean),
-      ...(logoImageUrl ? [buildInputImageFromUploadUrl(logoImageUrl)].filter(Boolean) : []),
-      ...restaurantPhotoUrls.map(buildInputImageFromUploadUrl).filter(Boolean)
-    ];
-    const fileInputs = [
-      ...menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean)
-    ];
-
-    if (!imageInputs.length && !fileInputs.length) {
+    if (!menuImageUrls.length && !menuPdfUrls.length) {
       const error = new Error("no_import_assets");
       error.statusCode = 400;
       throw error;
     }
-
-    const userContext = [
-      `Restaurant name: ${restaurantName || "(not provided)"}`,
-      `Short brand name: ${shortName || "(not provided)"}`,
-      `Menu image count: ${menuImageUrls.length}`,
-      `Menu PDF count: ${menuPdfUrls.length}`,
-      `Logo provided: ${logoImageUrl ? "yes" : "no"}`,
-      `Restaurant photo count: ${restaurantPhotoUrls.length}`,
-      `Seller notes: ${notes || "(none)"}`
-    ].join("\n");
-
-    const response = await fetch(OPENAI_RESPONSES_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: OPENAI_IMPORT_MODEL,
-        instructions: IMPORTER_SYSTEM_PROMPT,
-        input: [
-          {
-            role: "user",
-            content: [
-              { type: "input_text", text: userContext },
-              ...fileInputs,
-              ...imageInputs
-            ]
-          }
-        ],
-        text: {
-          format: IMPORTER_TEXT_FORMAT
-        },
-        store: false,
-        temperature: 0.2,
-        max_output_tokens: 6000
-      })
-    });
-
-    const payload = await response.json().catch(() => ({}));
-    writeSellerJobJson(job.jobId, "extraction/openai-response.json", payload);
-
-    if (!response.ok) {
-      const message = payload?.error?.message || payload?.message || "openai_request_failed";
-      const error = new Error(message);
-      error.statusCode = response.status || 502;
-      throw error;
-    }
-
-    const parsedPayload = extractStructuredParsedOutput(payload);
-    if (parsedPayload) {
-      const skeleton = buildImporterDraftSkeleton({
-        restaurantName,
-        shortName,
-        menuImageUrls,
-        menuPdfUrls,
-        logoImageUrl,
-        restaurantPhotoUrls
-      });
-      let enrichedDraft = normalizeStructuredImporterDraft(parsedPayload);
-      enrichedDraft = applyImporterMediaFallbacks(enrichedDraft, { logoImageUrl, restaurantPhotoUrls });
-
-      try {
-        enrichedDraft = await completeImporterTranslations(enrichedDraft);
-      } catch (error) {
-        console.error("IMPORTER TRANSLATION COMPLETION ERROR:", error);
-        const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
-        const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
-        warnings.push(`Translation completion fallback used: ${error.message}`);
-        enrichedDraft.review = { ...review, warnings };
-      }
-
-      let mergedDraft = deepMerge(skeleton, enrichedDraft);
-      const matchedMedia = applyImporterProductLibraryMatches(mergedDraft);
-      mergedDraft = matchedMedia.draft;
-
-      writeSellerJobJson(job.jobId, "final/draft.json", mergedDraft);
-
-      return {
-        draft: mergedDraft,
-        jobId: job.jobId,
-        mediaLibraryMatches: matchedMedia.matchedCount
-      };
-    }
-
-    const rawText = extractResponseText(payload);
-    if (!rawText) {
-      const error = new Error(payload?.status === "incomplete" ? "incomplete_openai_response" : "empty_openai_response");
-      error.statusCode = 502;
-      throw error;
-    }
-    writeSellerJobText(job.jobId, "extraction/raw-output.txt", rawText);
-
-    let parsed;
-    try {
-      parsed = parseModelJsonText(rawText);
-    } catch (_error) {
-      console.error("IMPORTER RAW OPENAI TEXT:", rawText.slice(0, 1200));
-      try {
-        const repaired = await repairImporterJsonText(rawText);
-        writeSellerJobText(job.jobId, "extraction/repaired-output.txt", repaired.rawText);
-        parsed = repaired.parsed;
-      } catch (repairError) {
-        console.error("IMPORTER JSON REPAIR ERROR:", repairError);
-        const error = new Error("invalid_json_from_openai");
-        error.statusCode = 502;
-        throw error;
-      }
-    }
-
-    const skeleton = buildImporterDraftSkeleton({
+    const inputContext = {
       restaurantName,
       shortName,
+      notes,
       menuImageUrls,
       menuPdfUrls,
       logoImageUrl,
       restaurantPhotoUrls
-    });
+    };
 
-    let enrichedDraft = normalizeStructuredImporterDraft(parsed);
-    enrichedDraft = applyImporterMediaFallbacks(enrichedDraft, { logoImageUrl, restaurantPhotoUrls });
+    let parsedDraft = null;
+    let sourceExtraction = null;
+    const importerWarnings = [];
 
     try {
-      enrichedDraft = await completeImporterTranslations(enrichedDraft);
+      sourceExtraction = await extractImporterMenuSource(inputContext);
+      writeSellerJobJson(job.jobId, "extraction/menu-source.json", sourceExtraction);
+
+      if (sourceExtraction.pages.length) {
+        writeSellerJobText(job.jobId, "extraction/menu-source.txt", formatImporterSourceForPrompt(sourceExtraction));
+        parsedDraft = await buildImporterDraftFromSource(inputContext, sourceExtraction);
+        writeSellerJobJson(job.jobId, "extraction/structured-from-source.json", parsedDraft);
+      } else {
+        importerWarnings.push("Source extraction produced no usable page text, so the importer fell back to direct multimodal structuring.");
+      }
     } catch (error) {
-      console.error("IMPORTER TRANSLATION COMPLETION ERROR:", error);
-      const review = enrichedDraft.review && typeof enrichedDraft.review === "object" ? enrichedDraft.review : {};
-      const warnings = Array.isArray(review.warnings) ? review.warnings.slice() : [];
-      warnings.push(`Translation completion fallback used: ${error.message}`);
-      enrichedDraft.review = { ...review, warnings };
+      console.error("IMPORTER SOURCE EXTRACTION ERROR:", error);
+      importerWarnings.push(`Source extraction fallback used: ${error.message}`);
     }
 
-    let mergedDraft = deepMerge(skeleton, enrichedDraft);
-    const matchedMedia = applyImporterProductLibraryMatches(mergedDraft);
-    mergedDraft = matchedMedia.draft;
+    if (!parsedDraft) {
+      const directDraft = await buildImporterDraftDirectFromAssets(inputContext);
+      writeSellerJobJson(job.jobId, "extraction/openai-response.json", directDraft.payload);
+      if (directDraft.rawText) {
+        writeSellerJobText(job.jobId, "extraction/raw-output.txt", directDraft.rawText);
+      }
+      if (directDraft.repairedRawText) {
+        writeSellerJobText(job.jobId, "extraction/repaired-output.txt", directDraft.repairedRawText);
+      }
+      parsedDraft = directDraft.parsed;
+    }
 
-    writeSellerJobJson(job.jobId, "final/draft.json", mergedDraft);
+    const finalized = await finalizeImporterDraft(
+      parsedDraft,
+      inputContext,
+      [
+        ...importerWarnings,
+        ...(Array.isArray(sourceExtraction?.warnings)
+          ? sourceExtraction.warnings.map((warning) => `Source extraction: ${warning}`)
+          : [])
+      ]
+    );
+
+    writeSellerJobJson(job.jobId, "final/draft.json", finalized.draft);
 
     return {
-      draft: mergedDraft,
+      draft: finalized.draft,
       jobId: job.jobId,
-      mediaLibraryMatches: matchedMedia.matchedCount
+      mediaLibraryMatches: finalized.mediaLibraryMatches
     };
   } catch (error) {
     error.jobId = job.jobId;
