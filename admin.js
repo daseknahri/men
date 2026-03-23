@@ -1024,6 +1024,7 @@ function renderMenuBuilder() {
     }
 
     crumbs.innerHTML = breadcrumbParts.map((entry) => `<span class="menu-builder-crumb">${escapeHtml(entry)}</span>`).join('');
+    table.dataset.step = currentMenuWorkspaceStep;
     addBtn.textContent = addLabel;
     backBtn.style.display = currentMenuWorkspaceStep === 'supercategories' ? 'none' : '';
     thead.innerHTML = `<tr>${columns.map((label) => `<th>${escapeHtml(label)}</th>`).join('')}</tr>`;
