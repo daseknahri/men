@@ -40,6 +40,7 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_LOCK_MS = 15 * 60 * 1000;
 const OPENAI_IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || "gpt-4o-mini";
+const OPENAI_IMPORT_PDF_MODEL = process.env.OPENAI_IMPORT_PDF_MODEL || "gpt-4o";
 const OPENAI_MEDIA_MODEL = process.env.OPENAI_MEDIA_MODEL || "gpt-4.1";
 const SELLER_TOOLS_ENABLED = booleanFromEnv(
   process.env.SELLER_TOOLS_ENABLED,
@@ -357,6 +358,15 @@ function buildInputFileFromUploadUrl(value) {
     filename: path.basename(filePath),
     file_data: `data:${mimeType};base64,${base64}`
   };
+}
+
+function importerHasPdfInput(input) {
+  return Array.isArray(input?.menuPdfUrls)
+    && input.menuPdfUrls.some((value) => typeof value === "string" && value.trim());
+}
+
+function getImporterModelForInput(input) {
+  return importerHasPdfInput(input) ? OPENAI_IMPORT_PDF_MODEL : OPENAI_IMPORT_MODEL;
 }
 
 function copyUploadUrlsToSellerJob(jobId, relativeDir, urls = []) {
@@ -1545,6 +1555,7 @@ async function extractImporterMenuSource(input) {
   const notes = asImporterString(input?.notes);
   const restaurantName = asImporterString(input?.restaurantName);
   const shortName = asImporterString(input?.shortName);
+  const importerModel = getImporterModelForInput(input);
   const imageInputs = menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean);
   const fileInputs = menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean);
 
@@ -1559,7 +1570,7 @@ async function extractImporterMenuSource(input) {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
     },
     body: JSON.stringify({
-      model: OPENAI_IMPORT_MODEL,
+      model: importerModel,
       instructions: IMPORTER_SOURCE_EXTRACTION_SYSTEM_PROMPT,
       input: [
         {
@@ -1611,6 +1622,7 @@ async function extractImporterMenuSource(input) {
 }
 
 async function buildImporterDraftFromSource(input, sourceExtraction) {
+  const importerModel = getImporterModelForInput(input);
   const userContext = [
     `Restaurant name: ${input.restaurantName || "(not provided)"}`,
     `Short brand name: ${input.shortName || "(not provided)"}`,
@@ -1626,7 +1638,7 @@ async function buildImporterDraftFromSource(input, sourceExtraction) {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
     },
     body: JSON.stringify({
-      model: OPENAI_IMPORT_MODEL,
+      model: importerModel,
       instructions: IMPORTER_SYSTEM_PROMPT,
       input: [
         {
@@ -1677,6 +1689,7 @@ async function buildImporterDraftDirectFromAssets(input) {
   const restaurantName = asImporterString(input?.restaurantName);
   const shortName = asImporterString(input?.shortName);
   const notes = asImporterString(input?.notes);
+  const importerModel = getImporterModelForInput(input);
   const imageInputs = menuImageUrls.map(buildInputImageFromUploadUrl).filter(Boolean);
   const fileInputs = menuPdfUrls.map(buildInputFileFromUploadUrl).filter(Boolean);
   const userContext = [
@@ -1694,7 +1707,7 @@ async function buildImporterDraftDirectFromAssets(input) {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
     },
     body: JSON.stringify({
-      model: OPENAI_IMPORT_MODEL,
+      model: importerModel,
       instructions: IMPORTER_SYSTEM_PROMPT,
       input: [
         {
@@ -1808,9 +1821,12 @@ async function generateImporterDraft(input) {
   const restaurantName = typeof input.restaurantName === "string" ? input.restaurantName.trim() : "";
   const shortName = typeof input.shortName === "string" ? input.shortName.trim() : "";
   const notes = typeof input.notes === "string" ? input.notes.trim() : "";
+  const importerModel = getImporterModelForInput({ menuPdfUrls });
   const job = createSellerJob("import");
+  let importerStage = "request";
 
   try {
+    importerStage = "prepare_input";
     writeSellerJobJson(job.jobId, "input/request.json", {
       restaurantName,
       shortName,
@@ -1819,7 +1835,7 @@ async function generateImporterDraft(input) {
       menuPdfUrls,
       logoImageUrl,
       restaurantPhotoUrls,
-      model: OPENAI_IMPORT_MODEL
+      model: importerModel
     });
     copyUploadUrlsToSellerJob(job.jobId, "input/menu-images", menuImageUrls);
     copyUploadUrlsToSellerJob(job.jobId, "input/menu-pdfs", menuPdfUrls);
@@ -1846,11 +1862,13 @@ async function generateImporterDraft(input) {
     const importerWarnings = [];
 
     try {
+      importerStage = "source_extraction";
       sourceExtraction = await extractImporterMenuSource(inputContext);
       writeSellerJobJson(job.jobId, "extraction/menu-source.json", sourceExtraction);
 
       if (sourceExtraction.pages.length) {
         writeSellerJobText(job.jobId, "extraction/menu-source.txt", formatImporterSourceForPrompt(sourceExtraction));
+        importerStage = "source_structuring";
         parsedDraft = await buildImporterDraftFromSource(inputContext, sourceExtraction);
         writeSellerJobJson(job.jobId, "extraction/structured-from-source.json", parsedDraft);
       } else {
@@ -1862,6 +1880,7 @@ async function generateImporterDraft(input) {
     }
 
     if (!parsedDraft) {
+      importerStage = "direct_structuring";
       const directDraft = await buildImporterDraftDirectFromAssets(inputContext);
       writeSellerJobJson(job.jobId, "extraction/openai-response.json", directDraft.payload);
       if (directDraft.rawText) {
@@ -1873,6 +1892,7 @@ async function generateImporterDraft(input) {
       parsedDraft = directDraft.parsed;
     }
 
+    importerStage = "finalize";
     const finalized = await finalizeImporterDraft(
       parsedDraft,
       inputContext,
@@ -1893,8 +1913,10 @@ async function generateImporterDraft(input) {
     };
   } catch (error) {
     error.jobId = job.jobId;
+    error.importerStage = error.importerStage || importerStage;
     writeSellerJobJson(job.jobId, "review/error.json", {
       message: error.message,
+      stage: error.importerStage || importerStage,
       statusCode: error.statusCode || 500,
       at: new Date().toISOString()
     });
@@ -2252,7 +2274,8 @@ app.post("/api/importer/draft", requireAuth, async (req, res) => {
     res.status(error.statusCode || 500).json({
       ok: false,
       error: error.message || "importer_draft_failed",
-      jobId: error.jobId || ""
+      jobId: error.jobId || "",
+      stage: error.importerStage || ""
     });
   }
 });

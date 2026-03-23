@@ -3393,7 +3393,10 @@ window.generateImporterDraft = async function () {
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.ok || !data.draft) {
-            throw new Error(data.error || 'Importer draft failed.');
+            const error = new Error(data.error || 'Importer draft failed.');
+            error.jobId = data.jobId || '';
+            error.stage = data.stage || '';
+            throw error;
         }
 
         lastImporterDraft = data.draft;
@@ -3412,7 +3415,9 @@ window.generateImporterDraft = async function () {
                 : error?.message === 'incomplete_openai_response'
                     ? 'The model stopped before finishing the menu draft. Try fewer files or a clearer menu capture.'
                     : error.message;
-        showToast(`Menu draft failed: ${message}`);
+        const stageLabel = error?.stage ? ` [${String(error.stage).replace(/_/g, ' ')}]` : '';
+        const jobLabel = error?.jobId ? ` Job: ${error.jobId}.` : '';
+        showToast(`Menu draft failed${stageLabel}: ${message}.${jobLabel}`.replace(/\.\s*\./g, '.'));
     }
 };
 

@@ -146,7 +146,7 @@ What they do:
 - Once a restaurant changes credentials from the Security tab, that stored auth file takes precedence over the original `ADMIN_USER` / `ADMIN_PASS` environment values.
 - The admin security panel should not show the default-credentials warning at handoff time.
 - Keep AI keys and future automation credentials out of the live restaurant admin.
-- If you want to use `Seller Tools -> AI Import Studio`, set `OPENAI_API_KEY` server-side and optionally `OPENAI_IMPORT_MODEL`.
+- If you want to use `Seller Tools -> AI Import Studio`, set `OPENAI_API_KEY` server-side and optionally `OPENAI_IMPORT_MODEL`; for PDF-heavy workflows, also set `OPENAI_IMPORT_PDF_MODEL`.
 - If you want to use `Seller Tools -> AI Media Studio`, set `OPENAI_API_KEY` server-side and optionally `OPENAI_MEDIA_MODEL`.
 
 ## Data And Product Model
