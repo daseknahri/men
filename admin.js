@@ -782,7 +782,7 @@ function getSectionTitle(sectionId) {
         menu: 'Menu',
         info: 'Info',
         branding: 'Branding',
-        'data-tools': t('admin.nav.data_tools', 'Seller Tools')
+        'data-tools': 'Import'
     };
 
     return titles[sectionId] || 'Menu';
@@ -1215,20 +1215,12 @@ window.openMenuBuilderEdit = function (type, id) {
 function applyAdminCapabilities() {
     const sellerToolsNavBtn = document.getElementById('sellerToolsNavBtn');
     const dataToolsSection = document.getElementById('data-tools');
-    const clearCacheBtn = document.getElementById('clearCacheBtn');
-    const aiMediaCard = document.getElementById('aiMediaStudioCard');
 
     if (sellerToolsNavBtn) {
         sellerToolsNavBtn.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
     }
     if (dataToolsSection) {
         dataToolsSection.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
-    }
-    if (clearCacheBtn) {
-        clearCacheBtn.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
-    }
-    if (aiMediaCard) {
-        aiMediaCard.style.display = adminCapabilities.aiMediaToolsEnabled ? '' : 'none';
     }
 
     if (!adminCapabilities.sellerToolsEnabled && dataToolsSection?.classList.contains('active')) {
@@ -1334,8 +1326,6 @@ function refreshUI() {
     initGalleryForm();
     renderGalleryAdmin();
     renderImporterDraftOutputs(lastImporterDraft);
-    renderMediaStudioOutputs(lastGeneratedMedia);
-    renderLaunchReadinessCard();
     updateStats();
     applyAdminCapabilities();
     syncParameterTabs();
@@ -1804,14 +1794,12 @@ window.suggestMissingMenuImages = async function () {
     }
 
     if (assignedCount === 0) {
-        renderLaunchReadinessCard();
         showToast(t('admin.menu_images.none_missing', 'No missing menu images were found.'));
         return;
     }
 
     renderMenuTable();
     updateStats();
-    renderLaunchReadinessCard();
 
     const saved = await saveAndRefresh();
     if (saved) {
@@ -3833,7 +3821,6 @@ async function loadSecurityStatus() {
             adminSecurityStatus = null;
             statusCard.style.display = 'none';
             renderOwnerSummaries();
-            renderLaunchReadinessCard();
             return;
         }
 
@@ -3871,13 +3858,11 @@ async function loadSecurityStatus() {
         `;
         statusCard.style.display = '';
         renderOwnerSummaries();
-        renderLaunchReadinessCard();
     } catch (error) {
         console.error('Security status error:', error);
         adminSecurityStatus = null;
         statusCard.style.display = 'none';
         renderOwnerSummaries();
-        renderLaunchReadinessCard();
     }
 }
 

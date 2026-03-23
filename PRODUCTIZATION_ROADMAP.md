@@ -8,6 +8,7 @@ The project is already live on Coolify, so every iteration should be deploy-safe
 
 ### Latest Progress
 
+- The seller-only admin surface is now being pruned down to the importer that is actually in use: launch-readiness, handoff, menu-image suggestion, AI media, quick-launch, backup/import, reset, and cache-clear controls have been removed from the visible admin interface so the internal setup flow stays focused on menu import only
 - The seller importer now uses a staged extraction path instead of asking the model to OCR and structure everything in one shot: menu images/PDFs are first transcribed into page-level source text, that extracted source is saved into the seller job, and the structured draft is then built from the cleaner text with the older direct multimodal path kept as fallback
 - The seller importer UI is now trimmed down to the actual job: upload menu files and generate a menu draft. Restaurant identity continues to come from the existing admin data, while branding/gallery/contact are no longer asked for or implied in the importer flow
 - The menu builder is being converted from always-open forms into a drill-down owner flow: the admin now starts from a super-category table, drills into categories, then drills into items, with add/edit forms opening in a modal instead of filling the whole page

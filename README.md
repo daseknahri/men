@@ -179,6 +179,7 @@ Current importer status:
 - extraction is now staged: uploaded menu assets are first turned into page-level menu source text, then the structured draft is built from that extracted text, with the older direct multimodal path kept as fallback
 - the server generates a review draft against the live restaurant schema
 - the draft must be reviewed and explicitly applied
+- the other seller-only setup cards were removed from the visible admin interface so this internal flow stays focused on menu import
 
 Current seller-side media status:
 

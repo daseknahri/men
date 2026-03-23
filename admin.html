@@ -2634,7 +2634,7 @@
         <button class="nav-btn active" id="menuNavBtn" onclick="showSection('menu', this)">🍴 Menu</button>
         <button class="nav-btn" id="infoNavBtn" onclick="showSection('info', this)">🧾 Info</button>
         <button class="nav-btn" id="brandingNavBtn" onclick="showSection('branding', this)">🎨 Branding</button>
-        <button class="nav-btn" id="sellerToolsNavBtn" onclick="showSection('data-tools', this)" data-i18n="admin.nav.data_tools">🧰 Data Tools</button>
+        <button class="nav-btn" id="sellerToolsNavBtn" onclick="showSection('data-tools', this)">📥 Import</button>
         <div class="sidebar-actions">
             <button class="nav-btn sidebar-logout-btn" onclick="adminLogout()" data-i18n="admin.nav.logout">🚪 Déconnexion</button>
         </div>
@@ -3598,44 +3598,9 @@
 
         <!-- DATA TOOLS SECTION -->
         <div id="data-tools" class="section">
-            <h3 data-i18n="admin.seller_tools.title">Seller Tools</h3>
-            <p class="copy-muted" data-i18n="admin.seller_tools.subtitle">
-                Review launch readiness, prepare handoff material, manage starter presets, and move restaurant data safely between instances.
-            </p>
+            <h3>Menu Import</h3>
+            <p class="copy-muted">Use this internal tool to turn menu images or a PDF into a reviewable menu draft before applying it to the site.</p>
             <div class="tool-grid">
-                <div class="tool-card tool-card--accent tool-card--wide">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.audit">Audit</div>
-                    <h4 data-i18n="admin.tools.launch_readiness">Launch Readiness</h4>
-                    <p data-i18n="admin.tools.launch_readiness_desc">Review the current restaurant instance before handoff. This quick audit highlights missing branding, contact data, menu completeness, gallery coverage, and security issues.</p>
-                    <div id="launchReadinessSummary" class="readiness-summary">
-                        <span class="readiness-summary-dot"></span>
-                        <span data-i18n="admin.tools.audit_loading">Audit loading...</span>
-                    </div>
-                    <div id="launchReadinessList" class="readiness-list"></div>
-                    <div id="launchReadinessMedia" class="readiness-list"></div>
-                    <div id="launchReadinessNote" class="readiness-note" style="display:none;"></div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.delivery">Delivery</div>
-                    <h4 data-i18n="admin.tools.handoff_summary">Handoff Summary</h4>
-                    <p data-i18n="admin.tools.handoff_summary_desc">Generate a concise operational summary for this restaurant instance before delivery or internal review.</p>
-                    <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="generateHandoffSummary()" data-i18n="admin.tools.generate_summary">Generate Summary</button>
-                        <button type="button" class="brand-secondary-btn" onclick="copyHandoffSummary()" data-i18n="admin.tools.copy_summary">Copy Summary</button>
-                        <button type="button" class="brand-secondary-btn" onclick="downloadHandoffSummary()" data-i18n="admin.tools.download_summary">Download Summary</button>
-                    </div>
-                    <textarea id="handoffSummaryOutput" class="summary-output" readonly placeholder="Generate a summary to review the current restaurant setup." data-i18n-placeholder="admin.tools.handoff_summary_placeholder"></textarea>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.media">Media</div>
-                    <h4 data-i18n="admin.tools.menu_image_suggestions">Menu Image Suggestions</h4>
-                    <p data-i18n="admin.tools.menu_image_suggestions_desc">Assign local library placeholders to menu items that still have no image. Use this as a fast internal delivery step before real client photos or future AI generation.</p>
-                    <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="suggestMissingMenuImages()" data-i18n="admin.tools.assign_missing_images">Assign Missing Images</button>
-                        <button type="button" class="brand-secondary-btn" onclick="copyMenuImageSuggestionSummary()" data-i18n="admin.tools.copy_summary">Copy Summary</button>
-                    </div>
-                    <textarea id="menuImageSuggestionOutput" class="summary-output" readonly placeholder="Run the suggestion tool to assign local library images to items without visuals." data-i18n-placeholder="admin.tools.menu_image_suggestions_placeholder"></textarea>
-                </div>
                 <div class="tool-card tool-card--accent tool-card--wide">
                     <div class="tool-card-eyebrow">Importer</div>
                     <h4>AI Import Studio</h4>
@@ -3677,100 +3642,6 @@
                     </div>
                     <textarea id="importStudioSummaryOutput" class="summary-output" readonly placeholder="No draft generated yet. Upload menu images or a PDF, generate the menu draft, then review blockers and warnings here."></textarea>
                     <textarea id="importStudioJsonOutput" class="summary-output" readonly placeholder="Draft JSON will appear here for seller review before apply."></textarea>
-                </div>
-                <div class="tool-card tool-card--accent tool-card--wide" id="aiMediaStudioCard">
-                    <div class="tool-card-eyebrow">Media</div>
-                    <h4>AI Media Studio</h4>
-                    <p>Generate seller-only hero or generic atmosphere images from the current restaurant branding, optional uploaded references, and prompt notes. Use this for homepage and gallery visuals, not for every dish.</p>
-                    <p class="muted-copy">Recommended flow: generate hero and generic gallery images here, keep dish photos on the client-photo or curated-library path.</p>
-                    <div class="form-group">
-                        <label for="mediaStudioSlot">Target Slot</label>
-                        <select id="mediaStudioSlot">
-                            <option value="hero">Homepage Hero</option>
-                            <option value="gallery">Gallery / Atmosphere</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mediaStudioCuisineHint">Cuisine / Concept</label>
-                        <input type="text" id="mediaStudioCuisineHint" placeholder="e.g. Modern Moroccan seafood, cafe brunch, grilled family restaurant" />
-                    </div>
-                    <div class="form-group">
-                        <label for="mediaStudioReferenceFiles">Extra Reference Images (optional)</label>
-                        <input type="file" id="mediaStudioReferenceFiles" accept="image/*" multiple />
-                    </div>
-                    <div class="form-group">
-                        <label for="mediaStudioNotes">Style Notes (optional)</label>
-                        <textarea id="mediaStudioNotes" rows="3" placeholder="Examples: warm sunset terrace, premium indoor dining, plated hero dish in foreground, no people, no text."></textarea>
-                    </div>
-                    <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="generateAIMedia()">Generate AI Image</button>
-                        <button type="button" class="brand-secondary-btn" onclick="applyGeneratedMedia()">Apply To Site</button>
-                        <button type="button" class="brand-secondary-btn" onclick="copyGeneratedMediaPrompt()">Copy Prompt</button>
-                    </div>
-                    <img id="mediaStudioPreview" class="tool-preview-image" alt="Generated media preview" />
-                    <textarea id="mediaStudioSummaryOutput" class="summary-output" readonly placeholder="No AI media generated yet. Generate an image, review the result, then apply it to the hero or gallery."></textarea>
-                    <textarea id="mediaStudioPromptOutput" class="summary-output" readonly placeholder="The generation prompt will appear here for seller review and reuse."></textarea>
-                </div>
-                <div class="tool-card tool-card--accent tool-card--wide">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.starter">Starter</div>
-                    <h4 data-i18n="admin.tools.quick_launch_preset">Quick Launch Preset</h4>
-                    <p data-i18n="admin.tools.quick_launch_preset_desc">Apply a strong starting point for a fast-food, cafe, or traditional restaurant before you fine-tune the final content.</p>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.preset">Preset</label>
-                        <select id="quickStartPreset">
-                            <option value="fast_food">Fast Food / Street Food</option>
-                            <option value="cafe">Cafe / Brunch</option>
-                            <option value="traditional">Traditional / Family Restaurant</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.restaurant_name">Restaurant Name</label>
-                        <input type="text" id="quickStartRestaurantName" placeholder="e.g. Atlas Restaurant" data-i18n-placeholder="admin.quick_launch.restaurant_name_placeholder" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.short_brand_name">Short Brand Name</label>
-                        <input type="text" id="quickStartShortName" placeholder="e.g. Atlas" data-i18n-placeholder="admin.quick_launch.short_brand_name_placeholder" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.address">Address</label>
-                        <input type="text" id="quickStartAddress" placeholder="e.g. Avenue Hassan II, Casablanca" data-i18n-placeholder="admin.quick_launch.address_placeholder" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.phone">Phone</label>
-                        <input type="text" id="quickStartPhone" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.quick_launch.whatsapp_optional">WhatsApp (optional)</label>
-                        <input type="text" id="quickStartWhatsApp" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" />
-                    </div>
-                    <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="applyOnboardingPreset()" data-i18n="admin.tools.apply_quick_launch">Apply Quick Launch Setup</button>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.backup">Backup</div>
-                    <h4 data-i18n="admin.tools.export_current_restaurant">Export Current Restaurant</h4>
-                    <p data-i18n="admin.tools.export_current_restaurant_desc">Download the complete normalized website data including menu, branding, hours, translations, visibility, and section order.</p>
-                    <div class="tool-actions">
-                        <button type="button" class="primary-btn btn-auto" onclick="exportRestaurantBackup()" data-i18n="admin.tools.export_backup">Export Backup</button>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.restore">Restore</div>
-                    <h4 data-i18n="admin.tools.import_restaurant_backup">Import Restaurant Backup</h4>
-                    <p data-i18n="admin.tools.import_restaurant_backup_desc">Upload a previously exported JSON backup to restore or clone a restaurant setup quickly.</p>
-                    <div class="tool-actions">
-                        <input type="file" id="dataImportFile" accept="application/json,.json" />
-                        <button type="button" class="primary-btn btn-auto" onclick="importRestaurantBackup()" data-i18n="admin.tools.import_backup">Import Backup</button>
-                    </div>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-card-eyebrow" data-i18n="admin.tools.reset">Reset</div>
-                    <h4 data-i18n="admin.tools.starter_reset">Starter Reset</h4>
-                    <p data-i18n="admin.tools.starter_reset_desc">Reset this instance back to the bundled starter template when you want to begin a fresh restaurant setup.</p>
-                    <div class="tool-actions">
-                        <button type="button" class="brand-secondary-btn" onclick="resetDefaults()" data-i18n="admin.tools.reset_to_starter">Reset To Starter</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -3818,7 +3689,7 @@
                     </div>
                     <div class="security-side-card">
                         <h4 data-i18n="admin.security.handoff_policy">Handoff policy</h4>
-                        <p data-i18n="admin.security.handoff_policy_text">Do not deliver the website while default credentials remain active. Confirm the warning disappears in Launch Readiness and test a fresh login before handoff.</p>
+                        <p data-i18n="admin.security.handoff_policy_text">Do not deliver the website while default credentials remain active. Save custom credentials here and test a fresh login before handoff.</p>
                     </div>
                 </div>
             </div>
@@ -3827,11 +3698,6 @@
     </main>
 
     <div id="adminToast" class="toast"></div>
-
-    <!-- CLEAR CACHE BUTTON -->
-    <button id="clearCacheBtn" class="floating-action floating-action--cache" onclick="clearImageCache()" title="Clear local image cache">
-        <span class="floating-action-icon">CC</span><span>Clear Image Cache</span>
-    </button>
 
     <style>
         @keyframes pulseSave {
