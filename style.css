@@ -263,7 +263,7 @@ body.menu-page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 20px;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 20px 18px;
 }
 
 .top-nav-left,
@@ -865,7 +865,7 @@ body.menu-page {
 /* Cart floating hub */
 .cart-floating-hub {
   position: fixed;
-  bottom: 25px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 4000;
@@ -903,7 +903,7 @@ body.menu-page {
 
 .home-floating-hub {
   position: fixed;
-  bottom: 25px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   left: 25px;
   width: 60px;
   height: 60px;
@@ -933,6 +933,7 @@ body.menu-page {
     min-height: 100dvh;
     box-shadow: none;
     background: linear-gradient(180deg, #f8f3eb 0%, #fffdf8 100%);
+    isolation: isolate;
   }
 
   .top-nav-bar {
@@ -993,11 +994,40 @@ body.menu-page {
     margin-bottom: 20px;
   }
 
+  .super-cat-pills {
+    gap: 8px;
+    margin: 14px 0 10px;
+  }
+
+  .super-cat-pill {
+    padding: 9px 16px;
+    font-size: 0.8rem;
+  }
+
   .super-cat-sheet {
     max-width: none;
     width: 100%;
     max-height: calc(100dvh - 18px);
-    padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+    padding: 22px 14px calc(66px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .super-cat-row {
+    padding: 15px 13px;
+    margin-bottom: 9px;
+    border-radius: 20px;
+  }
+
+  .super-cat-row-emoji {
+    min-width: 38px;
+    font-size: 1.65rem;
+  }
+
+  .super-cat-row-name {
+    font-size: 0.96rem;
+  }
+
+  .super-cat-row-desc {
+    font-size: 0.78rem;
   }
 
   .super-sheet-close {
@@ -1012,6 +1042,7 @@ body.menu-page {
 
   .dish-page-header {
     height: 42vh;
+    min-height: 250px;
   }
 
   .dish-page-close {
