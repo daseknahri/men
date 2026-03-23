@@ -86,6 +86,7 @@ const INFO_SECTION_IDS = ['info', 'landing', 'wifi', 'hours', 'security'];
 const BRANDING_SECTION_IDS = ['branding', 'gallery'];
 const MENU_WORKSPACE_SECTION_IDS = ['menu', 'categories', 'supercategories'];
 const MENU_WORKSPACE_STEPS = ['supercategories', 'categories', 'items'];
+const BRANDING_WORKSPACE_TABS = ['identity', 'homepage', 'gallery'];
 const ADMIN_SECTION_ORDER_KEYS = ['about', 'payments', 'events', 'gallery', 'hours', 'contact'];
 const SECTION_ORDER_LABELS = {
     about: 'admin.section_order.about',
@@ -97,6 +98,7 @@ const SECTION_ORDER_LABELS = {
 };
 let landingSectionOrderDraft = [...ADMIN_SECTION_ORDER_KEYS];
 let currentMenuWorkspaceStep = 'supercategories';
+let currentBrandingWorkspaceTab = 'identity';
 let menuBuilderSelectedSuperCategoryId = '';
 let menuBuilderSelectedCategoryKey = '';
 const PRESET_THEME_TOKENS = {
@@ -813,13 +815,26 @@ function moveSectionChildren(sourceId, targetId) {
     target.dataset.mounted = 'true';
 }
 
+function moveNodeToHost(nodeId, hostId) {
+    const node = document.getElementById(nodeId);
+    const host = document.getElementById(hostId);
+    if (!node || !host) return;
+    if (node.parentElement !== host) {
+        host.appendChild(node);
+    }
+}
+
 function mountOwnerAdminLayout() {
     moveSectionChildren('supercategories', 'menuSuperCategoryMount');
     moveSectionChildren('categories', 'menuCategoryMount');
-    moveSectionChildren('landing', 'infoLandingMount');
+    moveNodeToHost('landingContactBlock', 'infoLandingPrimaryMount');
+    moveNodeToHost('landingSocialBlock', 'infoLandingSocialMount');
+    moveNodeToHost('landingFacilitiesBlock', 'infoLandingFacilitiesMount');
     moveSectionChildren('hours', 'infoHoursMount');
     moveSectionChildren('wifi', 'infoWifiMount');
     moveSectionChildren('security', 'infoSecurityMount');
+    moveNodeToHost('landingLayoutBlock', 'brandingHomepageLayoutMount');
+    moveNodeToHost('landingCopyBlock', 'brandingHomepageCopyMount');
     moveSectionChildren('gallery', 'brandingGalleryMount');
     mountMenuCrudForms();
 }
@@ -837,10 +852,29 @@ function syncMenuWorkspaceStepButtons() {
     });
 }
 
+function syncBrandingWorkspaceTabs() {
+    BRANDING_WORKSPACE_TABS.forEach((tab) => {
+        const button = document.getElementById(`brandingTabBtn-${tab}`);
+        const panel = document.getElementById(`brandingPanel-${tab}`);
+        if (button) {
+            button.classList.toggle('active', tab === currentBrandingWorkspaceTab);
+        }
+        if (panel) {
+            panel.classList.toggle('active', tab === currentBrandingWorkspaceTab);
+        }
+    });
+}
+
 window.setMenuWorkspaceStep = function (step) {
     if (!MENU_WORKSPACE_STEPS.includes(step)) return;
     currentMenuWorkspaceStep = step;
     syncMenuWorkspaceStepButtons();
+};
+
+window.setBrandingWorkspaceTab = function (tab) {
+    if (!BRANDING_WORKSPACE_TABS.includes(tab)) return;
+    currentBrandingWorkspaceTab = tab;
+    syncBrandingWorkspaceTabs();
 };
 
 function scrollToAdminSubsection(sectionId) {
@@ -922,66 +956,6 @@ function resetMenuBuilderNavigation() {
     currentMenuWorkspaceStep = 'supercategories';
     menuBuilderSelectedSuperCategoryId = '';
     menuBuilderSelectedCategoryKey = '';
-}
-
-function renderSummaryStrip(containerId, cards) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = cards.map((card) => `
-        <div class="admin-summary-card">
-            <span class="admin-summary-label">${escapeHtml(card.label)}</span>
-            <span class="admin-summary-value">${escapeHtml(card.value)}</span>
-            ${card.note ? `<span class="admin-summary-note">${escapeHtml(card.note)}</span>` : ''}
-        </div>
-    `).join('');
-}
-
-function renderOwnerSummaries() {
-    const superCategoryRows = getAdminMenuSuperCategoryRows().filter((row) => !row.isVirtual);
-    const categoryKeys = Object.keys(catEmojis || {});
-    const menuItems = Array.isArray(menu) ? menu : [];
-    const featuredCount = menuItems.filter((item) => item.featured).length;
-    const address = (restaurantConfig.address || '').trim();
-    const phone = (restaurantConfig.phone || '').trim();
-    const hoursRows = Array.isArray(restaurantConfig._hours) ? restaurantConfig._hours.filter(Boolean) : [];
-    const wifiReady = Boolean(restaurantConfig?.wifi?.name && restaurantConfig?.wifi?.code);
-    const branding = typeof window.normalizeBranding === 'function'
-        ? window.normalizeBranding(restaurantConfig.branding || {})
-        : (restaurantConfig.branding || {});
-    const presetConfig = typeof window.getBrandPresetConfig === 'function'
-        ? window.getBrandPresetConfig(branding.presetId || 'core')
-        : { label: branding.presetId || 'Core' };
-    const galleryImages = Array.isArray(restaurantConfig.gallery) ? restaurantConfig.gallery.filter(Boolean) : [];
-
-    renderSummaryStrip('menuSummaryStrip', [
-        { label: 'Super Categories', value: String(superCategoryRows.length), note: 'Top-level groups in the menu.' },
-        { label: 'Categories', value: String(categoryKeys.length), note: 'Customer-facing menu sections.' },
-        { label: 'Items', value: String(menuItems.length), note: 'Products currently published.' },
-        { label: 'Promo / Featured', value: `${promoIds.length} / ${featuredCount}`, note: 'Promo of the day and featured dishes.' }
-    ]);
-
-    renderSummaryStrip('infoSummaryStrip', [
-        { label: 'Address', value: address ? 'Configured' : 'Missing', note: address || 'Add the public restaurant address.' },
-        { label: 'Phone', value: phone ? 'Configured' : 'Missing', note: phone || 'Add the public phone number.' },
-        { label: 'Hours', value: hoursRows.length > 0 ? `${hoursRows.length} day rows` : 'Missing', note: hoursRows.length > 0 ? 'Opening hours are configured.' : 'Add opening hours before handoff.' },
-        { label: 'WiFi', value: wifiReady ? 'Configured' : 'Optional', note: wifiReady ? restaurantConfig.wifi.name : 'WiFi can stay empty if not offered.' },
-        {
-            label: 'Admin Access',
-            value: adminSecurityStatus
-                ? (adminSecurityStatus.usesDefaultCredentials ? 'Needs update' : 'Configured')
-                : 'Loading',
-            note: adminSecurityStatus
-                ? (adminSecurityStatus.usesDefaultCredentials ? 'Default credentials are still active.' : 'Custom credentials are active.')
-                : 'Security status will load after the admin check.'
-        }
-    ]);
-
-    renderSummaryStrip('brandingSummaryStrip', [
-        { label: 'Preset', value: presetConfig.label || 'Core / White Label', note: 'Base theme used by the public site.' },
-        { label: 'Logo', value: branding.logoImage ? 'Configured' : 'Fallback', note: branding.logoImage || 'Using the generated brand mark only.' },
-        { label: 'Hero', value: branding.heroImage ? 'Configured' : 'Fallback', note: branding.heroImage || 'Using the packaged default hero.' },
-        { label: 'Gallery', value: galleryImages.length > 0 ? `${galleryImages.length} images` : 'Empty', note: galleryImages.length > 0 ? 'Homepage gallery is configured.' : 'Add gallery images when the client provides them.' }
-    ]);
 }
 
 function renderMenuBuilder() {
@@ -1312,7 +1286,6 @@ function refreshUI() {
     mountOwnerAdminLayout();
     renderParameterShells();
     renderAdminSaveState();
-    renderOwnerSummaries();
     renderMenuBuilder();
     populateCatDropdown();
     initBrandingForm();
@@ -1330,6 +1303,7 @@ function refreshUI() {
     applyAdminCapabilities();
     syncParameterTabs();
     syncMenuWorkspaceStepButtons();
+    syncBrandingWorkspaceTabs();
     if (typeof window.applyBranding === 'function') {
         window.applyBranding();
     }
@@ -3820,7 +3794,6 @@ async function loadSecurityStatus() {
         if (!res.ok || !data.ok) {
             adminSecurityStatus = null;
             statusCard.style.display = 'none';
-            renderOwnerSummaries();
             return;
         }
 
@@ -3857,12 +3830,10 @@ async function loadSecurityStatus() {
             </ul>
         `;
         statusCard.style.display = '';
-        renderOwnerSummaries();
     } catch (error) {
         console.error('Security status error:', error);
         adminSecurityStatus = null;
         statusCard.style.display = 'none';
-        renderOwnerSummaries();
     }
 }
 

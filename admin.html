@@ -703,6 +703,33 @@
             color: #6b7280;
         }
 
+        .branding-workspace-panel {
+            display: none;
+        }
+
+        .branding-workspace-panel.active {
+            display: block;
+        }
+
+        .branding-workspace-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .owner-subsection-heading {
+            margin-bottom: 14px;
+        }
+
+        .owner-subsection-heading h4 {
+            margin: 0 0 6px;
+        }
+
+        .owner-subsection-heading p {
+            margin: 0;
+            color: #6b7280;
+        }
+
         .hint-chip-row {
             display: flex;
             gap: 10px;
@@ -2663,7 +2690,6 @@
                         <button type="button" id="menuBuilderAddBtn" class="primary-btn btn-auto" onclick="openMenuBuilderAdd()">Add</button>
                     </div>
                 </div>
-                <div id="menuSummaryStrip" class="admin-summary-strip"></div>
                 <div class="table-container">
                     <table id="menuBuilderTable" class="menu-builder-table">
                         <thead></thead>
@@ -2856,11 +2882,39 @@
 
         <div id="info" class="section">
             <p class="copy-muted">Keep restaurant contact, public information, hours, WiFi, and admin access in one place.</p>
-            <div id="infoSummaryStrip" class="admin-summary-strip"></div>
             <div class="owner-section-stack">
                 <div class="owner-section-card" data-admin-subsection="landing">
-                    <div id="infoLandingMount"></div>
+                    <div class="owner-subsection-heading">
+                        <h4>Public Information</h4>
+                        <p>Update the public address, map link, and phone number the restaurant wants customers to use.</p>
+                    </div>
+                    <div id="infoLandingPrimaryMount"></div>
+                    <div class="modal-form-actions">
+                        <button type="submit" form="landingPageForm" class="primary-btn">Save Info</button>
+                    </div>
                 </div>
+                <details class="admin-disclosure admin-panel-disclosure">
+                    <summary>
+                        <span>
+                            <span>Social Links</span>
+                            <span class="admin-disclosure-copy">Open this only when the restaurant wants public social or directory links.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div id="infoLandingSocialMount"></div>
+                    </div>
+                </details>
+                <details class="admin-disclosure admin-panel-disclosure">
+                    <summary>
+                        <span>
+                            <span>Guest Facilities & Payments</span>
+                            <span class="admin-disclosure-copy">Open this only when you want to show accepted payments or on-site amenities.</span>
+                        </span>
+                    </summary>
+                    <div class="admin-disclosure-body">
+                        <div id="infoLandingFacilitiesMount"></div>
+                    </div>
+                </details>
                 <details class="admin-disclosure admin-panel-disclosure" data-admin-subsection="hours">
                     <summary>
                         <span>
@@ -3037,7 +3091,12 @@
             <h3 data-i18n="admin.branding.title">Brand & Theme System</h3>
             <p data-i18n="admin.branding.subtitle">Configure the reusable identity that should follow this restaurant across the public website and menu.
             </p>
-            <div id="brandingSummaryStrip" class="admin-summary-strip"></div>
+            <div class="parameter-tabs" id="brandingWorkspaceTabs">
+                <button type="button" id="brandingTabBtn-identity" class="parameter-tab-btn active" onclick="setBrandingWorkspaceTab('identity')">Identity</button>
+                <button type="button" id="brandingTabBtn-homepage" class="parameter-tab-btn" onclick="setBrandingWorkspaceTab('homepage')">Homepage</button>
+                <button type="button" id="brandingTabBtn-gallery" class="parameter-tab-btn" onclick="setBrandingWorkspaceTab('gallery')">Gallery</button>
+            </div>
+            <div id="brandingPanel-identity" class="branding-workspace-panel active">
             <form id="brandingForm">
                 <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
@@ -3260,17 +3319,37 @@
                 </div>
                 <button type="submit" class="primary-btn" data-i18n="admin.branding.save">Save Branding</button>
             </form>
-            <details class="admin-disclosure admin-panel-disclosure" data-admin-subsection="gallery" style="margin-top:22px;">
-                <summary>
-                    <span>
-                        <span>Gallery</span>
-                        <span class="admin-disclosure-copy">Open this only when you need to manage homepage gallery images.</span>
-                    </span>
-                </summary>
-                <div class="admin-disclosure-body">
+            </div>
+            <div id="brandingPanel-homepage" class="branding-workspace-panel">
+                <div class="branding-workspace-stack">
+                    <div class="owner-section-card">
+                        <div class="owner-subsection-heading">
+                            <h4>Homepage Layout</h4>
+                            <p>Control which homepage sections are visible and in what order they appear.</p>
+                        </div>
+                        <div id="brandingHomepageLayoutMount"></div>
+                    </div>
+                    <div class="owner-section-card">
+                        <div class="owner-subsection-heading">
+                            <h4>Homepage Copy</h4>
+                            <p>Update multilingual homepage text and public copy overrides.</p>
+                        </div>
+                        <div id="brandingHomepageCopyMount"></div>
+                    </div>
+                    <div class="modal-form-actions">
+                        <button type="submit" form="landingPageForm" class="primary-btn">Save Homepage Settings</button>
+                    </div>
+                </div>
+            </div>
+            <div id="brandingPanel-gallery" class="branding-workspace-panel">
+                <div class="owner-section-card" data-admin-subsection="gallery">
+                    <div class="owner-subsection-heading">
+                        <h4>Gallery</h4>
+                        <p>Manage homepage gallery images and supporting brand visuals.</p>
+                    </div>
                     <div id="brandingGalleryMount"></div>
                 </div>
-            </details>
+            </div>
         </div>
 
         <!-- LANDING PAGE SECTION -->
@@ -3279,7 +3358,7 @@
             <h3 data-i18n="admin.landing.title">Landing Page Configuration</h3>
             <p data-i18n="admin.landing.subtitle">Update what your customers see when they first visit your site.</p>
             <form id="landingPageForm">
-                <div class="form-grid"
+                <div id="landingContactBlock" class="form-grid"
                     style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:20px;">
                     <div class="info-group">
                         <label data-i18n="admin.landing.address">📍 Address</label>
@@ -3294,7 +3373,7 @@
                         <input type="text" id="lpPhone" placeholder="+212 6..." data-i18n-placeholder="admin.quick_launch.phone_placeholder" required />
                     </div>
                 </div>
-                <details class="admin-disclosure">
+                <details id="landingSocialBlock" class="admin-disclosure">
                     <summary>
                         <span>
                             <span>Social & Directory Links</span>
@@ -3323,7 +3402,7 @@
                         </div>
                     </div>
                 </details>
-                <details class="admin-disclosure">
+                <details id="landingFacilitiesBlock" class="admin-disclosure">
                     <summary>
                         <span>
                             <span>Guest Facilities & Payments</span>
@@ -3360,7 +3439,7 @@
                         </div>
                     </div>
                 </details>
-                <details class="admin-disclosure">
+                <details id="landingLayoutBlock" class="admin-disclosure">
                     <summary>
                         <span>
                             <span>Homepage Layout</span>
@@ -3397,7 +3476,7 @@
                         </div>
                     </div>
                 </details>
-                <details class="admin-disclosure">
+                <details id="landingCopyBlock" class="admin-disclosure">
                     <summary>
                         <span>
                             <span>Homepage Copy</span>
