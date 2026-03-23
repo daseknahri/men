@@ -255,10 +255,11 @@ body.menu-page {
 
 /* NEW: Top Navigation Bar */
 .top-nav-bar {
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 500px);
   z-index: 1500;
   display: flex;
   justify-content: space-between;
@@ -799,10 +800,6 @@ body.menu-page {
 }
 
 .menu-nav-bar {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
   z-index: 120;
   background: linear-gradient(180deg, rgba(12, 15, 21, 0.74) 0%, rgba(12, 15, 21, 0.42) 62%, rgba(12, 15, 21, 0) 100%);
   backdrop-filter: blur(14px);
