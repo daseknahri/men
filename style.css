@@ -445,7 +445,7 @@ body.menu-page {
   background: linear-gradient(180deg, #fff 0%, #fffdf9 100%);
   border-radius: 32px 32px 0 0;
   margin-top: -26px;
-  padding: 28px 22px 64px;
+  padding: 24px 20px 56px;
   position: relative;
   z-index: 5;
   box-shadow: 0 -18px 46px rgba(15, 23, 42, 0.06);
@@ -457,13 +457,13 @@ body.menu-page {
   font-weight: 800;
   text-align: center;
   color: #111;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   letter-spacing: -0.03em;
 }
 
 .landing-status {
   justify-content: center;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 }
 
 /* Super Category Pills on Landing */
@@ -508,7 +508,7 @@ body.menu-page {
   border-left: 4px solid #4caf50;
   border-radius: 12px;
   padding: 14px 18px;
-  margin: 15px 0;
+  margin: 12px 0 14px;
   font-size: 0.9rem;
   color: #2e7d32;
   font-weight: 600;
@@ -526,7 +526,7 @@ body.menu-page {
   font-size: 1.02rem;
   font-weight: 800;
   cursor: pointer;
-  margin: 28px 0 24px;
+  margin: 18px 0 18px;
   transition: transform 0.24s ease, box-shadow 0.24s ease, filter 0.24s ease;
   box-shadow: 0 18px 34px rgba(226, 27, 27, 0.24);
   font-family: 'Poppins', sans-serif;
@@ -541,7 +541,7 @@ body.menu-page {
 
 /* Info Section */
 .info-section {
-  margin: 4px 0 26px;
+  margin: 4px 0 20px;
   border: 1px solid rgba(255, 141, 8, 0.08);
   border-radius: 24px;
   overflow: hidden;
@@ -594,7 +594,7 @@ body.menu-page {
 
 /* Hours Section */
 .hours-section {
-  margin: 28px 0 0;
+  margin: 20px 0 0;
 }
 
 .hours-title {
@@ -996,7 +996,7 @@ body.menu-page {
 
   .super-cat-pills {
     gap: 8px;
-    margin: 14px 0 10px;
+    margin: 12px 0 8px;
   }
 
   .super-cat-pill {
@@ -1080,6 +1080,83 @@ body.menu-page {
 
   .cart-floating-hub:hover {
     transform: translateY(-2px);
+  }
+
+  .landing-hero {
+    height: 248px;
+  }
+
+  .landing-logo-wrap {
+    margin-top: -56px;
+  }
+
+  .landing-logo-circle {
+    width: 112px;
+    height: 112px;
+  }
+
+  .landing-body {
+    margin-top: -22px;
+    padding: 20px 16px 36px;
+    border-radius: 28px 28px 0 0;
+  }
+
+  .landing-rest-name {
+    font-size: clamp(1.6rem, 7vw, 2rem);
+    margin-bottom: 8px;
+  }
+
+  .landing-status {
+    margin-bottom: 12px;
+  }
+
+  .promo-section-vibrant {
+    margin: 18px 0 12px !important;
+    padding: 0 !important;
+  }
+
+  .promo-inner-container {
+    padding: 0;
+  }
+
+  #promoCarousel {
+    padding: 8px 2px 6px !important;
+    gap: 12px !important;
+  }
+
+  .promo-empty-msg {
+    padding: 26px 14px;
+    border-radius: 20px;
+    font-size: 0.96rem;
+  }
+
+  .view-menu-btn {
+    margin: 14px 0 14px;
+    padding: 18px 20px;
+    font-size: 0.98rem;
+  }
+
+  .info-section {
+    margin-bottom: 16px;
+    border-radius: 20px;
+  }
+
+  .info-row {
+    padding: 16px 14px;
+    gap: 14px;
+  }
+
+  .hours-section {
+    margin-top: 16px;
+  }
+
+  .social-links {
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  #landingView .home-floating-hub {
+    display: none;
   }
 }
 
