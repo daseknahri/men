@@ -3482,20 +3482,34 @@
                 max-height: 100dvh;
                 border-radius: 0;
                 padding: max(12px, env(safe-area-inset-top, 0px)) 14px calc(18px + env(safe-area-inset-bottom, 0px));
-                grid-template-columns: minmax(0, 1fr) auto;
+                grid-template-columns: auto minmax(0, 1fr);
+                grid-template-areas:
+                    "close title"
+                    "body body";
+                row-gap: 12px;
                 transform: none;
                 align-self: stretch;
+                box-shadow: none;
             }
 
             .menu-crud-modal-title {
+                grid-area: title;
+                position: sticky;
+                top: 0;
+                z-index: 5;
                 font-size: 1rem;
-                padding-right: 44px;
+                padding: 8px 0 10px;
+                padding-right: 0;
+                background: linear-gradient(180deg, rgba(255, 251, 244, 0.98) 0%, rgba(255, 251, 244, 0.94) 72%, rgba(255, 251, 244, 0) 100%);
             }
 
             .menu-crud-close {
-                top: 10px;
+                grid-area: close;
+                top: 0;
                 width: 36px;
                 height: 36px;
+                justify-self: start;
+                z-index: 6;
             }
 
             .owner-section-card,
@@ -3543,6 +3557,10 @@
                 padding: 0 !important;
                 align-items: stretch !important;
                 justify-content: stretch !important;
+            }
+
+            #menuCrudModalBody {
+                grid-area: body;
             }
 
             .menu-crud-modal-card .modal-form-actions {
