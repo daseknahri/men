@@ -3490,8 +3490,8 @@
                     "body body";
                 row-gap: 10px;
                 transform: none;
-                align-self: center;
-                place-self: center;
+                align-self: start;
+                place-self: start center;
                 overflow: hidden;
                 box-shadow: 0 26px 60px rgba(15, 23, 42, 0.2);
             }
@@ -3558,16 +3558,19 @@
             }
 
             #menuCrudModal {
-                padding: 10dvh 10vw !important;
-                align-items: center !important;
+                padding: max(18px, env(safe-area-inset-top, 0px)) 10vw calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+                align-items: flex-start !important;
                 justify-content: center !important;
             }
 
             #menuCrudModalBody {
                 grid-area: body;
                 min-height: 0;
+                display: block;
                 overflow-y: auto;
                 overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                touch-action: pan-y;
                 padding-right: 2px;
                 padding-bottom: 0;
             }
@@ -3625,6 +3628,7 @@
             #menuCrudModalBody > #superCatForm {
                 width: min(100%, 100%);
                 max-width: 100%;
+                min-height: max-content;
             }
 
             body.menu-crud-open .mobile-bottom-nav,
