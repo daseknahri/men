@@ -3934,6 +3934,10 @@
             color: #e01e2f;
             width: 100%;
         }
+
+        .sidebar-home-link {
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -3982,19 +3986,12 @@
         <button class="nav-btn" id="brandingNavBtn" data-section="branding" onclick="showSection('branding', this)">&#127912; Branding</button>
         <button class="nav-btn" id="sellerToolsNavBtn" data-section="data-tools" onclick="showSection('data-tools', this)">&#128229; Import</button>
         <div class="sidebar-actions">
+            <a href="/" class="nav-btn sidebar-home-link" data-i18n="admin.header.website_home">&larr; Website Home</a>
             <button class="nav-btn sidebar-logout-btn" onclick="adminLogout()" data-i18n="admin.nav.logout">&#128682; D&eacute;connexion</button>
         </div>
     </div>
 
     <main class="main" id="adminMain" style="display:none">
-        <div class="header">
-            <div>
-                <h2 id="section-title" data-i18n="admin.header.menu_management">Menu Management</h2>
-                <div id="adminSaveStatus" class="admin-save-status"></div>
-            </div>
-            <a href="/" class="back-btn" data-i18n="admin.header.website_home">&larr; Website Home</a>
-        </div>
-
         <!-- MENU SECTION -->
         <div id="menu" class="section active">
             <div class="menu-builder-shell">
