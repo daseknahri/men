@@ -323,7 +323,9 @@
             background: linear-gradient(180deg, rgba(37, 41, 50, 0.98) 0%, rgba(23, 26, 32, 0.98) 100%);
             border-radius: 24px;
             padding: 16px 16px 16px 14px;
-            display: flex;
+            display: grid;
+            grid-template-columns: 90px minmax(0, 1fr) 48px;
+            align-items: center;
             gap: 14px;
             position: relative;
             transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -357,11 +359,10 @@
         }
 
         .menu-item-info {
-            flex: 1;
-            padding-right: 42px;
             display: flex;
             flex-direction: column;
             min-width: 0;
+            justify-content: center;
         }
 
         .menu-item-name {
@@ -411,10 +412,36 @@
             object-fit: cover;
         }
 
+        .menu-item-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .menu-item-love {
+            position: static;
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #a9afb8;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.14);
+            font-size: 0.72rem;
+            line-height: 1;
+        }
+
+        .menu-item-love .love-icon {
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
         .menu-item-add {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
+            position: static;
             width: 42px;
             height: 42px;
             z-index: 5;
@@ -969,10 +996,11 @@
                 gap: 12px;
                 border-radius: 22px;
                 min-height: 108px;
+                grid-template-columns: 74px minmax(0, 1fr) 40px;
             }
 
             .menu-item-info {
-                padding-right: 48px;
+                min-width: 0;
             }
 
             .menu-item-name {
@@ -998,11 +1026,20 @@
             .menu-item-add {
                 width: 40px;
                 height: 40px;
-                right: 10px;
-                bottom: 10px;
                 border-radius: 14px;
                 font-size: 1.08rem;
                 box-shadow: 0 14px 24px rgba(230, 57, 70, 0.24);
+            }
+
+            .menu-item-love {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                font-size: 0.66rem;
+            }
+
+            .menu-item-love .love-icon {
+                font-size: 0.82rem;
             }
 
             .menu-search-box input {
@@ -1011,7 +1048,7 @@
                 font-size: 0.88rem;
             }
 
-            .love-btn {
+            .love-btn:not(.menu-item-love) {
                 top: 8px;
                 right: 8px;
                 width: 30px;
@@ -2172,7 +2209,7 @@
     <!-- SUPER CATEGORY BOTTOM SHEET -->
     <div id="superCatOverlay" class="overlay" onclick="closeSuperCatSheet()"></div>
     <div id="superCatSheet" class="super-cat-sheet">
-        <button class="super-sheet-close" onclick="closeSuperCatSheet()">✕</button>
+        <button class="super-sheet-close" onclick="closeSuperCatSheet()" aria-label="Close menu selector">&times;</button>
         <h2 class="super-sheet-title" data-i18n="menu_select_title">Sélectionner un Menu</h2>
         <div id="superCatList">
             <!-- Injected by JS -->
@@ -2181,7 +2218,7 @@
 
     <!-- Dish Detail Page (Slide Up Overlay) -->
     <div id="dishPage" class="dish-page">
-        <button class="dish-page-close" onclick="closeDishPage()">✕</button>
+        <button class="dish-page-close" onclick="closeDishPage()" aria-label="Close dish details">&times;</button>
         <div class="dish-page-header">
             <img id="dishPageImg" src="" alt="" class="dish-page-img" decoding="async">
         </div>
@@ -2201,7 +2238,7 @@
         <div class="history-modal" onclick="event.stopPropagation()">
             <div class="history-header">
                 <h2 data-i18n="history_title">Historique</h2>
-                <button onclick="closeHistory()" class="history-close-btn">✕</button>
+                <button onclick="closeHistory()" class="history-close-btn" aria-label="Close history">&times;</button>
             </div>
             <div id="historyContent">
                 <p class="history-empty" data-i18n="history_empty">Aucune commande récente.</p>
