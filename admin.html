@@ -657,6 +657,19 @@
         .menu-crud-modal-card .modal-form-actions {
             border-top: 1px solid rgba(232, 216, 197, 0.92);
             padding-top: 16px;
+            margin-top: 0;
+        }
+
+        .menu-crud-modal-card .modal-form-actions .primary-btn,
+        .menu-crud-modal-card .modal-form-actions .secondary-btn {
+            min-height: 52px;
+        }
+
+        .menu-crud-modal-card .modal-form-actions .secondary-btn {
+            background: rgba(255, 249, 241, 0.92);
+            color: var(--text2);
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            box-shadow: none;
         }
 
         .image-modal-card {
@@ -810,6 +823,62 @@
 
         .admin-disclosure-body {
             padding: 0 18px 18px;
+        }
+
+        .menu-crud-form-shell {
+            display: grid;
+            gap: 18px;
+        }
+
+        .menu-form-block {
+            display: grid;
+            gap: 16px;
+            padding: 20px;
+            border-radius: 22px;
+            border: 1px solid rgba(232, 216, 197, 0.92);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 241, 0.94) 100%);
+            box-shadow: 0 16px 30px rgba(75, 47, 24, 0.04);
+        }
+
+        .menu-form-block-header {
+            display: grid;
+            gap: 6px;
+        }
+
+        .menu-form-block-kicker {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #fff5e7;
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            color: var(--text2);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .menu-form-block-title {
+            margin: 0;
+            font-size: 1.02rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .menu-form-block-copy {
+            margin: 0;
+            color: var(--text2);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-width: 58ch;
+        }
+
+        .menu-form-block .form-group:last-child {
+            margin-bottom: 0;
         }
 
         .modal-form-actions {
@@ -2932,6 +3001,20 @@
                 gap: 14px;
             }
 
+            .menu-form-block {
+                padding: 16px;
+                border-radius: 18px;
+                gap: 14px;
+            }
+
+            .menu-form-block-title {
+                font-size: 0.96rem;
+            }
+
+            .menu-form-block-copy {
+                font-size: 0.84rem;
+            }
+
             .menu-builder-heading {
                 gap: 6px;
             }
@@ -3281,6 +3364,10 @@
                 padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
                 background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.98) 45%);
                 backdrop-filter: blur(12px);
+            }
+
+            .menu-crud-modal-card .modal-form-actions {
+                grid-template-columns: 1fr;
             }
 
             .menu-crud-modal-card .inline-check-grid,
@@ -3665,115 +3752,132 @@
             </div>
             <div id="menuStepPanel-items" class="menu-step-panel" style="display:none;">
             <h3 id="menuItemEditorTitle" data-i18n="admin.menu.title">Add Item</h3>
-            <form id="foodForm">
-                <div class="form-grid form-grid-2">
-                    <div class="form-group">
-                        <label data-i18n="admin.menu.default_name">Default Name</label>
-                        <input type="text" id="itemName" placeholder="e.g. Signature Plate" data-i18n-placeholder="admin.menu.default_name_placeholder" required />
+            <form id="foodForm" class="menu-crud-form-shell">
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Item</span>
+                        <h4 class="menu-form-block-title">Core details</h4>
+                        <p class="menu-form-block-copy">Set the default name, category, and fallback description first. This is the backbone of the dish entry.</p>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.menu.category">Category</label>
-                        <select id="itemCat" required></select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label data-i18n="admin.menu.default_description">Default Description</label>
-                    <input type="text" id="itemDesc" placeholder="Used as the fallback when a translation is missing" data-i18n-placeholder="admin.menu.default_description_placeholder" required />
-                </div>
-                <details class="admin-disclosure">
-                    <summary>
-                        <span>
-                            <span data-i18n="admin.menu.localized_names">Localized Names & Descriptions</span>
-                            <span class="admin-disclosure-copy">Open only when you need FR / EN / AR overrides.</span>
-                        </span>
-                    </summary>
-                    <div class="admin-disclosure-body">
-                        <p class="translation-hint" data-i18n="admin.menu.localized_names_hint">These fields power the French, English, and Arabic menu experience today and give the future AI importer a clean target schema.</p>
-                        <div class="translation-grid">
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.french">French</h4>
-                                <label for="itemNameFr" data-i18n="admin.menu.name_fr">Name (FR)</label>
-                                <input type="text" id="itemNameFr" placeholder="Nom du plat en francais" data-i18n-placeholder="admin.menu.name_fr_placeholder" />
-                                <label for="itemDescFr" data-i18n="admin.menu.description_fr">Description (FR)</label>
-                                <textarea id="itemDescFr" placeholder="Description en francais" data-i18n-placeholder="admin.menu.description_fr_placeholder" rows="3"></textarea>
-                            </div>
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.english">English</h4>
-                                <label for="itemNameEn" data-i18n="admin.menu.name_en">Name (EN)</label>
-                                <input type="text" id="itemNameEn" placeholder="Dish name in English" data-i18n-placeholder="admin.menu.name_en_placeholder" />
-                                <label for="itemDescEn" data-i18n="admin.menu.description_en">Description (EN)</label>
-                                <textarea id="itemDescEn" placeholder="Dish description in English" data-i18n-placeholder="admin.menu.description_en_placeholder" rows="3"></textarea>
-                            </div>
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.arabic">Arabic</h4>
-                                <label for="itemNameAr" data-i18n="admin.menu.name_ar">Name (AR)</label>
-                                <input type="text" id="itemNameAr" placeholder="Dish name in Arabic" data-i18n-placeholder="admin.menu.name_ar_placeholder" />
-                                <label for="itemDescAr" data-i18n="admin.menu.description_ar">Description (AR)</label>
-                                <textarea id="itemDescAr" placeholder="Dish description in Arabic" data-i18n-placeholder="admin.menu.description_ar_placeholder" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </details>
-                <div class="inline-check-grid" style="margin-top:18px;">
-                    <div class="form-group inline-check">
-                        <input type="checkbox" id="itemHasSizes" onchange="toggleSizesUI()"
-                            class="check-input" />
-                        <label for="itemHasSizes" data-i18n="admin.menu.has_sizes">Item Has Multiple Sizes</label>
-
-                    </div>
-                </div>
-
-                <div id="singlePriceGroup" class="form-group">
-                    <label data-i18n="admin.menu.price">Price (MAD)</label>
-                    <input type="number" id="itemPrice" placeholder="0.00" step="0.01" />
-                </div>
-
-                <div id="multiPriceGroup" class="multi-price-group">
-                    <div class="form-group">
-                        <label data-i18n="admin.menu.price_small">Small Price</label>
-                        <input type="number" id="itemPriceSmall" placeholder="0.00" step="0.01" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.menu.price_medium">Medium Price</label>
-                        <input type="number" id="itemPriceMedium" placeholder="0.00" step="0.01" />
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.menu.price_large">Large Price</label>
-                        <input type="number" id="itemPriceLarge" placeholder="0.00" step="0.01" />
-                    </div>
-                </div>
-
-                <details class="admin-disclosure">
-                    <summary>
-                        <span>
-                            <span>Advanced & Media</span>
-                            <span class="admin-disclosure-copy">Open only for ingredients, media, availability, or featured status.</span>
-                        </span>
-                    </summary>
-                    <div class="admin-disclosure-body">
+                    <div class="form-grid form-grid-2">
                         <div class="form-group">
-                            <label data-i18n="admin.menu.ingredients">Ingredients (Separate by commas)</label>
-                            <textarea id="itemIngredients" placeholder="Tomato, Lettuce, Special Sauce..." data-i18n-placeholder="admin.menu.ingredients_placeholder" rows="2"></textarea>
-                        </div>
-                        <div class="inline-check-grid">
-                            <div class="form-group inline-check">
-                                <input type="checkbox" id="itemFeatured" class="check-input" />
-                                <label for="itemFeatured" data-i18n="admin.menu.featured">Featured Item</label>
-                            </div>
-                            <div class="form-group inline-check">
-                                <input type="checkbox" id="itemAvailable" class="check-input"
-                                    checked />
-                                <label for="itemAvailable" data-i18n="admin.menu.available">Available</label>
-
-                            </div>
+                            <label data-i18n="admin.menu.default_name">Default Name</label>
+                            <input type="text" id="itemName" placeholder="e.g. Signature Plate" data-i18n-placeholder="admin.menu.default_name_placeholder" required />
                         </div>
                         <div class="form-group">
-                            <label data-i18n="admin.menu.gallery">Gallery (URLs or Upload)</label>
-                            <input type="file" id="itemFile" accept="image/*" multiple class="file-input-spaced" />
-                            <textarea id="itemImg" placeholder="Or paste URLs here (comma separated)..." data-i18n-placeholder="admin.menu.gallery_placeholder" rows="2"></textarea>
+                            <label data-i18n="admin.menu.category">Category</label>
+                            <select id="itemCat" required></select>
                         </div>
                     </div>
-                </details>
+                    <div class="form-group">
+                        <label data-i18n="admin.menu.default_description">Default Description</label>
+                        <input type="text" id="itemDesc" placeholder="Used as the fallback when a translation is missing" data-i18n-placeholder="admin.menu.default_description_placeholder" required />
+                    </div>
+                    <details class="admin-disclosure">
+                        <summary>
+                            <span>
+                                <span data-i18n="admin.menu.localized_names">Localized Names & Descriptions</span>
+                                <span class="admin-disclosure-copy">Open only when you need FR / EN / AR overrides.</span>
+                            </span>
+                        </summary>
+                        <div class="admin-disclosure-body">
+                            <p class="translation-hint" data-i18n="admin.menu.localized_names_hint">These fields power the French, English, and Arabic menu experience today and give the future AI importer a clean target schema.</p>
+                            <div class="translation-grid">
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.french">French</h4>
+                                    <label for="itemNameFr" data-i18n="admin.menu.name_fr">Name (FR)</label>
+                                    <input type="text" id="itemNameFr" placeholder="Nom du plat en francais" data-i18n-placeholder="admin.menu.name_fr_placeholder" />
+                                    <label for="itemDescFr" data-i18n="admin.menu.description_fr">Description (FR)</label>
+                                    <textarea id="itemDescFr" placeholder="Description en francais" data-i18n-placeholder="admin.menu.description_fr_placeholder" rows="3"></textarea>
+                                </div>
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.english">English</h4>
+                                    <label for="itemNameEn" data-i18n="admin.menu.name_en">Name (EN)</label>
+                                    <input type="text" id="itemNameEn" placeholder="Dish name in English" data-i18n-placeholder="admin.menu.name_en_placeholder" />
+                                    <label for="itemDescEn" data-i18n="admin.menu.description_en">Description (EN)</label>
+                                    <textarea id="itemDescEn" placeholder="Dish description in English" data-i18n-placeholder="admin.menu.description_en_placeholder" rows="3"></textarea>
+                                </div>
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.arabic">Arabic</h4>
+                                    <label for="itemNameAr" data-i18n="admin.menu.name_ar">Name (AR)</label>
+                                    <input type="text" id="itemNameAr" placeholder="Dish name in Arabic" data-i18n-placeholder="admin.menu.name_ar_placeholder" />
+                                    <label for="itemDescAr" data-i18n="admin.menu.description_ar">Description (AR)</label>
+                                    <textarea id="itemDescAr" placeholder="Dish description in Arabic" data-i18n-placeholder="admin.menu.description_ar_placeholder" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </section>
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Pricing</span>
+                        <h4 class="menu-form-block-title">Price structure</h4>
+                        <p class="menu-form-block-copy">Use one standard price, or switch to size-based pricing when the dish needs small, medium, and large values.</p>
+                    </div>
+                    <div class="inline-check-grid">
+                        <div class="form-group inline-check">
+                            <input type="checkbox" id="itemHasSizes" onchange="toggleSizesUI()"
+                                class="check-input" />
+                            <label for="itemHasSizes" data-i18n="admin.menu.has_sizes">Item Has Multiple Sizes</label>
+                        </div>
+                    </div>
+                    <div id="singlePriceGroup" class="form-group">
+                        <label data-i18n="admin.menu.price">Price (MAD)</label>
+                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" />
+                    </div>
+                    <div id="multiPriceGroup" class="multi-price-group">
+                        <div class="form-group">
+                            <label data-i18n="admin.menu.price_small">Small Price</label>
+                            <input type="number" id="itemPriceSmall" placeholder="0.00" step="0.01" />
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="admin.menu.price_medium">Medium Price</label>
+                            <input type="number" id="itemPriceMedium" placeholder="0.00" step="0.01" />
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="admin.menu.price_large">Large Price</label>
+                            <input type="number" id="itemPriceLarge" placeholder="0.00" step="0.01" />
+                        </div>
+                    </div>
+                </section>
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Operations</span>
+                        <h4 class="menu-form-block-title">Availability & media</h4>
+                        <p class="menu-form-block-copy">Keep the essentials visible, and open the advanced area only when you need ingredients, flags, or image management.</p>
+                    </div>
+                    <details class="admin-disclosure">
+                        <summary>
+                            <span>
+                                <span>Advanced & Media</span>
+                                <span class="admin-disclosure-copy">Open only for ingredients, media, availability, or featured status.</span>
+                            </span>
+                        </summary>
+                        <div class="admin-disclosure-body">
+                            <div class="form-group">
+                                <label data-i18n="admin.menu.ingredients">Ingredients (Separate by commas)</label>
+                                <textarea id="itemIngredients" placeholder="Tomato, Lettuce, Special Sauce..." data-i18n-placeholder="admin.menu.ingredients_placeholder" rows="2"></textarea>
+                            </div>
+                            <div class="inline-check-grid">
+                                <div class="form-group inline-check">
+                                    <input type="checkbox" id="itemFeatured" class="check-input" />
+                                    <label for="itemFeatured" data-i18n="admin.menu.featured">Featured Item</label>
+                                </div>
+                                <div class="form-group inline-check">
+                                    <input type="checkbox" id="itemAvailable" class="check-input"
+                                        checked />
+                                    <label for="itemAvailable" data-i18n="admin.menu.available">Available</label>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="admin.menu.gallery">Gallery (URLs or Upload)</label>
+                                <input type="file" id="itemFile" accept="image/*" multiple class="file-input-spaced" />
+                                <textarea id="itemImg" placeholder="Or paste URLs here (comma separated)..." data-i18n-placeholder="admin.menu.gallery_placeholder" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </details>
+                </section>
                 <div class="modal-form-actions">
                     <button type="submit" class="primary-btn" data-i18n="admin.menu.save_product">Save</button>
                     <button type="button" class="primary-btn secondary-btn" onclick="closeMenuCrudModal()">Cancel</button>
@@ -3910,46 +4014,52 @@
         <!-- CATEGORIES SECTION -->
         <div id="categories" class="section">
             <h3 data-i18n="admin.categories.title">Add Category</h3>
-            <form id="catForm">
+            <form id="catForm" class="menu-crud-form-shell">
                 <input type="hidden" id="catEditingKey" value="" />
-                <div style="display:grid; grid-template-columns: 1fr 100px; gap: 15px;">
-                    <div class="form-group">
-                        <label>Fallback / Internal Category Key</label>
-                        <input type="text" id="catName" placeholder="e.g. Hot Drinks" data-i18n-placeholder="admin.categories.name_placeholder" required />
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Category</span>
+                        <h4 class="menu-form-block-title">Category identity</h4>
+                        <p class="menu-form-block-copy">Use a stable fallback key and emoji here. Customer-facing labels come from the translation block below.</p>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="admin.categories.emoji">Emoji</label>
-                        <input type="text" id="catEmoji" placeholder="☕" required />
-                    </div>
-                </div>
-                <p class="translation-hint">The website uses the translated category names below. This top field is the stable fallback key used internally and whenever a translation is missing.</p>
-                <details class="admin-disclosure">
-                    <summary>
-                        <span>
-                            <span>Translations</span>
-                            <span class="admin-disclosure-copy">Only open this when you need category labels in multiple languages.</span>
-                        </span>
-                    </summary>
-                    <div class="admin-disclosure-body">
-                        <div class="translation-grid" style="margin-top:16px;">
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.french">French</h4>
-                                <label for="catNameFr" data-i18n="admin.categories.name_fr">Category Name</label>
-                                <input type="text" id="catNameFr" placeholder="Nom de la categorie en francais" data-i18n-placeholder="admin.categories.name_fr_placeholder" />
-                            </div>
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.english">English</h4>
-                                <label for="catNameEn" data-i18n="admin.categories.name_en">Category Name</label>
-                                <input type="text" id="catNameEn" placeholder="Category name in English" data-i18n-placeholder="admin.categories.name_en_placeholder" />
-                            </div>
-                            <div class="translation-card">
-                                <h4 data-i18n="admin.lang.arabic">Arabic</h4>
-                                <label for="catNameAr" data-i18n="admin.categories.name_ar">Category Name</label>
-                                <input type="text" id="catNameAr" placeholder="Category name in Arabic" data-i18n-placeholder="admin.categories.name_ar_placeholder" />
-                            </div>
+                    <div style="display:grid; grid-template-columns: 1fr 100px; gap: 15px;">
+                        <div class="form-group">
+                            <label>Fallback / Internal Category Key</label>
+                            <input type="text" id="catName" placeholder="e.g. Hot Drinks" data-i18n-placeholder="admin.categories.name_placeholder" required />
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="admin.categories.emoji">Emoji</label>
+                            <input type="text" id="catEmoji" placeholder="☕" required />
                         </div>
                     </div>
-                </details>
+                    <details class="admin-disclosure">
+                        <summary>
+                            <span>
+                                <span>Translations</span>
+                                <span class="admin-disclosure-copy">Only open this when you need category labels in multiple languages.</span>
+                            </span>
+                        </summary>
+                        <div class="admin-disclosure-body">
+                            <div class="translation-grid" style="margin-top:16px;">
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.french">French</h4>
+                                    <label for="catNameFr" data-i18n="admin.categories.name_fr">Category Name</label>
+                                    <input type="text" id="catNameFr" placeholder="Nom de la categorie en francais" data-i18n-placeholder="admin.categories.name_fr_placeholder" />
+                                </div>
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.english">English</h4>
+                                    <label for="catNameEn" data-i18n="admin.categories.name_en">Category Name</label>
+                                    <input type="text" id="catNameEn" placeholder="Category name in English" data-i18n-placeholder="admin.categories.name_en_placeholder" />
+                                </div>
+                                <div class="translation-card">
+                                    <h4 data-i18n="admin.lang.arabic">Arabic</h4>
+                                    <label for="catNameAr" data-i18n="admin.categories.name_ar">Category Name</label>
+                                    <input type="text" id="catNameAr" placeholder="Category name in Arabic" data-i18n-placeholder="admin.categories.name_ar_placeholder" />
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </section>
                 <div class="modal-form-actions">
                     <button type="submit" class="primary-btn" data-i18n="admin.categories.add">Save</button>
                     <button type="button" class="primary-btn secondary-btn" onclick="closeMenuCrudModal()">Cancel</button>
@@ -4436,66 +4546,79 @@
             <h3>Super Categories (Meal Periods)</h3>
             <p>Group your food categories into logical meal times (e.g. Breakfast, Lunch, Dinner).</p>
 
-            <form id="superCatForm" class="panel-soft">
+            <form id="superCatForm" class="panel-soft menu-crud-form-shell">
                 <input type="hidden" id="scEditingId" value="" />
-                <div class="form-grid form-grid-name-emoji">
-                    <div class="form-group">
-                        <label>Fallback Name</label>
-                        <input type="text" id="scName" placeholder="e.g. Breakfast" required />
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Super Category</span>
+                        <h4 class="menu-form-block-title">Top-level menu group</h4>
+                        <p class="menu-form-block-copy">This is the first layer customers open before they reach categories. Set the fallback identity and translated labels here.</p>
                     </div>
-                    <div class="form-group">
-                        <label>Emoji</label>
-                        <input type="text" id="scEmoji" placeholder="☕" required />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Fallback Description</label>
-                    <input type="text" id="scDesc" placeholder="e.g. Paninis, Sandwichs Froids & Salades" required />
-                </div>
-                <div class="form-group">
-                    <label>Time Slot (Optional Display)</label>
-                    <input type="text" id="scTime" placeholder="e.g. 07:00 - 12:00" />
-                </div>
-                <p class="translation-hint">Customer-facing super-category titles and descriptions come from the FR / EN / AR fields below. These fallback fields only appear when a translation is missing.</p>
-                <details class="admin-disclosure">
-                    <summary>
-                        <span>
-                            <span>Translations</span>
-                            <span class="admin-disclosure-copy">Open only when you need FR / EN / AR labels for the customer-facing menu.</span>
-                        </span>
-                    </summary>
-                    <div class="admin-disclosure-body">
-                        <div class="translation-grid">
-                            <div class="translation-card">
-                                <h4>French</h4>
-                                <label for="scNameFr">Name</label>
-                                <input type="text" id="scNameFr" placeholder="Nom en francais" />
-                                <label for="scDescFr">Description</label>
-                                <textarea id="scDescFr" rows="3" placeholder="Description en francais"></textarea>
-                            </div>
-                            <div class="translation-card">
-                                <h4>English</h4>
-                                <label for="scNameEn">Name</label>
-                                <input type="text" id="scNameEn" placeholder="Name in English" />
-                                <label for="scDescEn">Description</label>
-                                <textarea id="scDescEn" rows="3" placeholder="Description in English"></textarea>
-                            </div>
-                            <div class="translation-card">
-                                <h4>Arabic</h4>
-                                <label for="scNameAr">Name</label>
-                                <input type="text" id="scNameAr" placeholder="Name in Arabic" />
-                                <label for="scDescAr">Description</label>
-                                <textarea id="scDescAr" rows="3" placeholder="Description in Arabic"></textarea>
-                            </div>
+                    <div class="form-grid form-grid-name-emoji">
+                        <div class="form-group">
+                            <label>Fallback Name</label>
+                            <input type="text" id="scName" placeholder="e.g. Breakfast" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Emoji</label>
+                            <input type="text" id="scEmoji" placeholder="☕" required />
                         </div>
                     </div>
-                </details>
-                <div class="form-group">
-                    <label>Included Categories</label>
-                    <div id="scCatsList" class="chip-select-list">
-                        <!-- Checkboxes will be rendered here -->
+                    <div class="form-group">
+                        <label>Fallback Description</label>
+                        <input type="text" id="scDesc" placeholder="e.g. Paninis, Sandwichs Froids & Salades" required />
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label>Time Slot (Optional Display)</label>
+                        <input type="text" id="scTime" placeholder="e.g. 07:00 - 12:00" />
+                    </div>
+                    <details class="admin-disclosure">
+                        <summary>
+                            <span>
+                                <span>Translations</span>
+                                <span class="admin-disclosure-copy">Open only when you need FR / EN / AR labels for the customer-facing menu.</span>
+                            </span>
+                        </summary>
+                        <div class="admin-disclosure-body">
+                            <div class="translation-grid">
+                                <div class="translation-card">
+                                    <h4>French</h4>
+                                    <label for="scNameFr">Name</label>
+                                    <input type="text" id="scNameFr" placeholder="Nom en francais" />
+                                    <label for="scDescFr">Description</label>
+                                    <textarea id="scDescFr" rows="3" placeholder="Description en francais"></textarea>
+                                </div>
+                                <div class="translation-card">
+                                    <h4>English</h4>
+                                    <label for="scNameEn">Name</label>
+                                    <input type="text" id="scNameEn" placeholder="Name in English" />
+                                    <label for="scDescEn">Description</label>
+                                    <textarea id="scDescEn" rows="3" placeholder="Description in English"></textarea>
+                                </div>
+                                <div class="translation-card">
+                                    <h4>Arabic</h4>
+                                    <label for="scNameAr">Name</label>
+                                    <input type="text" id="scNameAr" placeholder="Name in Arabic" />
+                                    <label for="scDescAr">Description</label>
+                                    <textarea id="scDescAr" rows="3" placeholder="Description in Arabic"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </section>
+                <section class="menu-form-block">
+                    <div class="menu-form-block-header">
+                        <span class="menu-form-block-kicker">Structure</span>
+                        <h4 class="menu-form-block-title">Included categories</h4>
+                        <p class="menu-form-block-copy">Choose which child categories appear inside this super category.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Included Categories</label>
+                        <div id="scCatsList" class="chip-select-list">
+                            <!-- Checkboxes will be rendered here -->
+                        </div>
+                    </div>
+                </section>
                 <div class="modal-form-actions">
                     <button type="submit" class="primary-btn">Save</button>
                     <button type="button" class="primary-btn secondary-btn" onclick="closeMenuCrudModal()">Cancel</button>
