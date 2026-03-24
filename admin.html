@@ -325,6 +325,16 @@
             margin-inline: auto;
         }
 
+        .menu-builder-stage {
+            display: grid;
+            gap: 18px;
+            padding: 24px;
+            border-radius: 28px;
+            border: 1px solid rgba(232, 216, 197, 0.92);
+            background: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 248, 239, 0.94) 100%);
+            box-shadow: 0 22px 48px rgba(75, 47, 24, 0.08);
+        }
+
         .section > form,
         .section > .hours-form,
         .section > .panel-soft,
@@ -337,9 +347,45 @@
         .menu-builder-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 18px;
+            align-items: end;
+            gap: 20px;
             flex-wrap: wrap;
+        }
+
+        #menuBuilderTitle {
+            margin: 0;
+            font-size: clamp(1.55rem, 2vw, 2.15rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+        }
+
+        #menuBuilderCopy {
+            margin: 0;
+            max-width: 52ch;
+            color: var(--text2);
+            line-height: 1.55;
+        }
+
+        .menu-builder-heading {
+            display: grid;
+            gap: 8px;
+            max-width: 640px;
+        }
+
+        .menu-builder-kicker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            background: rgba(255, 255, 255, 0.92);
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text2);
         }
 
         .menu-builder-breadcrumbs {
@@ -352,34 +398,133 @@
         }
 
         .menu-builder-crumb {
-            padding: 6px 10px;
+            padding: 7px 11px;
             border-radius: 999px;
-            background: #f3f4f6;
-            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            box-shadow: 0 8px 20px rgba(75, 47, 24, 0.04);
         }
 
         .menu-builder-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .menu-builder-actions .primary-btn,
+        .menu-builder-actions .brand-secondary-btn {
+            min-height: 48px;
+            padding-inline: 18px;
+            box-shadow: 0 16px 30px rgba(75, 47, 24, 0.08);
+        }
+
+        .menu-builder-table-wrap {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(232, 216, 197, 0.92);
+            border-radius: 24px;
+            padding: 12px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+        }
+
+        .menu-builder-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .menu-builder-table thead th {
+            padding: 0 18px 10px;
+            border: none;
+            font-size: 0.76rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text2);
         }
 
         .menu-builder-table tbody tr {
             cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
         .menu-builder-table tbody tr:hover {
-            background: #fff8f0;
+            transform: translateY(-1px);
+        }
+
+        .menu-builder-table td {
+            background: rgba(255, 255, 255, 0.96);
+            border-top: 1px solid rgba(232, 216, 197, 0.92);
+            border-bottom: 1px solid rgba(232, 216, 197, 0.92);
+            padding: 18px;
+            vertical-align: middle;
+            box-shadow: 0 12px 28px rgba(75, 47, 24, 0.04);
+        }
+
+        .menu-builder-table td:first-child {
+            border-left: 1px solid rgba(232, 216, 197, 0.92);
+            border-radius: 20px 0 0 20px;
+        }
+
+        .menu-builder-table td:last-child {
+            border-right: 1px solid rgba(232, 216, 197, 0.92);
+            border-radius: 0 20px 20px 0;
+        }
+
+        .menu-builder-entry {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .menu-builder-entry-emoji {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #fff7eb 0%, #fff1db 100%);
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            font-size: 1.15rem;
+            box-shadow: 0 10px 20px rgba(255, 141, 8, 0.08);
+            flex: 0 0 42px;
+        }
+
+        .menu-builder-entry-copy {
+            display: grid;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .menu-builder-entry-copy strong {
+            font-size: 1rem;
+            line-height: 1.2;
+        }
+
+        .menu-builder-count-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: #fff7ec;
+            border: 1px solid rgba(232, 216, 197, 0.96);
+            color: var(--text2);
+            font-weight: 700;
+            white-space: nowrap;
         }
 
         .menu-builder-row-copy {
             color: var(--text2);
             font-size: 0.9rem;
+            line-height: 1.45;
         }
 
         .menu-builder-row-meta {
             color: var(--text2);
             font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .menu-builder-item-main {
@@ -417,6 +562,7 @@
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .menu-builder-likes {
@@ -438,11 +584,12 @@
 
         .menu-builder-empty {
             display: none;
-            padding: 18px;
-            border: 1px dashed var(--border);
-            border-radius: 16px;
-            background: #fafafa;
+            padding: 28px;
+            border: 1px dashed rgba(232, 216, 197, 0.96);
+            border-radius: 20px;
+            background: linear-gradient(180deg, #fffdf9 0%, #fff8ef 100%);
             color: var(--text2);
+            text-align: center;
         }
 
         .menu-crud-modal-card {
@@ -466,6 +613,8 @@
         #menuCrudModalBody > form {
             width: min(100%, 860px);
             margin-inline: auto;
+            display: grid;
+            gap: 0;
         }
 
         #menuCrudModalBody > #catForm,
@@ -478,6 +627,7 @@
             font-size: 1.35rem;
             font-weight: 800;
             line-height: 1.2;
+            letter-spacing: -0.02em;
         }
 
         .menu-crud-close {
@@ -496,6 +646,17 @@
 
         .menu-crud-modal-card form > h3 {
             display: none;
+        }
+
+        .menu-crud-modal-card .admin-disclosure,
+        .menu-crud-modal-card .translation-card,
+        .menu-crud-modal-card .chip-select-list {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-crud-modal-card .modal-form-actions {
+            border-top: 1px solid rgba(232, 216, 197, 0.92);
+            padding-top: 16px;
         }
 
         .image-modal-card {
@@ -2765,6 +2926,21 @@
                 backdrop-filter: blur(10px);
             }
 
+            .menu-builder-stage {
+                padding: 16px;
+                border-radius: 22px;
+                gap: 14px;
+            }
+
+            .menu-builder-heading {
+                gap: 6px;
+            }
+
+            .menu-builder-kicker {
+                padding: 6px 10px;
+                font-size: 0.68rem;
+            }
+
             .menu-builder-actions {
                 width: 100%;
                 gap: 8px;
@@ -2800,6 +2976,11 @@
                 padding: 5px 8px;
             }
 
+            .menu-builder-table-wrap {
+                padding: 8px;
+                border-radius: 18px;
+            }
+
             .admin-summary-strip {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -2830,8 +3011,8 @@
                 border: 1px solid var(--border);
                 border-radius: 16px;
                 padding: 2px 0;
-                background: #fff;
-                box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+                background: rgba(255, 255, 255, 0.98);
+                box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
                 margin-bottom: 10px;
                 content-visibility: auto;
                 contain-intrinsic-size: 160px;
@@ -2840,6 +3021,8 @@
             #menuBuilderTable td {
                 min-width: 0;
                 border: none;
+                background: transparent;
+                box-shadow: none;
                 padding: 8px 12px;
             }
 
@@ -2877,6 +3060,28 @@
                 align-items: center;
                 gap: 6px;
                 padding-top: 2px;
+            }
+
+            .menu-builder-entry {
+                gap: 10px;
+            }
+
+            .menu-builder-entry-emoji {
+                width: 36px;
+                height: 36px;
+                flex-basis: 36px;
+                border-radius: 12px;
+                font-size: 1rem;
+            }
+
+            .menu-builder-entry-copy strong {
+                font-size: 0.98rem;
+            }
+
+            .menu-builder-count-pill {
+                min-height: 34px;
+                padding: 0 10px;
+                font-size: 0.8rem;
             }
 
             #menuBuilderTable[data-step="items"] tr {
@@ -3400,24 +3605,27 @@
         <!-- MENU SECTION -->
         <div id="menu" class="section active">
             <div class="menu-builder-shell">
-                <div class="menu-builder-header">
-                    <div>
-                    <div id="menuBuilderBreadcrumbs" class="menu-builder-breadcrumbs"></div>
-                    <h3 id="menuBuilderTitle" style="margin:0;">Super Categories</h3>
-                    <p id="menuBuilderCopy" class="copy-muted" style="margin-top:8px;">Start from the top of the menu tree, then drill into categories and items.</p>
+                <div class="menu-builder-stage">
+                    <div class="menu-builder-header">
+                        <div class="menu-builder-heading">
+                            <span class="menu-builder-kicker">Menu Builder</span>
+                            <div id="menuBuilderBreadcrumbs" class="menu-builder-breadcrumbs"></div>
+                            <h3 id="menuBuilderTitle" style="margin:0;">Super Categories</h3>
+                            <p id="menuBuilderCopy" class="copy-muted" style="margin:0;">Start from the top of the menu tree, then drill into categories and items.</p>
+                        </div>
+                        <div class="menu-builder-actions">
+                            <button type="button" id="menuBuilderBackBtn" class="brand-secondary-btn menu-icon-btn" data-mobile-icon="&#8592;" onclick="goBackMenuBuilder()">Back</button>
+                            <button type="button" id="menuBuilderAddBtn" class="primary-btn btn-auto menu-icon-btn" data-mobile-icon="+" onclick="openMenuBuilderAdd()">Add</button>
+                        </div>
                     </div>
-                    <div class="menu-builder-actions">
-                        <button type="button" id="menuBuilderBackBtn" class="brand-secondary-btn menu-icon-btn" data-mobile-icon="&#8592;" onclick="goBackMenuBuilder()">Back</button>
-                        <button type="button" id="menuBuilderAddBtn" class="primary-btn btn-auto menu-icon-btn" data-mobile-icon="+" onclick="openMenuBuilderAdd()">Add</button>
+                    <div class="table-container menu-builder-table-wrap">
+                        <table id="menuBuilderTable" class="menu-builder-table">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
+                    <div id="menuBuilderEmpty" class="menu-builder-empty"></div>
                 </div>
-                <div class="table-container">
-                    <table id="menuBuilderTable" class="menu-builder-table">
-                        <thead></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                <div id="menuBuilderEmpty" class="menu-builder-empty"></div>
             </div>
             <div id="menuCrudHosts" style="display:none;">
                 <div id="menuCrudSuperHost"></div>

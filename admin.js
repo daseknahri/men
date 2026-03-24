@@ -1027,13 +1027,20 @@ function renderMenuBuilder() {
             return `
                 <tr onclick='openMenuBuilderRow(${inlineId})'>
                     <td data-label="Super Category">
-                        <strong>${escapeHtml(entry.emoji || ADMIN_ICON.bullet)} ${escapeHtml(entry.name || 'Super Category')}</strong>
-                        <div class="menu-builder-row-copy">${escapeHtml(entry.desc || '')}</div>
+                        <div class="menu-builder-entry">
+                            <span class="menu-builder-entry-emoji">${escapeHtml(entry.emoji || ADMIN_ICON.bullet)}</span>
+                            <div class="menu-builder-entry-copy">
+                                <strong>${escapeHtml(entry.name || 'Super Category')}</strong>
+                                <div class="menu-builder-row-copy">${escapeHtml(entry.desc || '')}</div>
+                            </div>
+                        </div>
                     </td>
-                    <td data-label="Includes"><span class="menu-builder-row-meta">${categoriesCount} categories</span></td>
+                    <td data-label="Includes"><span class="menu-builder-count-pill">${categoriesCount} categories</span></td>
                     <td data-label="Actions">
-                        ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("supercategory", ${inlineId})'>${ADMIN_ICON.edit}</button>`}
-                        ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); deleteSuperCat(${inlineId})'>${ADMIN_ICON.trash}</button>`}
+                        <div class="menu-builder-item-actions">
+                            ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("supercategory", ${inlineId})'>${ADMIN_ICON.edit}</button>`}
+                            ${entry.isVirtual ? '' : `<button type="button" class="action-btn" onclick='event.stopPropagation(); deleteSuperCat(${inlineId})'>${ADMIN_ICON.trash}</button>`}
+                        </div>
                     </td>
                 </tr>
             `;
@@ -1046,11 +1053,20 @@ function renderMenuBuilder() {
             const inlineKey = toInlineJsString(entry.key);
             return `
                 <tr onclick='openMenuBuilderCategory(${inlineKey})'>
-                    <td data-label="Category"><strong>${escapeHtml(entry.emoji)} ${escapeHtml(entry.name)}</strong></td>
-                    <td data-label="Items"><span class="menu-builder-row-meta">${entry.itemCount} items</span></td>
+                    <td data-label="Category">
+                        <div class="menu-builder-entry">
+                            <span class="menu-builder-entry-emoji">${escapeHtml(entry.emoji)}</span>
+                            <div class="menu-builder-entry-copy">
+                                <strong>${escapeHtml(entry.name)}</strong>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Items"><span class="menu-builder-count-pill">${entry.itemCount} items</span></td>
                     <td data-label="Actions">
-                        <button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("category", ${inlineKey})'>${ADMIN_ICON.edit}</button>
-                        <button type="button" class="action-btn" onclick='event.stopPropagation(); deleteCat(${inlineKey})'>${ADMIN_ICON.trash}</button>
+                        <div class="menu-builder-item-actions">
+                            <button type="button" class="action-btn" onclick='event.stopPropagation(); openMenuBuilderEdit("category", ${inlineKey})'>${ADMIN_ICON.edit}</button>
+                            <button type="button" class="action-btn" onclick='event.stopPropagation(); deleteCat(${inlineKey})'>${ADMIN_ICON.trash}</button>
+                        </div>
                     </td>
                 </tr>
             `;
