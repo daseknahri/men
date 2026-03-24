@@ -109,7 +109,6 @@ let currentMenuWorkspaceStep = 'supercategories';
 let currentBrandingWorkspaceTab = 'identity';
 let menuBuilderSelectedSuperCategoryId = '';
 let menuBuilderSelectedCategoryKey = '';
-let menuCrudLockedScrollY = 0;
 const PRESET_THEME_TOKENS = {
     fast_food: {
         presetId: 'fast_food',
@@ -1144,10 +1143,8 @@ function openMenuCrudModal(type, title) {
     body.innerHTML = '';
     body.appendChild(form);
     titleEl.textContent = title;
-    menuCrudLockedScrollY = window.scrollY || window.pageYOffset || 0;
     document.documentElement.classList.add('menu-crud-open');
     document.body.classList.add('menu-crud-open');
-    document.body.style.top = `-${menuCrudLockedScrollY}px`;
     modal.style.display = 'flex';
     modal.scrollTop = 0;
     body.scrollTop = 0;
@@ -1162,8 +1159,6 @@ window.closeMenuCrudModal = function () {
     if (modal) modal.style.display = 'none';
     document.documentElement.classList.remove('menu-crud-open');
     document.body.classList.remove('menu-crud-open');
-    document.body.style.top = '';
-    window.scrollTo(0, menuCrudLockedScrollY);
     mountMenuCrudForms();
 };
 

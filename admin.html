@@ -330,12 +330,6 @@
             overflow: hidden;
         }
 
-        body.menu-crud-open {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-        }
-
         .menu-builder-stage {
             display: grid;
             gap: 16px;
@@ -790,6 +784,8 @@
 
         #menuCrudModal {
             z-index: 12000 !important;
+            position: fixed !important;
+            inset: 0 !important;
             padding: 18px !important;
             align-items: center !important;
             justify-content: center !important;
