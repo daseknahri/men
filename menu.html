@@ -363,6 +363,7 @@
             flex-direction: column;
             min-width: 0;
             justify-content: center;
+            padding-block: 4px;
         }
 
         .menu-item-name {
@@ -414,14 +415,15 @@
 
         .menu-item-side {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            align-self: stretch;
         }
 
         .menu-item-love {
-            position: static;
+            position: absolute;
+            top: 12px;
+            right: 12px;
             width: 40px;
             height: 40px;
             border-radius: 14px;
@@ -433,11 +435,17 @@
             box-shadow: 0 12px 22px rgba(0, 0, 0, 0.14);
             font-size: 0.72rem;
             line-height: 1;
+            z-index: 6;
         }
 
         .menu-item-love .love-icon {
             font-size: 0.9rem;
             line-height: 1;
+        }
+
+        html[dir="rtl"] .menu-item-love {
+            right: auto;
+            left: 12px;
         }
 
         .menu-item-add {
@@ -1036,10 +1044,17 @@
                 height: 36px;
                 border-radius: 12px;
                 font-size: 0.66rem;
+                top: 10px;
+                right: 10px;
             }
 
             .menu-item-love .love-icon {
                 font-size: 0.82rem;
+            }
+
+            html[dir="rtl"] .menu-item-love {
+                right: auto;
+                left: 10px;
             }
 
             .menu-search-box input {

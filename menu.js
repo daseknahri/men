@@ -827,6 +827,10 @@ function renderMenu() {
                 <div class="menu-grid">
                     ${items.map((item, itemIndex) => `
                         <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
+                            <button class="love-btn menu-item-love ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
+                                    onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
+                                <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
+                            </button>
                             <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
                                 ${imgTag(item)}
                             </div>
@@ -838,14 +842,10 @@ function renderMenu() {
                 ? `<span style="font-size:0.7em; opacity:0.7;">${t('price_from', 'Ã€ partir de')}</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
                 : (window.isItemInPromo(item.id)
                     ? `<span class="price-discounted">${window.getItemPrice(item).toFixed(0)} MAD</span> <span class="price-original-item">${item.price.toFixed(0)} MAD</span>`
-                    : `${item.price.toFixed(0)} MAD`)}
+                                    : `${item.price.toFixed(0)} MAD`)}
                                 </div>
                             </div>
                             <div class="menu-item-side">
-                                <button class="love-btn menu-item-love ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
-                                        onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
-                                    <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
-                                </button>
                                 <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
                             </div>
                         </div>
