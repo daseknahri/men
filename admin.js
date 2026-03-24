@@ -1146,12 +1146,14 @@ function openMenuCrudModal(type, title) {
     titleEl.textContent = title;
     document.documentElement.classList.add('menu-crud-open');
     document.body.classList.add('menu-crud-open');
-    modal.style.display = 'flex';
-    modal.scrollTop = 0;
+    if (typeof modal.showModal === 'function') {
+        if (!modal.open) modal.showModal();
+    } else {
+        modal.setAttribute('open', 'open');
+    }
     body.scrollTop = 0;
     if (card) card.scrollTop = 0;
     requestAnimationFrame(() => {
-        modal.scrollTop = 0;
         body.scrollTop = 0;
         if (card) card.scrollTop = 0;
     });
@@ -1159,11 +1161,25 @@ function openMenuCrudModal(type, title) {
 
 window.closeMenuCrudModal = function () {
     const modal = document.getElementById('menuCrudModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        if (typeof modal.close === 'function' && modal.open) {
+            modal.close();
+        } else {
+            modal.removeAttribute('open');
+        }
+    }
     document.documentElement.classList.remove('menu-crud-open');
     document.body.classList.remove('menu-crud-open');
     mountMenuCrudForms();
 };
+
+const menuCrudDialog = document.getElementById('menuCrudModal');
+if (menuCrudDialog) {
+    menuCrudDialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        window.closeMenuCrudModal();
+    });
+}
 
 window.openMenuBuilderAdd = function () {
     if (currentMenuWorkspaceStep === 'supercategories') {
