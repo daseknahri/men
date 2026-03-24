@@ -3492,7 +3492,10 @@
                 transform: none;
                 align-self: start;
                 place-self: start center;
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
                 box-shadow: 0 26px 60px rgba(15, 23, 42, 0.2);
             }
 
@@ -3567,10 +3570,7 @@
                 grid-area: body;
                 min-height: 0;
                 display: block;
-                overflow-y: auto;
-                overscroll-behavior: contain;
-                -webkit-overflow-scrolling: touch;
-                touch-action: pan-y;
+                overflow: visible;
                 padding-right: 2px;
                 padding-bottom: 0;
             }
@@ -3656,6 +3656,10 @@
                     "close title"
                     "dropzone dropzone"
                     "grid grid";
+                overflow-x: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
             }
 
             .image-modal-close {
