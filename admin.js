@@ -1241,7 +1241,7 @@ async function performAdminLogin() {
         console.log('[LOGIN] Server response:', data);
         if (!res.ok || !data.ok) {
             if (errorEl) {
-                errorEl.textContent = 'âŒ Identifiants incorrects';
+                errorEl.textContent = 'Incorrect credentials.';
                 errorEl.style.display = 'block';
             }
             return;
@@ -1250,7 +1250,7 @@ async function performAdminLogin() {
     } catch (e) {
         console.error('[LOGIN] Request error:', e);
         if (errorEl) {
-            errorEl.textContent = 'âŒ Erreur de connexion au serveur';
+            errorEl.textContent = 'Server connection error.';
             errorEl.style.display = 'block';
         }
     }
@@ -1468,7 +1468,7 @@ function renderMenuTable() {
             : menu.filter(item => (item.cat || 'Uncategorized') === currentAdminCategory);
 
         if (filteredMenu.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#888;">Aucun produit dans la catÃ©gorie "${currentAdminCategory}".</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#888;">No items in category "${currentAdminCategory}".</td></tr>`;
             return;
         }
 
@@ -1498,15 +1498,15 @@ function renderMenuTable() {
                 <td><span class="promo-star action-btn ${promoIds.includes(item.id) ? 'promo-active' : ''}" onclick='togglePromo(${inlineItemId})'>${ADMIN_ICON.star}</span></td>
                 <td><span class="promo-star action-btn ${item.featured ? 'promo-active' : ''}" onclick='toggleFeatured(${inlineItemId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">${ADMIN_ICON.sparkle}</span></td>
                 <td>
-                    <button class="action-btn" onclick='editItem(${inlineItemId})' title="Modifier les dÃ©tails">${ADMIN_ICON.edit}</button>
-                    <button class="action-btn" onclick='openImageModal(${inlineItemId})' title="GÃ©rer les images">${ADMIN_ICON.image}</button>
+                    <button class="action-btn" onclick='editItem(${inlineItemId})' title="Edit item">${ADMIN_ICON.edit}</button>
+                    <button class="action-btn" onclick='openImageModal(${inlineItemId})' title="Manage images">${ADMIN_ICON.image}</button>
                     <button class="action-btn" onclick='deleteItem(${inlineItemId})'>${ADMIN_ICON.trash}</button>
                 </td>
             </tr > `;
         }).join('');
     } catch (e) {
         console.error('Render Table Error:', e);
-        tbody.innerHTML = `< tr > <td colspan="7" style="color:red; text-align:center;">Erreur de chargement des produits. Veuillez cliquer sur 'Reset All Data'.</td></tr > `;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Unable to load items.</td></tr>`;
     }
 }
 
@@ -1564,10 +1564,10 @@ function editItem(id) {
 
     // Change form title and button
     const itemEditorTitle = document.getElementById('menuItemEditorTitle');
-    if (itemEditorTitle) itemEditorTitle.textContent = "âœï¸ Modifier: " + getAdminItemDisplayName(item);
-    document.querySelector('#foodForm .primary-btn').textContent = "ðŸ’¾ Mettre Ã  jour le produit";
+    if (itemEditorTitle) itemEditorTitle.textContent = `Edit Item - ${getAdminItemDisplayName(item)}`;
+    document.querySelector('#foodForm .primary-btn').textContent = 'Save';
 
-    openMenuCrudModal('item', `Edit Item Â· ${getAdminItemDisplayName(item)}`);
+    openMenuCrudModal('item', `Edit Item - ${getAdminItemDisplayName(item)}`);
 }
 
 function resetFoodForm() {
@@ -1580,8 +1580,8 @@ function resetFoodForm() {
     if (availableCb) availableCb.checked = true;
     toggleSizesUI();
     const itemEditorTitle = document.getElementById('menuItemEditorTitle');
-    if (itemEditorTitle) itemEditorTitle.textContent = "Add New Food Item";
-    document.querySelector('#foodForm .primary-btn').textContent = "âž• Save Product";
+    if (itemEditorTitle) itemEditorTitle.textContent = 'Add Item';
+    document.querySelector('#foodForm .primary-btn').textContent = 'Save';
 }
 
 function initForms() {
@@ -1601,14 +1601,14 @@ function initForms() {
         // Upload new files to server (stored on disk, returned as /uploads/... URL)
         let newUploadedUrls = [];
         if (fileInput && fileInput.files.length > 0) {
-            showToast('â³ TÃ©lÃ©chargement des images en cours...');
+            showToast('Uploading item images...');
             for (let file of fileInput.files) {
                 try {
                     const url = await uploadImageToServer(file);
                     newUploadedUrls.push(url);
                 } catch (err) {
                     console.error('Image upload failed:', err);
-                    showToast('âš ï¸ Ã‰chec du tÃ©lÃ©chargement de l\'image â€” rÃ©essayez.');
+                    showToast('Image upload failed. Please try again.');
                 }
             }
         }
@@ -1656,7 +1656,7 @@ function initForms() {
             price = parseFloat(document.getElementById('itemPrice').value) || 0;
         }
 
-        if (!name) { showToast('âš ï¸ Le nom du produit est obligatoire !'); return; }
+        if (!name) { showToast('Item name is required.'); return; }
 
         if (editingItemId) {
             const index = menu.findIndex(m => m.id == editingItemId);
@@ -1671,7 +1671,7 @@ function initForms() {
                     available
                 };
             }
-            showToast('âœ… Produit mis Ã  jour !');
+            showToast('Item updated.');
         } else {
             const newItem = {
                 id: Date.now(),
@@ -1685,7 +1685,7 @@ function initForms() {
                 badge: ''
             };
             menu.push(newItem);
-            showToast('âœ… Produit ajoutÃ© !');
+            showToast('Item added.');
         }
 
         const saved = await saveAndRefresh();
@@ -1726,7 +1726,7 @@ function initForms() {
         if (saved) {
             resetCategoryFormState();
             closeMenuCrudModal();
-            showToast(previousKey ? 'CatÃ©gorie mise Ã  jour !' : 'CatÃ©gorie ajoutÃ©e !');
+            showToast(previousKey ? 'Category updated.' : 'Category added.');
         }
     };
 
@@ -1735,7 +1735,7 @@ function initForms() {
         restaurantConfig.wifi.name = document.getElementById('wifiSSID').value;
         restaurantConfig.wifi.code = document.getElementById('wifiPassInput').value;
         saveAndRefresh();
-        showToast('WiFi mis Ã  jour !');
+        showToast('WiFi updated.');
     };
 
     document.getElementById('brandingForm').onsubmit = (e) => {
@@ -1766,7 +1766,7 @@ function initForms() {
 
         window.updateBrandingPreview();
         saveAndRefresh();
-        showToast('Branding sauvegardÃ© !');
+        showToast('Branding saved.');
     };
 
     document.getElementById('landingPageForm').onsubmit = (e) => {
@@ -1826,7 +1826,7 @@ function initForms() {
         }
 
         saveAndRefresh();
-        showToast('Landing page et contenu multilingue sauvegardÃ©s !');
+        showToast('Homepage content saved.');
     };
 
     document.getElementById('superCatForm').onsubmit = async (e) => {
@@ -1855,7 +1855,7 @@ function initForms() {
         if (saved) {
             resetSuperCategoryFormState();
             closeMenuCrudModal();
-            showToast(existingIdx !== -1 ? 'Super CatÃ©gorie mise Ã  jour !' : 'Super CatÃ©gorie sauvegardÃ©e !');
+            showToast(existingIdx !== -1 ? 'Super category updated.' : 'Super category saved.');
         }
     };
 }
@@ -2494,11 +2494,11 @@ function editSuperCat(id) {
     const checks = document.querySelectorAll('.sc-cat-check');
     checks.forEach(cb => cb.checked = sc.cats.includes(cb.value));
 
-    openMenuCrudModal('supercategory', `Edit Super Category Â· ${sc.name}`);
+    openMenuCrudModal('supercategory', `Edit Super Category - ${sc.name}`);
 }
 
 function deleteSuperCat(id) {
-    if (confirm('Supprimer cette super catÃ©gorie ?')) {
+    if (confirm('Delete this super category?')) {
         restaurantConfig.superCategories = restaurantConfig.superCategories.filter(s => s.id !== id);
         saveAndRefresh();
     }
@@ -2516,7 +2516,7 @@ async function uploadImageToServer(file) {
 
     if (!response.ok) {
         if (response.status === 401) {
-            alert('âš ï¸ Session expirÃ©e. Veuillez vous reconnecter.');
+            alert('Session expired. Please sign in again.');
             location.reload();
             return;
         }
@@ -2991,22 +2991,22 @@ async function forceSaveChangesLegacy() {
             await window.commitFormItem();
         } else {
             await saveAndRefresh();
-            showToast('âœ… Toutes les modifications ont Ã©tÃ© enregistrÃ©es !');
+            showToast('All changes saved.');
         }
 
         // Visual feedback on float button
         const btn = document.getElementById('floatSaveBtn');
         if (btn) {
             btn.classList.add('saved');
-            btn.innerHTML = '<span style="font-size:1.3rem;">âœ…</span><span>SauvegardÃ© !</span>';
+            btn.innerHTML = '<span style="font-size:1.3rem;">✓</span><span>Saved</span>';
             setTimeout(() => {
                 btn.classList.remove('saved');
-                btn.innerHTML = '<span style="font-size:1.3rem;">ðŸ’¾</span><span>Sauvegarder</span>';
+                btn.innerHTML = '<span style="font-size:1.3rem;">💾</span><span>Save</span>';
             }, 2500);
         }
     } catch (e) {
         console.error('Save Error:', e);
-        alert('âŒ Erreur de sauvegarde: ' + e.message);
+        alert('Save error: ' + e.message);
     }
 }
 async function saveAndRefreshLegacy() {
@@ -3057,7 +3057,7 @@ async function saveAndRefreshLegacy() {
         });
         if (!res.ok) {
             if (res.status === 401) {
-                alert('âš ï¸ Session expirÃ©e. Veuillez vous reconnecter.');
+                alert('Session expired. Please sign in again.');
                 location.reload();
                 return;
             }
@@ -3067,7 +3067,7 @@ async function saveAndRefreshLegacy() {
         refreshUI();
     } catch (e) {
         console.error('Save Error:', e);
-        showToast('âŒ Erreur de sauvegarde: ' + e.message);
+        showToast('Save error: ' + e.message);
     }
 }
 
@@ -3407,9 +3407,9 @@ function editCat(cat) {
     document.getElementById('catName').value = cat;
     document.getElementById('catEmoji').value = catEmojis[cat] || '';
     setCategoryTranslationFields(cat);
-    openMenuCrudModal('category', `Edit Category Â· ${window.getLocalizedCategoryName(cat, cat)}`);
+    openMenuCrudModal('category', `Edit Category - ${window.getLocalizedCategoryName(cat, cat)}`);
 }
-function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Supprimez d\'abord les produits de cette catÃ©gorie !'); delete catEmojis[cat]; delete categoryTranslations[cat]; saveAndRefresh(); }
+function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Delete the products in this category first.'); delete catEmojis[cat]; delete categoryTranslations[cat]; saveAndRefresh(); }
 function initWifiForm() {
     const fields = {
         'wifiSSID': restaurantConfig.wifi.name,
@@ -3444,7 +3444,7 @@ function syncImageModalAiControls() {
     }
     if (buttonEl) {
         buttonEl.disabled = false;
-        buttonEl.textContent = "âœ¨ GÃ©nÃ©rer avec l'IA";
+        buttonEl.textContent = 'Generate with AI';
     }
 }
 
@@ -3479,9 +3479,9 @@ function renderModalImages() {
     grid.innerHTML = images.map((img, index) => `
             <div style="position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid #ddd;">
                 <img src="${img}" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
-                    <button onclick="deleteModalImage(${index})" style="position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:5px; cursor:pointer; padding:2px 6px; font-size:12px;">âœ•</button>
+                    <button onclick="deleteModalImage(${index})" style="position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:5px; cursor:pointer; padding:2px 6px; font-size:12px;">&times;</button>
                 </div>
-        `).join('') + (images.length === 0 ? '<p style="grid-column: span 3; color:#888; text-align:center;">Aucune image pour le moment.</p>' : '');
+        `).join('') + (images.length === 0 ? '<p class="image-modal-empty">No images yet.</p>' : '');
 }
 
 async function handleModalImageUpload(input) {
@@ -3497,7 +3497,7 @@ async function handleModalImageUpload(input) {
             item.images.push(url);
         } catch (err) {
             console.error('Modal upload failed:', err);
-            showToast('âš ï¸ Ã‰chec de l\'upload');
+            showToast('Upload failed.');
         }
     }
 
@@ -3507,7 +3507,7 @@ async function handleModalImageUpload(input) {
     input.value = '';
     saveAndRefresh();
     renderModalImages();
-    showToast('Image(s) ajoutÃ©e(s)!');
+    showToast('Images added.');
 }
 
 function addModalImageUrl() {
@@ -3525,7 +3525,7 @@ function addModalImageUrl() {
     document.getElementById('modalImgUrl').value = '';
     saveAndRefresh();
     renderModalImages();
-    showToast('Image ajoutÃ©e via URL!');
+    showToast('Image added from URL.');
 }
 
 function deleteModalImage(index) {
@@ -3539,7 +3539,7 @@ function deleteModalImage(index) {
 
     saveAndRefresh();
     renderModalImages();
-    showToast('Image supprimÃ©e');
+    showToast('Image removed.');
 }
 
 window.generateModalImageWithAI = async function () {
@@ -3558,7 +3558,7 @@ window.generateModalImageWithAI = async function () {
 
     const originalLabel = buttonEl.textContent;
     buttonEl.disabled = true;
-    buttonEl.textContent = 'GÃ©nÃ©ration...';
+    buttonEl.textContent = 'Generating...';
 
     try {
         const response = await fetch('/api/media/generate-menu-item', {
@@ -3652,7 +3652,7 @@ function initHoursForm() {
             restaurantConfig._hours = updatedHours;
             restaurantConfig._hoursNote = updatedNote;
             saveAndRefresh();
-            showToast('âœ… Horaires mis Ã  jour !');
+            showToast('Hours updated.');
         };
     }
 }
@@ -3679,14 +3679,14 @@ function initGalleryForm() {
 
         // Handle Files
         if (fileInput.files.length > 0) {
-            showToast('â³ TÃ©lÃ©chargement gallery...');
+            showToast('Uploading gallery images...');
             for (let file of fileInput.files) {
                 try {
                     const url = await uploadImageToServer(file);
                     restaurantConfig.gallery.push(url);
                 } catch (err) {
                     console.error('Gallery upload failed:', err);
-                    showToast('âš ï¸ Ã‰chec gallery');
+                    showToast('Gallery upload failed.');
                 }
             }
             fileInput.value = '';
@@ -3694,7 +3694,7 @@ function initGalleryForm() {
 
         saveAndRefresh();
         renderGalleryAdmin();
-        showToast('ðŸ–¼ï¸ Images ajoutÃ©es Ã  la galerie !');
+        showToast('Gallery images added.');
     };
 }
 
@@ -3707,9 +3707,9 @@ function renderGalleryAdmin() {
     grid.innerHTML = images.map((img, index) => `
             <div style="position:relative; aspect-ratio:1.5; border-radius:12px; overflow:hidden; border:1px solid #ddd; background:#eee;">
                 <img src="${img}" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
-                    <button onclick="deleteGalleryImage(${index})" style="position:absolute; top:8px; right:8px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; font-size:14px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);">âœ•</button>
+                    <button onclick="deleteGalleryImage(${index})" style="position:absolute; top:8px; right:8px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; font-size:14px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);">&times;</button>
                 </div>
-        `).join('') + (images.length === 0 ? '<p style="grid-column: 1/-1; color:#888; text-align:center; padding:40px; border:2px dashed #eee; border-radius:15px;">La galerie est vide.</p>' : '');
+        `).join('') + (images.length === 0 ? '<p style="grid-column: 1/-1; color:#888; text-align:center; padding:40px; border:2px dashed #eee; border-radius:15px;">The gallery is empty.</p>' : '');
 }
 
 function deleteGalleryImage(index) {
@@ -3717,6 +3717,6 @@ function deleteGalleryImage(index) {
         restaurantConfig.gallery.splice(index, 1);
         saveAndRefresh();
         renderGalleryAdmin();
-        showToast('Image supprimÃ©e');
+        showToast('Image removed.');
     }
 }
