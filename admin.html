@@ -2198,7 +2198,11 @@
                 top: auto;
                 bottom: calc(84px + env(safe-area-inset-bottom, 0px));
                 width: min(208px, calc(100vw - 24px));
+                height: auto;
+                min-height: 0;
                 max-height: none;
+                overflow: visible;
+                overflow-y: visible;
                 padding: 10px;
                 border-radius: 20px;
                 transform: translateY(10px) scale(0.96);
