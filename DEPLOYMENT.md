@@ -44,12 +44,12 @@ Set these in Coolify. You can start from [`coolify.env.example`](./coolify.env.e
 - `ADMIN_DOMAIN=<admin-domain>`
 - `ADMIN_USER=<admin-username>`
 - `ADMIN_PASS=<strong-password>`
-- `OPENAI_API_KEY=<server-side-key>` if you want `Seller Tools -> AI Import Studio` or `AI Media Studio`
-- `OPENAI_IMPORT_MODEL=gpt-4o-mini` optional override for image-based menu imports
+- `OPENAI_API_KEY=<server-side-key>` if you want seller-side menu import or per-item AI image generation
+- `OPENAI_IMPORT_MODEL=gpt-4o` optional override for image-based menu imports; recommended for reliability
 - `OPENAI_IMPORT_PDF_MODEL=gpt-4o` optional override for PDF menu imports; use a stronger model here
-- `OPENAI_MEDIA_MODEL=gpt-4.1` optional override for seller-side media generation
+- `OPENAI_MEDIA_MODEL=gpt-4.1` optional override for per-item AI menu image generation
 - `SELLER_TOOLS_ENABLED=false` for clean client handoff admin; enable only on seller setup instances
-- `AI_MEDIA_TOOLS_ENABLED=false` unless you explicitly want seller-side AI media generation available
+- `AI_MEDIA_TOOLS_ENABLED=false` unless you explicitly want the per-item AI image button available inside the item image modal
 - `COOKIE_SECURE=true`
 - `DATA_FILE=/app/data/data.json`
 - `UPLOADS_DIR=/app/uploads`
@@ -95,9 +95,15 @@ Minimum env review before clicking deploy:
 
 Importer note:
 
-- the current importer slice supports uploaded images only
-- it does not parse PDFs yet
+- the current importer supports both uploaded images and PDFs
 - it produces a review draft that must be explicitly applied by the seller
+- it is intended for setup/import time, not for the delivered owner workflow
+
+AI item-image note:
+
+- the owner admin can expose per-item AI image generation from the item image modal when `AI_MEDIA_TOOLS_ENABLED=true`
+- this does not require `SELLER_TOOLS_ENABLED=true`
+- importer routes, backup import/export, and reset remain seller-only when `SELLER_TOOLS_ENABLED=false`
 
 ## Deploy To See It Live
 
