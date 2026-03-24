@@ -606,13 +606,13 @@
             max-width: 80vw;
             max-height: min(88dvh, 980px);
             overflow: auto;
-            padding: 26px 26px 18px;
-            border-radius: 28px;
+            padding: 22px 22px 18px;
+            border-radius: 30px;
             position: relative;
-            border: 1px solid rgba(232, 216, 197, 0.92);
-            box-shadow: 0 28px 64px rgba(15, 23, 42, 0.22);
+            border: 1px solid rgba(232, 216, 197, 0.88);
+            box-shadow: 0 36px 80px rgba(15, 23, 42, 0.2);
             display: grid;
-            gap: 16px;
+            gap: 14px;
             place-self: center;
             scrollbar-gutter: stable both-edges;
             align-content: start;
@@ -623,12 +623,13 @@
         .menu-crud-modal-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 24px;
-            right: 24px;
-            height: 4px;
+            top: 10px;
+            left: 22px;
+            right: 22px;
+            height: 3px;
             border-radius: 999px;
             background: linear-gradient(90deg, rgba(226, 27, 27, 0.92), rgba(255, 141, 8, 0.92));
+            opacity: 0.9;
         }
 
         #menuCrudModalBody {
@@ -652,12 +653,12 @@
 
         .menu-crud-modal-title {
             margin: 0;
-            font-size: clamp(1.28rem, 0.9vw + 1rem, 1.62rem);
+            font-size: clamp(1.16rem, 0.9vw + 0.95rem, 1.46rem);
             font-weight: 800;
             line-height: 1.2;
             letter-spacing: -0.02em;
             max-width: none;
-            padding-top: 4px;
+            padding-top: 6px;
         }
 
         .menu-crud-close {
@@ -665,12 +666,12 @@
             top: 6px;
             border: 1px solid rgba(232, 216, 197, 0.92);
             background: rgba(255, 255, 255, 0.94);
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 999px;
-            font-size: 1rem;
+            font-size: 0.92rem;
             cursor: pointer;
-            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 18px rgba(15, 23, 42, 0.07);
             transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
             justify-self: end;
             align-self: start;
@@ -695,16 +696,16 @@
         }
 
         .menu-crud-modal-card .admin-disclosure {
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         .menu-crud-modal-card .admin-disclosure summary {
-            padding: 14px 16px;
-            min-height: 52px;
+            padding: 13px 15px;
+            min-height: 48px;
         }
 
         .menu-crud-modal-card .admin-disclosure-body {
-            padding: 0 16px 16px;
+            padding: 0 15px 15px;
         }
 
         .menu-crud-modal-card .translation-hint {
@@ -712,38 +713,38 @@
         }
 
         .menu-crud-modal-card .modal-form-actions {
-            border-top: 1px solid rgba(232, 216, 197, 0.92);
-            padding-top: 14px;
+            border-top: 1px solid rgba(232, 216, 197, 0.8);
+            padding-top: 12px;
             margin-top: 0;
             position: sticky;
             bottom: -18px;
-            margin-left: -26px;
-            margin-right: -26px;
+            margin-left: -22px;
+            margin-right: -22px;
             margin-bottom: -18px;
-            padding: 14px 26px 18px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 253, 248, 0.96) 38%, rgba(255, 249, 241, 0.99) 100%);
-            backdrop-filter: blur(14px);
+            padding: 12px 22px 16px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 253, 248, 0.94) 34%, rgba(255, 249, 241, 0.99) 100%);
+            backdrop-filter: blur(16px);
             display: flex;
             justify-content: flex-end;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .menu-crud-modal-card .modal-form-actions .primary-btn,
         .menu-crud-modal-card .modal-form-actions .secondary-btn {
-            min-height: 38px;
-            min-width: 102px;
+            min-height: 36px;
+            min-width: 96px;
             width: auto;
-            padding: 0 13px;
-            border-radius: 12px;
-            font-size: 0.84rem;
+            padding: 0 12px;
+            border-radius: 11px;
+            font-size: 0.8rem;
             flex: 0 0 auto;
         }
 
         .menu-crud-modal-card .menu-form-block {
-            padding: 16px;
-            gap: 12px;
+            padding: 14px;
+            gap: 10px;
             border-radius: 20px;
         }
 
@@ -753,8 +754,8 @@
         }
 
         .menu-crud-modal-card .translation-card {
-            padding: 14px;
-            border-radius: 16px;
+            padding: 12px;
+            border-radius: 15px;
         }
 
         .menu-crud-modal-card .chip-select-list {
@@ -764,8 +765,8 @@
         }
 
         .menu-crud-modal-card .chip-select-option {
-            padding: 7px 10px;
-            font-size: 0.82rem;
+            padding: 6px 10px;
+            font-size: 0.79rem;
         }
 
         .menu-crud-modal-card .modal-form-actions .secondary-btn {
@@ -892,7 +893,7 @@
         .admin-disclosure {
             margin-top: 18px;
             border: 1px solid var(--border);
-            border-radius: 18px;
+            border-radius: 16px;
             background: linear-gradient(180deg, rgba(255, 250, 244, 0.96) 0%, rgba(255, 246, 236, 0.9) 100%);
             overflow: hidden;
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -907,7 +908,7 @@
         .admin-disclosure summary {
             list-style: none;
             cursor: pointer;
-            padding: 16px 18px;
+            padding: 14px 16px;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -926,7 +927,7 @@
 
         .admin-disclosure summary::after {
             content: '+';
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             color: var(--primary);
         }
 
@@ -936,13 +937,13 @@
 
         .admin-disclosure-copy {
             display: block;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             color: var(--text2);
             font-weight: 500;
         }
 
         .admin-disclosure-body {
-            padding: 0 18px 18px;
+            padding: 0 16px 16px;
         }
 
         .menu-crud-form-shell {
@@ -952,19 +953,19 @@
 
         .menu-form-block {
             display: grid;
-            gap: 14px;
-            padding: 18px;
+            gap: 12px;
+            padding: 16px;
             border-radius: 22px;
             border: 1px solid rgba(232, 216, 197, 0.92);
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 241, 0.94) 100%);
-            box-shadow: 0 16px 30px rgba(75, 47, 24, 0.04);
+            box-shadow: 0 14px 26px rgba(75, 47, 24, 0.04);
             overflow: hidden;
         }
 
         .menu-form-block-header {
             display: grid;
-            gap: 5px;
-            padding-bottom: 10px;
+            gap: 4px;
+            padding-bottom: 8px;
             border-bottom: 1px dashed rgba(232, 216, 197, 0.96);
         }
 
@@ -973,12 +974,12 @@
             width: fit-content;
             align-items: center;
             justify-content: center;
-            padding: 6px 10px;
+            padding: 5px 9px;
             border-radius: 999px;
             background: #fff5e7;
             border: 1px solid rgba(232, 216, 197, 0.96);
             color: var(--text2);
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -986,7 +987,7 @@
 
         .menu-form-block-title {
             margin: 0;
-            font-size: 1.02rem;
+            font-size: 0.98rem;
             font-weight: 800;
             letter-spacing: -0.02em;
             line-height: 1.2;
@@ -995,9 +996,9 @@
         .menu-form-block-copy {
             margin: 0;
             color: var(--text2);
-            font-size: 0.84rem;
-            line-height: 1.45;
-            max-width: 54ch;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            max-width: 52ch;
         }
 
         .menu-form-block .form-group:last-child {
@@ -1007,8 +1008,8 @@
         .modal-form-actions {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 22px;
+            gap: 8px;
+            margin-top: 18px;
         }
 
         @keyframes fadeIn {
@@ -1025,27 +1026,27 @@
 
         /* Forms */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.84rem;
         }
 
         input,
         select,
         textarea {
             width: 100%;
-            padding: 13px 15px;
+            padding: 12px 14px;
             border: 1.5px solid var(--border);
-            border-radius: 16px;
+            border-radius: 15px;
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             box-sizing: border-box;
-            min-height: 50px;
+            min-height: 46px;
             background: rgba(255, 253, 249, 0.94);
             color: var(--text);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -1088,11 +1089,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 14px;
-            border-radius: 16px;
+            padding: 11px 13px;
+            border-radius: 14px;
             border: 1px solid rgba(232, 216, 197, 0.92);
             background: rgba(255, 255, 255, 0.86);
-            min-height: 52px;
+            min-height: 48px;
         }
 
         .inline-check label {
@@ -1112,19 +1113,19 @@
         .multi-price-group {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 18px;
+            gap: 10px;
+            margin-bottom: 16px;
             background: linear-gradient(180deg, rgba(255, 250, 244, 0.96) 0%, rgba(255, 247, 238, 0.94) 100%);
-            padding: 14px;
-            border-radius: 18px;
+            padding: 12px;
+            border-radius: 16px;
             border: 1px solid rgba(232, 216, 197, 0.92);
         }
 
         .file-input-spaced {
             margin-bottom: 10px;
             width: 100%;
-            min-height: 54px;
-            padding: 10px 12px;
+            min-height: 50px;
+            padding: 9px 11px;
             border-radius: 16px;
             border: 1px dashed rgba(232, 216, 197, 0.96);
             background: linear-gradient(180deg, #fffdf9 0%, #fff8ef 100%);
@@ -3485,12 +3486,12 @@
                 min-height: 0;
                 max-height: 100dvh;
                 border-radius: 0;
-                padding: max(12px, env(safe-area-inset-top, 0px)) 14px calc(18px + env(safe-area-inset-bottom, 0px));
+                padding: max(10px, env(safe-area-inset-top, 0px)) 12px calc(16px + env(safe-area-inset-bottom, 0px));
                 grid-template-columns: auto minmax(0, 1fr);
                 grid-template-areas:
                     "close title"
                     "body body";
-                row-gap: 12px;
+                row-gap: 10px;
                 transform: none;
                 align-self: stretch;
                 box-shadow: none;
@@ -3501,8 +3502,8 @@
                 position: sticky;
                 top: 0;
                 z-index: 5;
-                font-size: 1rem;
-                padding: 8px 0 10px;
+                font-size: 0.95rem;
+                padding: 8px 0 8px;
                 padding-right: 0;
                 background: linear-gradient(180deg, rgba(255, 251, 244, 0.98) 0%, rgba(255, 251, 244, 0.94) 72%, rgba(255, 251, 244, 0) 100%);
             }
@@ -3510,8 +3511,8 @@
             .menu-crud-close {
                 grid-area: close;
                 top: 0;
-                width: 36px;
-                height: 36px;
+                width: 34px;
+                height: 34px;
                 justify-self: start;
                 z-index: 6;
             }
@@ -3525,8 +3526,8 @@
 
             .owner-section-card {
                 border-radius: 18px;
-                padding-top: 14px;
-                padding-bottom: 14px;
+                padding-top: 12px;
+                padding-bottom: 12px;
             }
 
             .admin-panel-disclosure,
@@ -3565,7 +3566,7 @@
 
             #menuCrudModalBody {
                 grid-area: body;
-                padding-bottom: 170px;
+                padding-bottom: 156px;
             }
 
             .menu-crud-modal-card .modal-form-actions {
@@ -3574,12 +3575,12 @@
                 right: max(14px, env(safe-area-inset-right, 0px));
                 bottom: calc(12dvh + env(safe-area-inset-bottom, 0px));
                 margin: 0;
-                padding: 10px 12px;
+                padding: 8px 10px;
                 background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.985) 65%);
                 backdrop-filter: blur(12px);
                 border: 1px solid rgba(232, 216, 197, 0.9);
-                border-radius: 18px;
-                box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
+                border-radius: 16px;
+                box-shadow: 0 16px 28px rgba(15, 23, 42, 0.14);
                 z-index: 9;
             }
 
@@ -3592,9 +3593,9 @@
             .menu-crud-modal-card .modal-form-actions .secondary-btn {
                 flex: 1 1 calc(50% - 8px);
                 min-width: 0;
-                min-height: 36px;
-                border-radius: 12px;
-                font-size: 0.82rem;
+                min-height: 34px;
+                border-radius: 10px;
+                font-size: 0.78rem;
             }
 
             .menu-crud-modal-card .inline-check-grid,
@@ -3606,13 +3607,13 @@
             }
 
             .translation-card {
-                padding: 11px;
-                border-radius: 16px;
+                padding: 10px;
+                border-radius: 14px;
             }
 
             .translation-card h4 {
-                margin-bottom: 10px;
-                font-size: 0.95rem;
+                margin-bottom: 8px;
+                font-size: 0.9rem;
             }
 
             #menuCrudModalBody > form,
