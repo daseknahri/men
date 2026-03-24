@@ -604,8 +604,9 @@
             background: linear-gradient(180deg, rgba(255, 253, 249, 0.99) 0%, rgba(255, 249, 241, 0.96) 100%);
             width: min(1000px, 80vw);
             max-width: 80vw;
-            max-height: min(88dvh, 980px);
-            overflow: auto;
+            height: min(80dvh, 980px);
+            max-height: min(80dvh, 980px);
+            overflow: hidden;
             padding: 22px 22px 18px;
             border-radius: 30px;
             position: relative;
@@ -617,6 +618,7 @@
             scrollbar-gutter: stable both-edges;
             align-content: start;
             grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-rows: auto minmax(0, 1fr);
             align-items: start;
         }
 
@@ -637,6 +639,11 @@
             gap: 12px;
             grid-column: 1 / -1;
             justify-items: center;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 4px;
         }
 
         #menuCrudModalBody > form {
