@@ -1068,7 +1068,7 @@ function renderMenuBuilder() {
             <tr onclick='editItem(${inlineId})'>
                 <td data-label="Item">
                     <div class="menu-builder-item-main">
-                        <div class="menu-builder-item-thumb">${previewImage ? `<img src="${escapeHtml(previewImage)}" alt="${escapeHtml(displayName)}" loading="lazy" decoding="async" fetchpriority="low" />` : ''}</div>
+                        <div class="menu-builder-item-thumb">${previewImage ? `<img src="${escapeHtml(previewImage)}" alt="${escapeHtml(displayName)}" width="160" height="160" loading="lazy" decoding="async" fetchpriority="low" />` : ''}</div>
                         <div class="menu-builder-item-meta">
                             <strong>${escapeHtml(displayName)}</strong>
                             <div class="menu-builder-row-copy">${escapeHtml(getAdminItemDisplayDescription(item))}</div>
@@ -1487,7 +1487,7 @@ function renderMenuTable() {
             <tr>
                 <td>
                     <div style="width:50px; height:50px; background:#eee; border-radius:8px; overflow:hidden; border:1px solid #ddd; cursor:pointer" onclick='openImageModal(${inlineItemId})'>
-                        ${firstImg ? `<img src="${firstImg}" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover" onerror="this.src='images/menu-item-placeholder.svg'">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px">${ADMIN_ICON.camera}</div>`}
+                        ${firstImg ? `<img src="${firstImg}" width="320" height="320" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover" onerror="this.src='images/menu-item-placeholder.svg'">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:20px">${ADMIN_ICON.camera}</div>`}
                     </div>
                     ${images.length > 0 ? `<small style="display:block;text-align:center;font-size:10px;color:var(--primary);cursor:pointer;margin-top:2px" onclick='openImageModal(${inlineItemId})'>${images.length} image(s)</small>` : ''}
                 </td>
@@ -3478,7 +3478,7 @@ function renderModalImages() {
 
     grid.innerHTML = images.map((img, index) => `
             <div style="position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid #ddd;">
-                <img src="${img}" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
+                <img src="${img}" width="640" height="640" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
                     <button onclick="deleteModalImage(${index})" style="position:absolute; top:5px; right:5px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:5px; cursor:pointer; padding:2px 6px; font-size:12px;">&times;</button>
                 </div>
         `).join('') + (images.length === 0 ? '<p class="image-modal-empty">No images yet.</p>' : '');
@@ -3706,7 +3706,7 @@ function renderGalleryAdmin() {
 
     grid.innerHTML = images.map((img, index) => `
             <div style="position:relative; aspect-ratio:1.5; border-radius:12px; overflow:hidden; border:1px solid #ddd; background:#eee;">
-                <img src="${img}" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
+                <img src="${img}" width="960" height="640" loading="lazy" decoding="async" fetchpriority="low" style="width:100%; height:100%; object-fit:cover;">
                     <button onclick="deleteGalleryImage(${index})" style="position:absolute; top:8px; right:8px; background:rgba(255,0,0,0.8); color:#fff; border:none; border-radius:6px; cursor:pointer; padding:4px 8px; font-size:14px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);">&times;</button>
                 </div>
         `).join('') + (images.length === 0 ? '<p style="grid-column: 1/-1; color:#888; text-align:center; padding:40px; border:2px dashed #eee; border-radius:15px;">The gallery is empty.</p>' : '');

@@ -860,7 +860,7 @@ function renderMenu() {
 function imgTag(item) {
     const src = (item.images && item.images.length > 0) ? item.images[0] : item.img;
     const safeFallbackEmoji = catEmojis[item.cat] || MENU_UI_ICONS.plate;
-    if (src) return `<img src="${src}" alt="${window.getLocalizedMenuName(item)}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(safeFallbackEmoji)} }))">`;
+    if (src) return `<img src="${src}" alt="${window.getLocalizedMenuName(item)}" width="320" height="320" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(safeFallbackEmoji)} }))">`;
     return `<span class="emoji-placeholder">${safeFallbackEmoji}</span>`;
 }
 

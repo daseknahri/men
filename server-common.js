@@ -11,6 +11,20 @@ const ALLOWED_UPLOAD_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", 
 const SESSION_COOKIE = "restaurant_admin_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const NO_STORE_EXTENSIONS = new Set([".html", ".js", ".css"]);
+const LONG_CACHE_EXTENSIONS = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".svg",
+  ".avif",
+  ".ico",
+  ".woff",
+  ".woff2",
+  ".ttf",
+  ".otf"
+]);
 
 function parsePort(value, fallback) {
   const parsed = Number.parseInt(value || "", 10);
@@ -217,10 +231,16 @@ function createBuildFingerprint(filePaths) {
 
 function setStaticAssetHeaders(res, filePath) {
   const extension = path.extname(filePath || "").toLowerCase();
-  if (!NO_STORE_EXTENSIONS.has(extension)) return;
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
+  if (NO_STORE_EXTENSIONS.has(extension)) {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    return;
+  }
+
+  if (LONG_CACHE_EXTENSIONS.has(extension)) {
+    res.setHeader("Cache-Control", "public, max-age=2592000, immutable");
+  }
 }
 
 module.exports = {
