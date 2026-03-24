@@ -321,10 +321,10 @@
 
         .menu-item-card {
             background: linear-gradient(180deg, rgba(37, 41, 50, 0.98) 0%, rgba(23, 26, 32, 0.98) 100%);
-            border-radius: 26px;
-            padding: 18px 18px 18px 16px;
+            border-radius: 24px;
+            padding: 16px 16px 16px 14px;
             display: flex;
-            gap: 16px;
+            gap: 14px;
             position: relative;
             transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
@@ -332,7 +332,7 @@
             box-shadow: 0 22px 40px rgba(0, 0, 0, 0.24);
             overflow: hidden;
             content-visibility: auto;
-            contain-intrinsic-size: 140px;
+            contain-intrinsic-size: 124px;
         }
 
         .menu-item-card::before {
@@ -358,7 +358,7 @@
 
         .menu-item-info {
             flex: 1;
-            padding-right: 44px;
+            padding-right: 42px;
             display: flex;
             flex-direction: column;
             min-width: 0;
@@ -366,16 +366,16 @@
 
         .menu-item-name {
             font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 7px;
-            line-height: 1.28;
+            font-size: 1.03rem;
+            margin-bottom: 5px;
+            line-height: 1.25;
             text-wrap: balance;
         }
 
         .menu-item-desc {
             color: rgba(226, 228, 234, 0.66);
-            font-size: 0.87rem;
-            line-height: 1.58;
+            font-size: 0.84rem;
+            line-height: 1.48;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -384,18 +384,18 @@
 
         .menu-item-price {
             margin-top: auto;
-            padding-top: 14px;
+            padding-top: 12px;
             font-weight: 800;
             color: #ff645d;
-            font-size: 1.04rem;
+            font-size: 0.98rem;
             letter-spacing: 0.01em;
         }
 
         .menu-item-img {
-            width: 98px;
-            height: 98px;
+            width: 90px;
+            height: 90px;
             background: linear-gradient(180deg, rgba(52, 57, 69, 0.98) 0%, rgba(31, 35, 43, 0.98) 100%);
-            border-radius: 22px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -413,16 +413,16 @@
 
         .menu-item-add {
             position: absolute;
-            bottom: 14px;
-            right: 14px;
-            width: 46px;
-            height: 46px;
+            bottom: 12px;
+            right: 12px;
+            width: 42px;
+            height: 42px;
             z-index: 5;
             background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
             border: none;
-            border-radius: 18px;
+            border-radius: 16px;
             color: #fff;
-            font-size: 1.26rem;
+            font-size: 1.12rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -437,7 +437,7 @@
 
         /* Search Bar overlay-ish */
         .menu-search-box {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             position: relative;
         }
 
@@ -504,10 +504,10 @@
             width: 100%;
             background: linear-gradient(180deg, rgba(38, 42, 52, 0.98) 0%, rgba(25, 29, 36, 0.98) 100%);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 22px;
-            padding: 15px 18px 15px 48px;
+            border-radius: 20px;
+            padding: 14px 16px 14px 46px;
             color: #fff;
-            font-size: 0.92rem;
+            font-size: 0.89rem;
             box-sizing: border-box;
             box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
             transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
@@ -958,55 +958,57 @@
                 position: sticky;
                 top: 10px;
                 z-index: 90;
-                margin: 0 -4px 18px;
-                padding: 6px 4px 2px;
+                margin: 0 -2px 16px;
+                padding: 4px 2px 2px;
                 background: linear-gradient(180deg, rgba(251, 247, 240, 0.96) 0%, rgba(251, 247, 240, 0.84) 62%, rgba(251, 247, 240, 0) 100%);
                 backdrop-filter: blur(10px);
             }
 
             .menu-item-card {
-                padding: 18px 16px 18px 14px;
-                gap: 14px;
-                border-radius: 24px;
-                min-height: 124px;
+                padding: 14px 12px;
+                gap: 12px;
+                border-radius: 22px;
+                min-height: 108px;
             }
 
             .menu-item-info {
-                padding-right: 56px;
+                padding-right: 48px;
             }
 
             .menu-item-name {
-                font-size: 1rem;
+                font-size: 0.96rem;
             }
 
             .menu-item-desc {
-                font-size: 0.82rem;
+                font-size: 0.78rem;
+                line-height: 1.42;
             }
 
             .menu-item-price {
-                font-size: 1rem;
-                padding-top: 12px;
+                font-size: 0.94rem;
+                padding-top: 10px;
             }
 
             .menu-item-img {
-                width: 82px;
-                height: 82px;
-                border-radius: 20px;
+                width: 74px;
+                height: 74px;
+                border-radius: 18px;
             }
 
             .menu-item-add {
-                width: 44px;
-                height: 44px;
-                right: 12px;
-                bottom: 12px;
-                border-radius: 16px;
+                width: 40px;
+                height: 40px;
+                right: 10px;
+                bottom: 10px;
+                border-radius: 14px;
+                font-size: 1.08rem;
                 box-shadow: 0 14px 24px rgba(230, 57, 70, 0.24);
             }
 
             .menu-search-box input {
-                padding: 15px 16px 15px 46px;
-                border-radius: 20px;
-                font-size: 0.9rem;
+                padding: 14px 15px 14px 44px;
+                border-radius: 18px;
+                font-size: 0.88rem;
             }
 
             .love-btn {
@@ -1294,14 +1296,14 @@
         /* ════════════ GAME STYLES ════════════ */
         .game-banner {
             background: linear-gradient(135deg, #e01e2f, #ff4c4c);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
+            border-radius: 18px;
+            padding: 13px 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(224, 30, 47, 0.3);
+            box-shadow: 0 16px 28px rgba(224, 30, 47, 0.24);
             transition: transform 0.2s;
         }
 
@@ -1311,7 +1313,7 @@
 
         .gb-text {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
@@ -1326,17 +1328,18 @@
         }
 
         .game-banner-note {
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             color: rgba(255, 255, 255, 0.8);
         }
 
         .game-banner-cta {
             background: #fff;
             color: #e01e2f;
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 7px 12px;
+            border-radius: 999px;
             font-weight: 800;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
         }
 
         .game-logo-mark {
@@ -1713,13 +1716,273 @@
                 opacity: 1;
             }
         }
+
+        /* Impeccable refinement pass */
+        .game-banner {
+            border: 1px solid rgba(255, 236, 226, 0.18);
+            box-shadow: 0 18px 34px rgba(224, 30, 47, 0.24);
+        }
+
+        .game-banner-main {
+            min-width: 0;
+        }
+
+        .gb-text,
+        .game-banner-note {
+            text-wrap: balance;
+        }
+
+        .social-links.social-links-minimal {
+            justify-content: flex-start;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-bar {
+                width: calc(100% - 24px);
+                padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px 0;
+            }
+
+            .top-nav-left,
+            .top-nav-right {
+                gap: 8px;
+            }
+
+            .lang-drop-btn {
+                min-width: 58px;
+                height: 40px;
+                border-radius: 14px;
+            }
+
+            .nav-icon-btn {
+                width: 44px;
+                height: 44px;
+                border-radius: 16px;
+                font-size: 1rem;
+            }
+
+            .landing-hero {
+                height: 216px;
+            }
+
+            .landing-logo-circle {
+                width: 96px;
+                height: 96px;
+            }
+
+            .landing-body {
+                padding: 16px 14px 24px;
+            }
+
+            .game-banner {
+                padding: 11px 12px;
+                gap: 12px;
+                border-radius: 18px;
+                align-items: center;
+            }
+
+            .game-banner-icon {
+                font-size: 1.5rem;
+            }
+
+            .gb-text {
+                font-size: 0.92rem;
+                line-height: 1.18;
+            }
+
+            .game-banner-note {
+                font-size: 0.72rem;
+                line-height: 1.35;
+            }
+
+            .game-banner-cta {
+                flex-shrink: 0;
+                padding: 7px 11px;
+                font-size: 0.68rem;
+                letter-spacing: 0.08em;
+            }
+
+            .promo-section-vibrant {
+                margin: 12px 0 8px !important;
+            }
+
+            .promo-card-vibrant {
+                min-width: 168px !important;
+                flex: 0 0 168px !important;
+                padding: 14px !important;
+                border-radius: 22px !important;
+                gap: 10px !important;
+            }
+
+            .promo-name-vibrant {
+                font-size: 0.94rem;
+                min-height: 2.45em;
+            }
+
+            .promo-nav-btn {
+                width: 34px;
+                height: 34px;
+            }
+
+            .menu-content-area {
+                padding: 20px 12px calc(106px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .cat-nav-wrapper {
+                margin: 0 -12px 14px;
+                padding: 8px 10px 10px;
+            }
+
+            .menu-cat-btn {
+                padding: 10px 12px;
+                border-radius: 16px;
+            }
+
+            .menu-search-box {
+                margin: 0 -2px 14px;
+            }
+
+            .menu-grid {
+                gap: 12px;
+            }
+
+            .menu-item-card {
+                display: grid;
+                grid-template-columns: 72px minmax(0, 1fr) 42px;
+                align-items: center;
+                min-height: 0;
+                padding: 12px;
+                gap: 12px;
+                border-radius: 22px;
+            }
+
+            .menu-item-img {
+                width: 72px;
+                height: 72px;
+                border-radius: 18px;
+            }
+
+            .menu-item-info {
+                padding-right: 0;
+                min-width: 0;
+            }
+
+            .menu-item-name {
+                font-size: 0.98rem;
+                margin-bottom: 3px;
+                line-height: 1.24;
+            }
+
+            .menu-item-desc {
+                font-size: 0.79rem;
+                line-height: 1.42;
+                -webkit-line-clamp: 2;
+            }
+
+            .menu-item-price {
+                margin-top: 8px;
+                padding-top: 0;
+                font-size: 0.92rem;
+            }
+
+            .menu-item-add {
+                position: relative;
+                right: auto;
+                bottom: auto;
+                width: 42px;
+                height: 42px;
+                border-radius: 16px;
+                justify-self: end;
+                box-shadow: 0 14px 24px rgba(230, 57, 70, 0.24);
+            }
+
+            .love-btn {
+                top: 10px;
+                right: 58px;
+                width: 28px;
+                height: 28px;
+                border-radius: 12px;
+            }
+
+            .love-count {
+                font-size: 0.68rem;
+            }
+
+            .super-cat-row {
+                padding: 12px;
+                border-radius: 18px;
+            }
+
+            .super-cat-row-left {
+                gap: 12px;
+            }
+
+            .super-cat-row-arrow {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+
+            .dish-page-header {
+                height: 34vh;
+                min-height: 220px;
+            }
+
+            .dish-page-body {
+                padding: 24px 16px 16px;
+                border-top-left-radius: 30px;
+                border-top-right-radius: 30px;
+                margin-top: -30px;
+            }
+
+            .dish-page-footer {
+                padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+                margin-left: -16px;
+                margin-right: -16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-nav-bar {
+                width: calc(100% - 20px);
+                padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 0;
+            }
+
+            .landing-hero {
+                height: 202px;
+            }
+
+            .landing-logo-circle {
+                width: 90px;
+                height: 90px;
+            }
+
+            .menu-item-card {
+                grid-template-columns: 64px minmax(0, 1fr) 40px;
+                gap: 10px;
+                padding: 11px;
+            }
+
+            .menu-item-img {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+            }
+
+            .menu-item-name {
+                font-size: 0.92rem;
+            }
+
+            .menu-item-price {
+                font-size: 0.88rem;
+            }
+        }
     </style>
 </head>
 
 
 <body class="menu-page">
 
-    <div class="mobile-wrapper">
+    <div class="mobile-wrapper is-landing">
 
         <!-- ═══════════ LANDING PAGE VIEW ═══════════ -->
         <div id="landingView">
@@ -1835,11 +2098,8 @@
                 </div>
 
                 <!-- Social Links -->
-                <div class="social-links menu-reveal-observe" id="menuLandingSocialLinks">
-                    <a href="index.html" class="social-icon-link">🏠</a>
-                    <span class="social-icon-link">📘</span>
-                    <span class="social-icon-link">📸</span>
-                    <span class="social-icon-link">🐦</span>
+                <div class="social-links social-links-minimal menu-reveal-observe" id="menuLandingSocialLinks">
+                    <a href="index.html" class="social-icon-link" aria-label="Website home">&#127968;</a>
                 </div>
             </div>
         </div>

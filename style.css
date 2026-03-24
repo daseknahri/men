@@ -46,6 +46,195 @@
   --glass-dark-hover: rgba(255, 255, 255, 0.15);
 }
 
+/* ===== Impeccable Final Pass ===== */
+@media (max-width: 768px) {
+  .top-bar {
+    box-shadow: 0 14px 28px rgba(9, 11, 16, 0.16);
+  }
+
+  .top-bar-inner {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .status-badge {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .header {
+    top: 48px;
+    background: transparent;
+    border-bottom: none;
+  }
+
+  .header-inner {
+    background: linear-gradient(180deg, rgba(18, 21, 28, 0.84) 0%, rgba(18, 21, 28, 0.68) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    box-shadow: 0 18px 34px rgba(9, 11, 16, 0.2);
+    backdrop-filter: blur(18px);
+  }
+
+  .header-nav.mobile-open {
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    padding: 14px;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(18, 21, 28, 0.96) 0%, rgba(24, 27, 34, 0.96) 100%);
+    box-shadow: 0 20px 36px rgba(9, 11, 16, 0.24);
+  }
+
+  .header-nav.mobile-open .nav-link {
+    color: rgba(255, 250, 244, 0.92);
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .hero-slider {
+    height: 252px;
+  }
+
+  .slide {
+    padding: 22px 14px 38px;
+  }
+
+  .slide-content {
+    max-width: min(100%, 292px);
+    padding: 14px 14px 12px;
+    border-radius: 20px;
+  }
+
+  .slide-sub {
+    font-size: 0.8rem;
+  }
+
+  .slide-title {
+    font-size: clamp(1.82rem, 10vw, 2.75rem);
+    line-height: 0.96;
+  }
+
+  .slide-cta {
+    padding: 11px 16px;
+    border-radius: 16px;
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+  }
+
+  .side-nav {
+    gap: 8px;
+    margin-top: -22px;
+  }
+
+  .side-btn {
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 72px;
+    padding: 12px 11px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .side-btn-label {
+    font-size: 0.72rem;
+    line-height: 1.15;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .about-inner,
+  .pf-inner,
+  .events-inner,
+  .gallery-inner,
+  .hours-inner,
+  .contact-inner,
+  .footer-inner {
+    max-width: 500px;
+  }
+
+  .about-header,
+  .events-section .about-header,
+  .gallery-section .about-header,
+  .hours-section .about-header,
+  .contact-section .about-header {
+    margin-bottom: 22px;
+  }
+
+  .section-title {
+    max-width: 12ch;
+    line-height: 1;
+  }
+
+  .about-signature {
+    margin-top: 18px;
+    padding-top: 16px;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .event-card h3,
+  .contact-card h3 {
+    margin-bottom: 8px;
+  }
+
+  .pf-grid {
+    gap: 14px;
+  }
+
+  .gallery-grid {
+    margin-top: 22px;
+  }
+
+  .footer-inner {
+    gap: 14px;
+  }
+
+  .footer-brand {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-bar-inner {
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px;
+  }
+
+  .header {
+    top: 46px;
+  }
+
+  .header-inner {
+    padding: 9px 12px;
+    border-radius: 20px;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .side-btn {
+    min-height: 68px;
+    padding: 11px 9px;
+  }
+
+  .side-btn-icon {
+    font-size: 1.08rem;
+  }
+
+  .section-title {
+    max-width: none;
+    font-size: clamp(1.72rem, 10vw, 2.3rem);
+  }
+}
+
 html {
   scroll-behavior: smooth
 }
@@ -5960,5 +6149,507 @@ body[data-theme-preset='traditional'] .about-section {
 
   .gallery-item {
     border-radius: 12px;
+  }
+}
+
+/* ===== Impeccable System Pass ===== */
+.side-btn {
+  gap: 14px;
+}
+
+.side-btn-icon {
+  font-size: 1.3em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.side-btn-label {
+  line-height: 1;
+}
+
+.social-links.social-links-minimal {
+  justify-content: center;
+}
+
+.social-links.social-links-minimal .social-icon-link {
+  width: 48px;
+  height: 48px;
+}
+
+.mobile-wrapper.is-landing .home-floating-hub {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 140;
+    background: rgba(18, 21, 28, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .top-bar-inner {
+    padding: calc(env(safe-area-inset-top, 0px) + 9px) 14px 9px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .status-badge {
+    padding: 5px 10px;
+    gap: 7px;
+    border-radius: 999px;
+  }
+
+  .status-text {
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+  }
+
+  .header {
+    top: 46px;
+    background: linear-gradient(180deg, rgba(18, 21, 28, 0.86) 0%, rgba(18, 21, 28, 0.62) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-inner {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .logo {
+    color: #fff;
+    font-size: 1.12rem;
+    letter-spacing: 0.02em;
+  }
+
+  .logo span {
+    color: #fff;
+  }
+
+  .mobile-menu-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .hero-slider {
+    height: 268px;
+    margin-top: 0;
+  }
+
+  .slide {
+    padding: 26px 14px 42px;
+  }
+
+  .slide-content {
+    max-width: min(100%, 308px);
+    padding: 16px 16px 14px;
+  }
+
+  .slide-title {
+    font-size: clamp(2.05rem, 12vw, 3.1rem);
+    letter-spacing: 0.02em;
+  }
+
+  .slide-desc {
+    font-size: 0.84rem;
+  }
+
+  .side-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 10px;
+    padding: 0 14px;
+    margin-top: -18px;
+    position: relative;
+    z-index: 25;
+  }
+
+  .side-btn {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    padding: 14px 10px 13px;
+    border-radius: 22px;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    box-shadow: 0 16px 28px rgba(255, 141, 8, 0.18);
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .side-btn-icon {
+    font-size: 1.2rem;
+  }
+
+  .about-section,
+  .events-section,
+  .hours-section,
+  .contact-section,
+  .gallery-section,
+  .payment-facilities-section {
+    padding: 58px 14px 62px;
+  }
+
+  .about-header {
+    text-align: left;
+    margin-bottom: 26px;
+  }
+
+  .title-line {
+    margin: 14px 0 0;
+  }
+
+  .section-tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    padding: 7px 11px;
+  }
+
+  .section-title {
+    max-width: 10ch;
+    letter-spacing: 0.03em;
+  }
+
+  .about-grid {
+    gap: 24px;
+  }
+
+  .about-text h3 {
+    font-size: 1.62rem;
+  }
+
+  .about-tagline {
+    font-size: 0.98rem;
+    margin-bottom: 14px;
+  }
+
+  .about-text p {
+    font-size: 0.88rem;
+    line-height: 1.66;
+    margin-bottom: 12px;
+  }
+
+  .about-visual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .about-card {
+    padding: 22px 14px;
+    border-radius: 18px;
+  }
+
+  .card-number {
+    font-size: 2.05rem;
+  }
+
+  .card-label {
+    font-size: 0.73rem;
+    line-height: 1.32;
+  }
+
+  .pf-grid {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .event-card,
+  .contact-card {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .event-card p,
+  .contact-card p {
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  .hours-card {
+    padding: 26px 18px;
+    border-radius: 22px;
+  }
+
+  .footer {
+    padding: 34px 14px calc(32px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .landing-hero {
+    height: 228px;
+  }
+
+  .landing-logo-wrap {
+    margin-top: -50px;
+  }
+
+  .landing-logo-circle {
+    width: 102px;
+    height: 102px;
+    border-width: 4px;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  }
+
+  .landing-body {
+    margin-top: -18px;
+    padding: 18px 14px 28px;
+    border-radius: 28px 28px 0 0;
+  }
+
+  .landing-rest-name {
+    font-size: clamp(1.45rem, 6.5vw, 1.9rem);
+    margin-bottom: 6px;
+  }
+
+  .landing-status {
+    margin-bottom: 10px;
+  }
+
+  .game-banner {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 20px;
+  }
+
+  .game-banner-main {
+    gap: 10px;
+  }
+
+  .gb-text {
+    font-size: 0.96rem;
+  }
+
+  .game-banner-note {
+    font-size: 0.76rem;
+  }
+
+  .game-banner-cta {
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .promo-section-vibrant {
+    margin: 14px 0 10px !important;
+  }
+
+  .promo-inner-container {
+    padding: 0;
+  }
+
+  .view-menu-btn {
+    margin: 12px 0 14px;
+    padding: 16px 18px;
+    border-radius: 22px;
+    font-size: 0.95rem;
+  }
+
+  .info-section {
+    margin-bottom: 12px;
+    border-radius: 20px;
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.05);
+  }
+
+  .info-row {
+    padding: 14px 12px;
+    gap: 12px;
+    font-size: 0.88rem;
+  }
+
+  .info-icon {
+    min-width: 24px;
+    font-size: 1rem;
+  }
+
+  .hours-section {
+    margin-top: 14px;
+  }
+
+  .hours-title {
+    font-size: 0.96rem;
+    margin-bottom: 10px;
+  }
+
+  .hours-grid {
+    border-radius: 18px;
+  }
+
+  .hour-row {
+    padding: 12px 14px;
+    font-size: 0.84rem;
+  }
+
+  .social-links {
+    margin-top: 14px;
+    gap: 10px;
+  }
+
+  .social-icon-link {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    font-size: 1.15rem;
+  }
+
+  .super-cat-sheet {
+    padding: 20px 14px calc(64px + env(safe-area-inset-bottom, 0px));
+    border-radius: 28px 28px 0 0;
+  }
+
+  .super-sheet-title {
+    font-size: 1.18rem;
+    margin-bottom: 16px;
+  }
+
+  .super-cat-row {
+    padding: 13px 12px;
+    margin-bottom: 10px;
+    border-radius: 18px;
+  }
+
+  .super-cat-row-name {
+    font-size: 0.94rem;
+  }
+
+  .super-cat-row-desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .super-cat-row-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .menu-nav-hero {
+    height: 182px;
+  }
+
+  .menu-nav-hero-title {
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    font-size: clamp(1.45rem, 6.2vw, 1.82rem);
+  }
+
+  .menu-content-area {
+    padding: 22px 12px calc(118px + env(safe-area-inset-bottom, 0px));
+    border-radius: 28px 28px 0 0;
+  }
+
+  .menu-content-area::before {
+    top: 11px;
+    width: 54px;
+  }
+
+  .cat-nav-wrapper {
+    margin: 0 -12px 18px;
+    padding: 8px 10px 12px;
+    border-radius: 22px;
+  }
+
+  .menu-search-box {
+    margin: 0 -2px 16px;
+    padding: 4px 2px 2px;
+  }
+
+  .menu-search-box input {
+    border-radius: 18px;
+    padding: 14px 15px 14px 44px;
+    font-size: 0.88rem;
+  }
+
+  .menu-section {
+    margin-bottom: 30px;
+  }
+
+  .menu-section-title {
+    margin-bottom: 14px;
+  }
+
+  .menu-item-card {
+    padding: 14px 12px;
+    gap: 12px;
+    border-radius: 22px;
+    min-height: 108px;
+  }
+
+  .menu-item-info {
+    padding-right: 48px;
+  }
+
+  .menu-item-name {
+    font-size: 0.96rem;
+    margin-bottom: 4px;
+  }
+
+  .menu-item-desc {
+    font-size: 0.78rem;
+    line-height: 1.42;
+  }
+
+  .menu-item-price {
+    padding-top: 10px;
+    font-size: 0.94rem;
+  }
+
+  .menu-item-img {
+    width: 74px;
+    height: 74px;
+    border-radius: 18px;
+  }
+
+  .menu-item-add {
+    width: 40px;
+    height: 40px;
+    right: 10px;
+    bottom: 10px;
+    border-radius: 14px;
+    font-size: 1.08rem;
+  }
+
+  .featured-card {
+    flex-basis: 148px;
+    border-radius: 20px;
+  }
+
+  .featured-info {
+    padding: 14px 14px 46px;
+  }
+
+  .dish-page-header {
+    height: 38vh;
+    min-height: 228px;
+  }
+
+  .dish-page-body {
+    padding: 24px 16px 16px;
+  }
+
+  .dish-page-name {
+    font-size: clamp(1.4rem, 7vw, 1.82rem);
+  }
+
+  .dish-page-desc {
+    max-width: none;
+    margin-bottom: 16px;
+  }
+
+  .dish-page-footer {
+    padding: 15px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    margin-left: -16px;
+    margin-right: -16px;
   }
 }
