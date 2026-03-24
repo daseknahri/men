@@ -1162,14 +1162,18 @@ function applyAdminCapabilities() {
     const dataToolsSection = document.getElementById('data-tools');
     const modalAiImageTools = document.getElementById('modalAiImageTools');
 
-    if (sellerToolsNavBtn) {
-        sellerToolsNavBtn.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
+    if (!adminCapabilities.sellerToolsEnabled) {
+        sellerToolsNavBtn?.remove();
+        dataToolsSection?.remove();
+    } else {
+        if (sellerToolsNavBtn) sellerToolsNavBtn.style.display = '';
+        if (dataToolsSection) dataToolsSection.style.display = '';
     }
-    if (dataToolsSection) {
-        dataToolsSection.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
-    }
-    if (modalAiImageTools) {
-        modalAiImageTools.style.display = adminCapabilities.aiMediaToolsEnabled ? '' : 'none';
+
+    if (!adminCapabilities.aiMediaToolsEnabled) {
+        modalAiImageTools?.remove();
+    } else if (modalAiImageTools) {
+        modalAiImageTools.style.display = '';
     }
 
     if (!adminCapabilities.sellerToolsEnabled && dataToolsSection?.classList.contains('active')) {
