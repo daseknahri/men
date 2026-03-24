@@ -3474,17 +3474,17 @@
 
             .menu-crud-modal-card {
                 position: fixed;
-                top: 10dvh;
-                right: 10vw;
-                bottom: 10dvh;
-                left: 10vw;
-                width: auto;
-                max-width: none;
+                top: 50%;
+                left: 50%;
+                width: 80vw;
+                height: 80dvh;
+                max-width: 80vw;
                 min-height: 0;
-                max-height: none;
+                max-height: 80dvh;
                 border-radius: 24px;
                 padding: 14px 14px calc(18px + env(safe-area-inset-bottom, 0px));
                 grid-template-columns: minmax(0, 1fr) auto;
+                transform: translate(-50%, -50%);
                 align-self: auto;
             }
 
