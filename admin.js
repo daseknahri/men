@@ -6,9 +6,7 @@ let promoIds = [];
 let lastImporterDraft = null;
 let lastImporterDraftMeta = null;
 let lastImporterReviewReport = null;
-let lastGeneratedMedia = null;
 const IMPORT_STUDIO_MAX_MENU_IMAGES = 8;
-const IMPORT_STUDIO_MAX_VENUE_IMAGES = 6;
 let adminAuth = { user: 'admin', pass: '' };
 let adminSecurityStatus = null;
 let adminCapabilities = {
@@ -433,34 +431,6 @@ function escapeHtml(value) {
 
 function toInlineJsString(value) {
     return JSON.stringify(String(value ?? ''));
-}
-
-function replacePresetVars(value, vars) {
-    if (typeof value !== 'string') return '';
-    return value.replace(/\{\{(\w+)\}\}/g, (_match, key) => vars[key] || '');
-}
-
-function slugifyForWifi(value) {
-    return String(value || '')
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '')
-        .slice(0, 24);
-}
-
-function buildPresetTranslations(preset, vars) {
-    const base = { fr: {}, en: {}, ar: {} };
-    const source = preset?.contentTranslations || {};
-
-    Object.keys(base).forEach((lang) => {
-        const bucket = source[lang] && typeof source[lang] === 'object' ? source[lang] : {};
-        Object.entries(bucket).forEach(([key, value]) => {
-            base[lang][key] = replacePresetVars(value, vars);
-        });
-    });
-
-    return base;
 }
 
 function normalizeMenuItemTranslations(input) {
@@ -1190,12 +1160,16 @@ window.openMenuBuilderEdit = function (type, id) {
 function applyAdminCapabilities() {
     const sellerToolsNavBtn = document.getElementById('sellerToolsNavBtn');
     const dataToolsSection = document.getElementById('data-tools');
+    const modalAiImageTools = document.getElementById('modalAiImageTools');
 
     if (sellerToolsNavBtn) {
         sellerToolsNavBtn.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
     }
     if (dataToolsSection) {
         dataToolsSection.style.display = adminCapabilities.sellerToolsEnabled ? '' : 'none';
+    }
+    if (modalAiImageTools) {
+        modalAiImageTools.style.display = adminCapabilities.aiMediaToolsEnabled ? '' : 'none';
     }
 
     if (!adminCapabilities.sellerToolsEnabled && dataToolsSection?.classList.contains('active')) {
@@ -3208,55 +3182,6 @@ function getImporterReviewReport(draft) {
     };
 }
 
-function renderMediaStudioOutputs(result) {
-    const summaryEl = document.getElementById('mediaStudioSummaryOutput');
-    const previewEl = document.getElementById('mediaStudioPreview');
-    const promptEl = document.getElementById('mediaStudioPromptOutput');
-    if (!summaryEl || !previewEl || !promptEl) return;
-
-    if (!result) {
-        summaryEl.value = 'No AI media generated yet.';
-        promptEl.value = '';
-        previewEl.style.display = 'none';
-        previewEl.removeAttribute('src');
-        return;
-    }
-
-    summaryEl.value = [
-        `Slot: ${result.slot || 'unknown'}`,
-        `Generated URL: ${result.url || ''}`,
-        `Reference images used: ${result.referenceCount || 0}`,
-        `Library asset id: ${result.libraryAssetId || 'not registered'}`,
-        `Library status: ${result.libraryAssetStatus || 'n/a'}`,
-        '',
-        'Use this for seller-side review before applying it to the live site.',
-        'Applying the image also marks the registered library asset as approved for future reuse.'
-    ].join('\n');
-    promptEl.value = result.prompt || '';
-    previewEl.src = result.url || '';
-    previewEl.style.display = result.url ? 'block' : 'none';
-}
-
-function getCurrentMediaStudioReferenceUrls() {
-    const urls = [];
-    const branding = restaurantConfig?.branding || {};
-    const gallery = Array.isArray(restaurantConfig?.gallery) ? restaurantConfig.gallery : [];
-
-    if (typeof branding.logoImage === 'string' && branding.logoImage.trim().startsWith('/uploads/')) {
-        urls.push(branding.logoImage.trim());
-    }
-    if (typeof branding.heroImage === 'string' && branding.heroImage.trim().startsWith('/uploads/')) {
-        urls.push(branding.heroImage.trim());
-    }
-
-    gallery
-        .filter((value) => typeof value === 'string' && value.trim().startsWith('/uploads/'))
-        .slice(0, 3)
-        .forEach((value) => urls.push(value.trim()));
-
-    return [...new Set(urls)];
-}
-
 function isPdfImportFile(file) {
     const source = file || {};
     const name = typeof source.name === 'string' ? source.name.trim().toLowerCase() : '';
@@ -3480,205 +3405,6 @@ window.copyImporterDraftJson = async function () {
     } catch (error) {
         console.error('Copy importer draft error:', error);
         showToast('Could not copy importer draft JSON.');
-    }
-};
-
-window.generateAIMedia = async function () {
-    const slot = document.getElementById('mediaStudioSlot')?.value === 'gallery' ? 'gallery' : 'hero';
-    const cuisineHint = (document.getElementById('mediaStudioCuisineHint')?.value || '').trim();
-    const notes = (document.getElementById('mediaStudioNotes')?.value || '').trim();
-    const extraReferenceFiles = document.getElementById('mediaStudioReferenceFiles')?.files;
-    const branding = restaurantConfig?.branding || {};
-    const restaurantName = (branding.restaurantName || window.getRestaurantDisplayName?.() || '').trim();
-    const shortName = (branding.shortName || restaurantName || '').trim();
-    const currentReferenceUrls = getCurrentMediaStudioReferenceUrls();
-
-    try {
-        let uploadedExtraRefs = [];
-        if (extraReferenceFiles && extraReferenceFiles.length) {
-            showToast('Uploading AI media references...');
-            uploadedExtraRefs = await uploadFilesForImporter(extraReferenceFiles, 'media reference');
-        }
-
-        const response = await fetch('/api/media/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-                slot,
-                restaurantName,
-                shortName,
-                cuisineHint,
-                notes,
-                logoImageUrl: typeof branding.logoImage === 'string' ? branding.logoImage : '',
-                referenceImageUrls: [...currentReferenceUrls, ...uploadedExtraRefs]
-            })
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.ok || !data.url) {
-            throw new Error(data.error || 'AI media generation failed.');
-        }
-
-        lastGeneratedMedia = data;
-        renderMediaStudioOutputs(lastGeneratedMedia);
-        showToast('AI media image generated.');
-    } catch (error) {
-        console.error('AI media generation error:', error);
-        const message = error?.message === 'openai_not_configured'
-            ? 'Set OPENAI_API_KEY on the admin server before using AI Media Studio.'
-            : error.message;
-        showToast(`AI media generation failed: ${message}`);
-    }
-};
-
-window.applyGeneratedMedia = async function () {
-    if (!lastGeneratedMedia?.url) {
-        showToast('Generate an AI media image first.');
-        return;
-    }
-
-    const slot = lastGeneratedMedia.slot === 'gallery' ? 'gallery' : 'hero';
-    if (slot === 'hero') {
-        const currentSlides = Array.isArray(restaurantConfig.branding?.heroSlides) ? restaurantConfig.branding.heroSlides.filter(Boolean) : [];
-        const nextSlides = [
-            lastGeneratedMedia.url,
-            currentSlides[1] || currentSlides[0] || lastGeneratedMedia.url,
-            currentSlides[2] || currentSlides[1] || currentSlides[0] || lastGeneratedMedia.url
-        ];
-        restaurantConfig.branding = {
-            ...(restaurantConfig.branding || {}),
-            heroImage: lastGeneratedMedia.url,
-            heroSlides: nextSlides
-        };
-    } else {
-        const gallery = Array.isArray(restaurantConfig.gallery) ? restaurantConfig.gallery.slice() : [];
-        if (!gallery.includes(lastGeneratedMedia.url)) {
-            gallery.unshift(lastGeneratedMedia.url);
-        }
-        restaurantConfig.gallery = gallery;
-    }
-
-    const saved = await saveAndRefresh();
-    if (saved) {
-        if (lastGeneratedMedia.libraryAssetId) {
-            try {
-                await fetch('/api/media/library/approve', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ assetId: lastGeneratedMedia.libraryAssetId })
-                });
-                lastGeneratedMedia = {
-                    ...lastGeneratedMedia,
-                    libraryAssetStatus: 'approved'
-                };
-                renderMediaStudioOutputs(lastGeneratedMedia);
-            } catch (error) {
-                console.error('Approve media library asset error:', error);
-            }
-        }
-        showToast(slot === 'hero' ? 'Generated image applied to hero.' : 'Generated image added to gallery.');
-    }
-};
-
-window.copyGeneratedMediaPrompt = async function () {
-    if (!lastGeneratedMedia?.prompt) {
-        showToast('No AI media prompt to copy yet.');
-        return;
-    }
-    try {
-        await navigator.clipboard.writeText(lastGeneratedMedia.prompt);
-        showToast('AI media prompt copied.');
-    } catch (error) {
-        console.error('Copy AI media prompt error:', error);
-        showToast('Could not copy the AI media prompt.');
-    }
-};
-
-window.applyOnboardingPreset = async function () {
-    const presetId = document.getElementById('quickStartPreset')?.value || 'fast_food';
-    const preset = ONBOARDING_PRESETS[presetId];
-    if (!preset) {
-        showToast('Choose a valid onboarding preset.');
-        return;
-    }
-
-    const restaurantName = (document.getElementById('quickStartRestaurantName')?.value || '').trim();
-    const shortNameInput = (document.getElementById('quickStartShortName')?.value || '').trim();
-    const address = (document.getElementById('quickStartAddress')?.value || '').trim();
-    const phone = (document.getElementById('quickStartPhone')?.value || '').trim();
-    const whatsapp = (document.getElementById('quickStartWhatsApp')?.value || '').trim();
-
-    if (!restaurantName) {
-        showToast('Restaurant name is required for quick launch setup.');
-        return;
-    }
-
-    const shortName = shortNameInput || restaurantName;
-    const vars = { restaurantName, shortName };
-    const presetTranslations = buildPresetTranslations(preset, vars);
-    const wifiSeed = slugifyForWifi(shortName) || 'restaurant';
-    const currentContent = restaurantConfig.contentTranslations || { fr: {}, en: {}, ar: {} };
-    const nextContentTranslations = {
-        fr: { ...(currentContent.fr || {}), ...(presetTranslations.fr || {}) },
-        en: { ...(currentContent.en || {}), ...(presetTranslations.en || {}) },
-        ar: { ...(currentContent.ar || {}), ...(presetTranslations.ar || {}) }
-    };
-
-    if (!confirm('Apply this quick launch preset? It will update branding, homepage copy, and onboarding defaults for this restaurant.')) {
-        return;
-    }
-
-    if (typeof window.mergeRestaurantConfig === 'function') {
-        window.mergeRestaurantConfig({
-            branding: {
-                ...(restaurantConfig.branding || {}),
-                ...(getPresetThemePack(presetId) || {}),
-                ...(preset.branding || {}),
-                restaurantName,
-                shortName,
-                tagline: replacePresetVars(preset.branding?.tagline || '', vars) || preset.branding?.tagline || shortName
-            },
-            wifi: {
-                ...(restaurantConfig.wifi || {}),
-                name: `${wifiSeed}-wifi`,
-                code: restaurantConfig.wifi?.code || window.defaultConfig?.wifi?.code || 'Ask the team'
-            },
-            guestExperience: preset.guestExperience || restaurantConfig.guestExperience,
-            sectionVisibility: preset.sectionVisibility || restaurantConfig.sectionVisibility,
-            sectionOrder: preset.sectionOrder || restaurantConfig.sectionOrder,
-            contentTranslations: nextContentTranslations,
-            location: {
-                ...(restaurantConfig.location || {}),
-                address: address || restaurantConfig.location?.address || ''
-            },
-            socials: {
-                ...(restaurantConfig.socials || {}),
-                whatsapp: whatsapp || restaurantConfig.socials?.whatsapp || ''
-            },
-            phone: phone || restaurantConfig.phone || ''
-        });
-        restaurantConfig = window.restaurantConfig;
-    }
-
-    landingSectionOrderDraft = normalizeSectionOrderDraft(
-        preset.sectionOrder || restaurantConfig.sectionOrder || ADMIN_SECTION_ORDER_KEYS
-    );
-
-    try {
-        await saveAndRefresh();
-        refreshUI();
-        const targetButton = adminCapabilities.sellerToolsEnabled
-            ? document.getElementById('sellerToolsNavBtn')
-            : document.getElementById('brandingNavBtn');
-        const targetSection = adminCapabilities.sellerToolsEnabled ? 'data-tools' : 'branding';
-        if (targetButton) {
-            showSection(targetSection, targetButton);
-        }
-        showToast('Quick launch preset applied.');
-    } catch (error) {
-        console.error('Quick launch preset error:', error);
-        showToast('Quick launch preset failed.');
     }
 };
 
@@ -4167,6 +3893,18 @@ function updateStats() {
 // IMAGE MODAL LOGIC
 let currentEditingId = null;
 
+function syncImageModalAiControls() {
+    const toolsEl = document.getElementById('modalAiImageTools');
+    const buttonEl = document.getElementById('modalGenerateImageBtn');
+    if (toolsEl) {
+        toolsEl.style.display = adminCapabilities.aiMediaToolsEnabled ? '' : 'none';
+    }
+    if (buttonEl) {
+        buttonEl.disabled = false;
+        buttonEl.textContent = "✨ Générer avec l'IA";
+    }
+}
+
 function openImageModal(id) {
     currentEditingId = id;
     const item = menu.find(m => m.id == id); // Use == for safety
@@ -4179,12 +3917,14 @@ function openImageModal(id) {
 
     document.getElementById('imgModalItemName').textContent = getAdminItemDisplayName(item);
     document.getElementById('imageModal').style.display = 'flex';
+    syncImageModalAiControls();
     renderModalImages();
 }
 
 function closeImageModal() {
     document.getElementById('imageModal').style.display = 'none';
     currentEditingId = null;
+    syncImageModalAiControls();
 }
 
 function renderModalImages() {
@@ -4257,6 +3997,65 @@ function deleteModalImage(index) {
     saveAndRefresh();
     renderModalImages();
     showToast('Image supprimée');
+}
+
+window.generateModalImageWithAI = async function () {
+    if (!adminCapabilities.aiMediaToolsEnabled) {
+        showToast("AI image generation is disabled.");
+        return;
+    }
+
+    const item = menu.find(m => m.id == currentEditingId);
+    const buttonEl = document.getElementById('modalGenerateImageBtn');
+    if (!item || !buttonEl) return;
+    if (!item.name || !item.name.trim()) {
+        showToast('Item name is required before generating an image.');
+        return;
+    }
+
+    const originalLabel = buttonEl.textContent;
+    buttonEl.disabled = true;
+    buttonEl.textContent = 'Génération...';
+
+    try {
+        const response = await fetch('/api/media/generate-menu-item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                name: item.name || '',
+                description: item.desc || '',
+                categoryKey: item.cat || '',
+                categoryName: typeof window.getLocalizedCategoryName === 'function'
+                    ? window.getLocalizedCategoryName(item.cat, item.cat)
+                    : (item.cat || ''),
+                translations: item.translations || {}
+            })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok || !data.url) {
+            throw new Error(data.error || 'AI image generation failed.');
+        }
+
+        if (!item.images) item.images = item.img ? [item.img] : [];
+        item.images = [data.url, ...item.images.filter((value) => value && value !== data.url)];
+        item.img = item.images[0] || data.url;
+
+        const saved = await saveAndRefresh();
+        if (saved) {
+            renderModalImages();
+            showToast('AI image generated and added to the item.');
+        }
+    } catch (error) {
+        console.error('Menu item AI image generation error:', error);
+        const message = error?.message === 'openai_not_configured'
+            ? 'Set OPENAI_API_KEY before using AI image generation.'
+            : error.message;
+        showToast(`AI image generation failed: ${message}`);
+    } finally {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalLabel;
+    }
 }
 
 async function resetDefaults() {

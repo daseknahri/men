@@ -17,6 +17,7 @@ const {
 } = require("./server-common");
 const { ensureStorage, readData, resetToBundledData, uploadsDir, writeData } = require("./site-store");
 const {
+  buildProductRecipeKeyFromMenuItem,
   approveLibraryAsset,
   ensureMediaLibraryStructure,
   findApprovedProductAssetForMenuItem,
@@ -1398,6 +1399,26 @@ function buildSellerMediaPrompt(input) {
   ].filter(Boolean).join(" ");
 }
 
+function buildMenuItemImagePrompt(input) {
+  const itemName = asImporterString(input?.name) || "Dish";
+  const itemDescription = asImporterString(input?.description);
+  const categoryKey = asImporterString(input?.categoryKey);
+  const categoryName = asImporterString(input?.categoryName) || categoryKey;
+  const cuisineHint = asImporterString(input?.cuisineHint);
+
+  return [
+    "Create a realistic restaurant menu image for a mobile ordering app.",
+    "Return one single appetizing food or drink photo.",
+    "No text, no labels, no logos, no watermark, no collage, no split layout, no packaging mockup, no UI.",
+    "Use clean lighting, premium restaurant presentation, and a composition that crops well for a square menu thumbnail.",
+    categoryName ? `Category: ${categoryName}.` : "",
+    cuisineHint ? `Cuisine hint: ${cuisineHint}.` : "",
+    `Dish name: ${itemName}.`,
+    itemDescription ? `Dish description and ingredients: ${itemDescription}.` : "",
+    "Keep the main dish centered and clearly readable at small mobile sizes."
+  ].filter(Boolean).join(" ");
+}
+
 async function generateSellerMediaImage(input) {
   if (!process.env.OPENAI_API_KEY) {
     const error = new Error("openai_not_configured");
@@ -1497,6 +1518,100 @@ async function generateSellerMediaImage(input) {
     referenceCount: imageInputs.length,
     libraryAssetId,
     libraryAssetStatus
+  };
+}
+
+async function generateMenuItemMediaImage(input) {
+  if (!process.env.OPENAI_API_KEY) {
+    const error = new Error("openai_not_configured");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const itemName = asImporterString(input?.name);
+  if (!itemName) {
+    const error = new Error("menu_item_name_required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const itemLike = {
+    name: itemName,
+    desc: asImporterString(input?.description),
+    cat: asImporterString(input?.categoryKey),
+    translations: input?.translations && typeof input.translations === "object" ? input.translations : {}
+  };
+  const prompt = buildMenuItemImagePrompt(input);
+
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: OPENAI_MEDIA_MODEL,
+      input: [
+        {
+          role: "user",
+          content: [
+            { type: "input_text", text: prompt }
+          ]
+        }
+      ],
+      tools: [{ type: "image_generation", quality: "high" }],
+      store: false
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || "openai_menu_item_media_request_failed";
+    const error = new Error(message);
+    error.statusCode = response.status || 502;
+    throw error;
+  }
+
+  const base64Image = extractGeneratedImageBase64(payload);
+  if (!base64Image) {
+    const error = new Error("empty_generated_image");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  const url = saveGeneratedImage(base64Image, "product-generated");
+  let libraryAssetId = "";
+
+  try {
+    const uploadPath = resolveLocalUploadPath(url);
+    if (uploadPath) {
+      const libraryAsset = registerLibraryAsset({
+        sourceFilePath: uploadPath,
+        slotType: "product",
+        sourceType: "generated",
+        displayName: itemName,
+        description: itemLike.desc || itemName,
+        categoryKey: itemLike.cat,
+        recipeKey: buildProductRecipeKeyFromMenuItem(itemLike),
+        languageVariants: itemLike.translations,
+        tags: [itemLike.cat, "menu-item", itemName].filter(Boolean),
+        approved: true,
+        model: OPENAI_MEDIA_MODEL,
+        prompt,
+        promptVersion: "menu-item-image-v1",
+        notes: "Generated from the item image modal.",
+        createdFrom: "menu_item_image_modal"
+      });
+      libraryAssetId = libraryAsset?.assetId || "";
+    }
+  } catch (error) {
+    console.error("MENU ITEM MEDIA LIBRARY REGISTER ERROR:", error);
+  }
+
+  return {
+    url,
+    prompt,
+    libraryAssetId
   };
 }
 
@@ -2104,6 +2219,22 @@ function requireAuth(req, res, next) {
   next();
 }
 
+function requireSellerTools(_req, res, next) {
+  if (!SELLER_TOOLS_ENABLED) {
+    res.status(403).json({ ok: false, error: "seller_tools_disabled" });
+    return;
+  }
+  next();
+}
+
+function requireAiMediaTools(_req, res, next) {
+  if (!AI_MEDIA_TOOLS_ENABLED) {
+    res.status(403).json({ ok: false, error: "ai_media_disabled" });
+    return;
+  }
+  next();
+}
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "admin", build });
 });
@@ -2225,7 +2356,7 @@ app.get("/api/admin/capabilities", requireAuth, (_req, res) => {
   res.json({
     ok: true,
     sellerToolsEnabled: SELLER_TOOLS_ENABLED,
-    aiMediaToolsEnabled: SELLER_TOOLS_ENABLED && AI_MEDIA_TOOLS_ENABLED
+    aiMediaToolsEnabled: AI_MEDIA_TOOLS_ENABLED
   });
 });
 
@@ -2245,7 +2376,7 @@ app.post("/api/data", requireAuth, (req, res) => {
   res.json({ ok: true, data: saved });
 });
 
-app.get("/api/data/export", requireAuth, (_req, res) => {
+app.get("/api/data/export", requireAuth, requireSellerTools, (_req, res) => {
   const data = readData();
   const stamp = new Date().toISOString().slice(0, 10);
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -2253,7 +2384,7 @@ app.get("/api/data/export", requireAuth, (_req, res) => {
   res.send(JSON.stringify(data, null, 2));
 });
 
-app.post("/api/data/import", requireAuth, (req, res) => {
+app.post("/api/data/import", requireAuth, requireSellerTools, (req, res) => {
   try {
     const payload = req.body?.data && typeof req.body.data === "object" ? req.body.data : req.body;
     const saved = writeData(payload);
@@ -2264,7 +2395,7 @@ app.post("/api/data/import", requireAuth, (req, res) => {
   }
 });
 
-app.post("/api/importer/draft", requireAuth, async (req, res) => {
+app.post("/api/importer/draft", requireAuth, requireSellerTools, async (req, res) => {
   try {
     const payload = req.body && typeof req.body === "object" ? req.body : {};
     const result = await generateImporterDraft(payload);
@@ -2280,7 +2411,7 @@ app.post("/api/importer/draft", requireAuth, async (req, res) => {
   }
 });
 
-app.post("/api/media/generate", requireAuth, async (req, res) => {
+app.post("/api/media/generate", requireAuth, requireSellerTools, requireAiMediaTools, async (req, res) => {
   try {
     const payload = req.body && typeof req.body === "object" ? req.body : {};
     const result = await generateSellerMediaImage(payload);
@@ -2294,7 +2425,21 @@ app.post("/api/media/generate", requireAuth, async (req, res) => {
   }
 });
 
-app.post("/api/media/library/approve", requireAuth, (req, res) => {
+app.post("/api/media/generate-menu-item", requireAuth, requireAiMediaTools, async (req, res) => {
+  try {
+    const payload = req.body && typeof req.body === "object" ? req.body : {};
+    const result = await generateMenuItemMediaImage(payload);
+    res.json({ ok: true, ...result });
+  } catch (error) {
+    console.error("MENU ITEM MEDIA GENERATION ERROR:", error);
+    res.status(error.statusCode || 500).json({
+      ok: false,
+      error: error.message || "menu_item_media_generation_failed"
+    });
+  }
+});
+
+app.post("/api/media/library/approve", requireAuth, requireSellerTools, requireAiMediaTools, (req, res) => {
   const assetId = typeof req.body?.assetId === "string" ? req.body.assetId.trim() : "";
   if (!assetId) {
     res.status(400).json({ ok: false, error: "asset_id_required" });
@@ -2314,7 +2459,7 @@ app.post("/api/media/library/approve", requireAuth, (req, res) => {
   }
 });
 
-app.post("/api/data/reset", requireAuth, (_req, res) => {
+app.post("/api/data/reset", requireAuth, requireSellerTools, (_req, res) => {
   const reset = resetToBundledData();
   res.json({ ok: true, data: reset });
 });
@@ -2345,7 +2490,10 @@ app.post("/api/upload", requireAuth, (req, res, next) => {
   });
 });
 
-app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads", express.static(uploadsDir, {
+  immutable: true,
+  maxAge: "30d"
+}));
 
 app.get(["/", "/admin", "/admin.html"], (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");

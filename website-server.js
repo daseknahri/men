@@ -55,7 +55,10 @@ app.get("/api/data", (_req, res) => {
   res.json(readData());
 });
 
-app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads", express.static(uploadsDir, {
+  immutable: true,
+  maxAge: "30d"
+}));
 
 app.get("/", (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");

@@ -356,7 +356,7 @@ function renderGallery() {
 
     grid.innerHTML = images.map(img => `
         <div class="gallery-item" onclick="openGalleryLightbox('${img}')">
-            <img src="${img}" alt="Gallery Image" loading="lazy" />
+            <img src="${img}" alt="Gallery Image" loading="lazy" decoding="async" fetchpriority="low" />
         </div>
     `).join('');
     grid.querySelectorAll('img').forEach((imgEl) => {
@@ -614,7 +614,7 @@ function goSlide(n) {
 function imgTag(item) {
     const emoji = catEmojis[item.cat] || '🍴';
     const firstImg = (item.images && item.images.length > 0) ? item.images[0] : (item.img || '');
-    if (firstImg) return `<img src="${firstImg}" alt="${window.getLocalizedMenuName(item)}" onerror="this.style.display='none';this.parentNode.textContent='${emoji}'" loading="lazy" />`;
+    if (firstImg) return `<img src="${firstImg}" alt="${window.getLocalizedMenuName(item)}" onerror="this.style.display='none';this.parentNode.textContent='${emoji}'" loading="lazy" decoding="async" fetchpriority="low" />`;
     return emoji;
 }
 
