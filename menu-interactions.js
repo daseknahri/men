@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     if (window.__foodyMenuInteractionsLoaded) return;
 
     function runtime() {
@@ -75,7 +75,7 @@
                         <button onclick="closeHistory()" class="history-close-btn" aria-label="${t('modal_close', 'Close')}">&times;</button>
                     </div>
                     <div id="historyContent">
-                        <p class="history-empty">${t('history_empty', 'Aucune commande récente.')}</p>
+                        <p class="history-empty">${t('history_empty', 'Aucune commande recente.')}</p>
                     </div>
                 </div>
             </div>
@@ -298,7 +298,7 @@
             : 'Restaurant';
         const serviceOptions = [
             { key: 'onsite', icon: MENU_UI_ICONS.plate, label: t('service_onsite', 'Sur place') },
-            { key: 'takeaway', icon: MENU_UI_ICONS.takeaway, label: t('service_takeaway', 'À Emporter') },
+            { key: 'takeaway', icon: MENU_UI_ICONS.takeaway, label: t('service_takeaway', 'A emporter') },
             { key: 'delivery', icon: MENU_UI_ICONS.delivery, label: t('service_delivery', 'Livraison') }
         ];
 
@@ -339,7 +339,7 @@
                 ${serviceType === 'delivery' ? `
                 <div class="cart-delivery-block">
                     <label class="cart-delivery-label">${t('cart_delivery_label', `${MENU_UI_ICONS.address} Adresse de livraison`)}</label>
-                    <textarea id="deliveryAddress" rows="2" placeholder="${t('cart_delivery_placeholder', 'Ex : Appartement 12, résidence, quartier...')}" oninput="window.currentDeliveryAddress = this.value" class="cart-delivery-input">${window.currentDeliveryAddress || ''}</textarea>
+                    <textarea id="deliveryAddress" rows="2" placeholder="${t('cart_delivery_placeholder', 'Ex : Appartement 12, residence, quartier...')}" oninput="window.currentDeliveryAddress = this.value" class="cart-delivery-input">${window.currentDeliveryAddress || ''}</textarea>
                 </div>
                 ` : ''}
                 <div class="cart-total-card">
@@ -377,7 +377,7 @@
         const container = document.getElementById('historyContent');
         if (!container) return;
         container.innerHTML = history.length === 0
-            ? `<p class="history-empty">${t('history_empty', 'Aucune commande récente.')}</p>`
+            ? `<p class="history-empty">${t('history_empty', 'Aucune commande recente.')}</p>`
             : history.map((ticketHtml, index) => `
                 <div class="history-ticket history-ticket-wrap">
                     ${ticketHtml}
@@ -438,21 +438,21 @@
 
         ticketContent.innerHTML = `
             <div class="ticket-content">
-                <button onclick="closeAllModals()" class="ticket-close-btn">×</button>
+                <button onclick="closeAllModals()" class="ticket-close-btn">&times;</button>
                 <div class="ticket-brand">
                     <div class="ticket-brand-name">${restaurantName}</div>
                     <div class="ticket-brand-address">${restaurantAddress}</div>
                 </div>
                 <div class="ticket-summary">
                     <div class="ticket-number">${t('ticket_number_prefix', 'TICKET')} #${orderNo}</div>
-                    <div class="ticket-datetime">${now.toLocaleDateString()} — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div class="ticket-datetime">${now.toLocaleDateString()} - ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     <div class="ticket-service">${t('ticket_type_label', 'Type')}: ${serviceLabel}</div>
-                    ${serviceType === 'delivery' ? `<div class="ticket-delivery-address">📍 ${window.currentDeliveryAddress}</div>` : ''}
+                    ${serviceType === 'delivery' ? `<div class="ticket-delivery-address">${MENU_UI_ICONS.address} ${window.currentDeliveryAddress}</div>` : ''}
                 </div>
                 <div class="ticket-items">
                     ${cart.map((item) => `
                         <div class="ticket-item-row">
-                            <div class="ticket-item-name"><strong class="ticket-item-qty">${item.qty} ×</strong> ${window.getLocalizedMenuName(item)}</div>
+                            <div class="ticket-item-name"><strong class="ticket-item-qty">${item.qty} &times;</strong> ${window.getLocalizedMenuName(item)}</div>
                             <div class="ticket-item-price">${(item.price * item.qty).toFixed(0)} <span class="ticket-item-currency">dhs</span></div>
                         </div>
                     `).join('')}
@@ -505,7 +505,7 @@
         const parent = btn.parentElement;
         if (!parent) return;
         parent.innerHTML = `
-            <button onclick="closeAllModals(); showLanding();" class="ticket-action-btn is-success">${t('ticket_saved', 'ORDER SAVED ✓')}</button>
+            <button onclick="closeAllModals(); showLanding();" class="ticket-action-btn is-success">${t('ticket_saved', 'ORDER SAVED')}</button>
             <div class="ticket-helper is-success">${t('ticket_saved_help', 'Order saved. Tap to close.')}</div>
         `;
     }
@@ -516,7 +516,7 @@
         let waText = `*${t('wa_new_order_title', 'NEW ORDER - {restaurant}', { restaurant: `#${orderNo}` })}*\n`;
         waText += `${t('ticket_type_label', 'Type')}: ${serviceLabel}\n`;
         if (serviceType === 'delivery') {
-            waText += `📍 ${t('ticket_addr', 'Adresse')}: ${window.currentDeliveryAddress.trim()}\n`;
+            waText += `${t('ticket_addr', 'Adresse')}: ${window.currentDeliveryAddress.trim()}\n`;
         }
         waText += `---------------------------\n`;
         cart.forEach((item) => {

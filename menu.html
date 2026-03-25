@@ -34,27 +34,24 @@
                     <div class="lang-dropdown" id="langDropdown">
                         <button class="lang-drop-btn" onclick="toggleLangDropdown()">
                             <span id="currentLangDisplay">FR</span>
-                            <span class="chevron">â–¼</span>
+                            <span class="chevron">&#9662;</span>
                         </button>
                         <div class="lang-options" id="langOptions">
-                            <div class="lang-opt" onclick="window.setLang('fr', this)"><span class="flag">ðŸ‡«ðŸ‡·</span> FR
-                            </div>
-                            <div class="lang-opt" onclick="window.setLang('en', this)"><span class="flag">ðŸ‡¬ðŸ‡§</span> EN
-                            </div>
-                            <div class="lang-opt" onclick="window.setLang('ar', this)"><span class="flag">ðŸ‡²ðŸ‡¦</span> AR
-                            </div>
+                            <div class="lang-opt" onclick="window.setLang('fr', this)">FR</div>
+                            <div class="lang-opt" onclick="window.setLang('en', this)">EN</div>
+                            <div class="lang-opt" onclick="window.setLang('ar', this)">AR</div>
                         </div>
                     </div>
                 </div>
                 <div class="top-nav-right">
                     <button id="cartNavBtnLanding" class="nav-icon-btn nav-cart-btn" onclick="openDrawer()" style="display:none;"
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
-                        ðŸ›’ <span id="cartBadgeLanding" class="cart-badge">0</span>
+                        &#128722; <span id="cartBadgeLanding" class="cart-badge">0</span>
                     </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
-                        ðŸ•’ <span id="histBadgeLanding" class="history-badge">0</span>
+                        &#128339; <span id="histBadgeLanding" class="history-badge">0</span>
                     </button>
-                    <a href="index.html" class="nav-icon-btn close-btn">âœ•</a>
+                    <a href="index.html" class="nav-icon-btn close-btn">&times;</a>
                 </div>
             </nav>
 
@@ -82,7 +79,7 @@
                 <!-- Game Banner (Replaces Pills) -->
                 <div class="game-banner menu-reveal-observe" onclick="openGameModal()">
                     <div class="game-banner-main">
-                        <span class="game-banner-icon">ðŸŽ®</span>
+                        <span class="game-banner-icon">&#127918;</span>
                         <div>
                             <div class="gb-text" data-i18n="game_title">Qui paie l'addition ?</div>
                             <div class="game-banner-note" data-i18n="game_subtitle">Jouez pour passer le temps !
@@ -98,11 +95,11 @@
                 <div class="promo-section-vibrant menu-reveal-observe">
                     <div class="promo-container-wrapper">
                         <div class="promo-inner-container">
-                            <button class="promo-nav-btn prev" onclick="scrollPromo(-1)">â®</button>
+                            <button class="promo-nav-btn prev" onclick="scrollPromo(-1)">&#10094;</button>
                             <div id="promoCarousel">
                                 <!-- Items injected by menu.js -->
                             </div>
-                            <button class="promo-nav-btn next" onclick="scrollPromo(1)">â¯</button>
+                            <button class="promo-nav-btn next" onclick="scrollPromo(1)">&#10095;</button>
                         </div>
                     </div>
                 </div>
@@ -115,19 +112,19 @@
                 <!-- Info Rows -->
                 <div class="info-section">
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_map_title" title="Voir sur la carte">
-                        <span class="info-icon">ðŸ“</span>
+                        <span class="info-icon">&#128205;</span>
                         <span class="info-text" id="landingLocation"></span>
                     </div>
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_call_title" title="Appeler">
-                        <span class="info-icon">ðŸ“ž</span>
+                        <span class="info-icon">&#128222;</span>
                         <span class="info-text" id="landingPhone"></span>
                     </div>
-                    <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_social_title" title="Nos rÃ©seaux sociaux">
-                        <span class="info-icon">ðŸ“¸</span>
+                    <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_social_title" title="Nos reseaux sociaux">
+                        <span class="info-icon">&#128247;</span>
                         <span class="info-text" id="landingSocial"></span>
                     </div>
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_wifi_title" title="Code WiFi">
-                        <span class="info-icon">ðŸ“¶</span>
+                        <span class="info-icon">&#128246;</span>
                         <span class="info-text" id="landingWifi"></span>
                     </div>
                 </div>
@@ -146,18 +143,18 @@
             <nav class="top-nav-bar menu-nav-bar">
                 <div class="top-nav-left">
                     <button id="menuBackBtn" class="nav-icon-btn" onclick="menuGoBack()"
-                        style="display:none;">â†</button>
+                        style="display:none;">&larr;</button>
                     <div class="nav-breadcrumb" id="navBreadcrumb"></div>
                 </div>
                 <div class="top-nav-right">
                     <button id="cartNavBtnMenu" class="nav-icon-btn nav-cart-btn" onclick="openDrawer()" style="display:none;"
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
-                        ðŸ›’ <span id="cartBadgeMenu" class="cart-badge">0</span>
+                        &#128722; <span id="cartBadgeMenu" class="cart-badge">0</span>
                     </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
-                        ðŸ•’ <span id="histBadgeMenu" class="history-badge">0</span>
+                        &#128339; <span id="histBadgeMenu" class="history-badge">0</span>
                     </button>
-                    <button class="nav-icon-btn" onclick="showLanding()">âœ•</button>
+                    <button class="nav-icon-btn" onclick="showLanding()">&times;</button>
                 </div>
             </nav>
 
@@ -199,7 +196,7 @@
         <!-- GLOBAL UI ELEMENTS -->
         <!-- Global Home Bubble -->
         <div class="home-floating-hub" onclick="showLanding()">
-            ðŸ 
+            &#127968;
         </div>
 
     </div>
@@ -208,7 +205,7 @@
     <div id="superCatOverlay" class="overlay" onclick="closeSuperCatSheet()"></div>
     <div id="superCatSheet" class="super-cat-sheet">
         <button class="super-sheet-close" onclick="closeSuperCatSheet()" data-i18n-aria-label="modal_close" aria-label="Close">&times;</button>
-        <h2 class="super-sheet-title" data-i18n="menu_select_title">SÃ©lectionner un Menu</h2>
+        <h2 class="super-sheet-title" data-i18n="menu_select_title">S&eacute;lectionner un Menu</h2>
         <div id="superCatList">
             <!-- Injected by JS -->
         </div>
