@@ -55,7 +55,11 @@
   <header class="header" id="header">
     <div class="header-inner">
       <div class="logo"><span id="brandLogoIconHeader">🍽️</span> <span id="brandNameHeader">Restaurant</span></div>
-      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open menu" aria-expanded="false" aria-controls="headerNav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <nav class="header-nav" id="headerNav">
         <a href="#heroSlider" class="nav-link active-link" data-i18n="nav_home">Accueil</a>
         <a href="menu.html" class="nav-link" data-i18n="nav_menu">Menu</a>

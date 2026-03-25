@@ -177,6 +177,11 @@ function initApp() {
         link.addEventListener('click', () => {
             const nav = document.getElementById('headerNav');
             if (nav) nav.classList.remove('mobile-open');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (menuBtn) {
+                menuBtn.classList.remove('is-open');
+                menuBtn.setAttribute('aria-expanded', 'false');
+            }
         });
     });
 }
@@ -815,7 +820,14 @@ function sendWA() {
 
 // MOBILE MENU
 function toggleMobileMenu() {
-    document.getElementById('headerNav').classList.toggle('mobile-open');
+    const nav = document.getElementById('headerNav');
+    const btn = document.querySelector('.mobile-menu-btn');
+    if (!nav) return;
+    const isOpen = nav.classList.toggle('mobile-open');
+    if (btn) {
+        btn.classList.toggle('is-open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
 }
 
 
