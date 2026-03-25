@@ -10,7 +10,8 @@ const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const ALLOWED_UPLOAD_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "svg", "pdf"]);
 const SESSION_COOKIE = "restaurant_admin_session";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
-const NO_STORE_EXTENSIONS = new Set([".html", ".js", ".css"]);
+const NO_STORE_EXTENSIONS = new Set([".html"]);
+const REVALIDATE_CACHE_EXTENSIONS = new Set([".js", ".css"]);
 const LONG_CACHE_EXTENSIONS = new Set([
   ".jpg",
   ".jpeg",
@@ -235,6 +236,11 @@ function setStaticAssetHeaders(res, filePath) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
+    return;
+  }
+
+  if (REVALIDATE_CACHE_EXTENSIONS.has(extension)) {
+    res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
     return;
   }
 

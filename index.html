@@ -19,7 +19,7 @@
     rel="stylesheet" /></noscript>
   <link rel="prefetch" href="menu.html" />
   <link rel="prefetch" href="menu.js" as="script" />
-  <link rel="prefetch" href="shared.js" as="script" />
+  <link rel="prefetch" href="shared-public.js" as="script" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -441,8 +441,8 @@
     </div>
   </div>
 
-  <script src="shared.js"></script>
-  <script src="app.js"></script>
+  <script src="shared-public.js" defer></script>
+  <script src="app.js" defer></script>
   <script>
     function toggleLangDropdown() {
       const opts = document.getElementById('langOptions');

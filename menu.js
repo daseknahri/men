@@ -9,6 +9,53 @@ window.catEmojis = catEmojis;
 let cart = typeof window.getStoredCart === 'function'
     ? window.getStoredCart()
     : [];
+const GAME_SCRIPT_SRC = 'game.js';
+let gameScriptPromise = null;
+const gameLoaderPlaceholders = {};
+
+function ensureGameScriptLoaded() {
+    if (window.__foodyGameLoaded) return Promise.resolve();
+    if (gameScriptPromise) return gameScriptPromise;
+
+    gameScriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = GAME_SCRIPT_SRC;
+        script.async = true;
+        script.onload = () => {
+            window.__foodyGameLoaded = true;
+            resolve();
+        };
+        script.onerror = () => {
+            gameScriptPromise = null;
+            reject(new Error('game_script_load_failed'));
+        };
+        document.body.appendChild(script);
+    });
+
+    return gameScriptPromise;
+}
+
+function installGameLoader(actionName) {
+    const placeholder = function (...args) {
+        return ensureGameScriptLoaded()
+            .then(() => {
+                const action = window[actionName];
+                if (typeof action === 'function' && action !== placeholder) {
+                    return action(...args);
+                }
+                return undefined;
+            })
+            .catch(() => {
+                window.showToast?.(t('lightbox_soon', 'Photo preview coming soon'));
+                return undefined;
+            });
+    };
+
+    gameLoaderPlaceholders[actionName] = placeholder;
+    window[actionName] = placeholder;
+}
+
+['openGameModal', 'closeGameModal', 'startGame', 'updatePlayerSlider', 'handleBoxClick'].forEach(installGameLoader);
 let serviceType = 'onsite';
 const MENU_UI_ICONS = Object.freeze({
     home: String.fromCodePoint(0x1F3E0),
