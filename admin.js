@@ -1829,7 +1829,10 @@ function initForms() {
             showToast('Category name is required.');
             return;
         }
-        const nextEmoji = document.getElementById('catEmoji').value;
+        const nextEmoji = document.getElementById('catEmoji')?.value
+            || catEmojis?.[categoryName]
+            || catEmojis?.[previousKey]
+            || ADMIN_ICON.bullet;
         const nextTranslations = buildCategoryTranslations(categoryName);
         const categoryImageInput = document.getElementById('catImage');
         const categoryImageUpload = document.getElementById('catImageUpload');
@@ -3566,8 +3569,6 @@ function editCat(cat) {
     if (editingKeyInput) editingKeyInput.value = cat;
     const catNameInput = document.getElementById('catName');
     if (catNameInput) catNameInput.value = cat;
-    const catEmojiInput = document.getElementById('catEmoji');
-    if (catEmojiInput) catEmojiInput.value = catEmojis[cat] || '';
     const catImageInput = document.getElementById('catImage');
     if (catImageInput) catImageInput.value = categoryImages?.[cat] || '';
     const catImageUpload = document.getElementById('catImageUpload');
