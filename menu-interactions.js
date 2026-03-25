@@ -42,8 +42,75 @@
     const MENU_UI_ICONS = runtime()?.MENU_UI_ICONS || {};
     let galleryItems = [];
     let currentGalleryIdx = 0;
+    let interactionDomReady = false;
+
+    function ensureMenuInteractionDom() {
+        if (interactionDomReady || document.getElementById('dishPage')) {
+            interactionDomReady = true;
+            return;
+        }
+
+        const template = document.createElement('template');
+        template.innerHTML = `
+            <div id="dishPage" class="dish-page">
+                <button class="dish-page-close" onclick="closeDishPage()" aria-label="${t('modal_close', 'Close')}">&times;</button>
+                <div class="dish-page-header">
+                    <img id="dishPageImg" src="" alt="" class="dish-page-img" width="1200" height="900" decoding="async">
+                </div>
+                <div class="dish-page-body">
+                    <h2 id="dishPageName" class="dish-page-name"></h2>
+                    <div id="dishPagePrice" class="dish-page-price"></div>
+                    <p id="dishPageDesc" class="dish-page-desc"></p>
+                    <div id="dishPageLoveContainer" class="dish-page-love-row"></div>
+                    <div class="dish-page-footer">
+                        <button id="dishPageAddBtn" class="dish-add-btn">${t('add_to_cart', 'AJOUTER AU PANIER')}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historyOverlay" class="history-overlay" onclick="closeHistory()">
+                <div class="history-modal" onclick="event.stopPropagation()">
+                    <div class="history-header">
+                        <h2>${t('history_title', 'Historique')}</h2>
+                        <button onclick="closeHistory()" class="history-close-btn" aria-label="${t('modal_close', 'Close')}">&times;</button>
+                    </div>
+                    <div id="historyContent">
+                        <p class="history-empty">${t('history_empty', 'Aucune commande récente.')}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sharedOverlay" class="overlay" onclick="closeAllModals()"></div>
+
+            <div id="cartDrawer" class="modal-sheet">
+                <div class="modal-handle"></div>
+                <div id="drawerContent"></div>
+            </div>
+
+            <div id="ticketModal" class="modal-sheet ticket-sheet">
+                <div id="ticketContent"></div>
+            </div>
+
+            <div id="galleryOverlay" class="gallery-overlay" onclick="closeGallery()">
+                <button class="gallery-close" onclick="closeGallery()">&times;</button>
+                <div class="gallery-container" onclick="event.stopPropagation()">
+                    <button class="gallery-nav gallery-prev" onclick="prevGalleryImage()">&#10094;</button>
+                    <img id="galleryImg" src="" alt="Gallery Image" width="1200" height="900" decoding="async">
+                    <button class="gallery-nav gallery-next" onclick="nextGalleryImage()">&#10095;</button>
+                </div>
+                <div class="gallery-info" onclick="event.stopPropagation()">
+                    <div id="galleryTitle" class="gallery-title"></div>
+                    <div id="galleryCount" class="gallery-count"></div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(template.content);
+        interactionDomReady = true;
+    }
 
     function closeAllModals() {
+        ensureMenuInteractionDom();
         ['sharedOverlay', 'cartDrawer', 'ticketModal', 'dishPage', 'historyOverlay', 'superCatSheet', 'superCatOverlay'].forEach((id) => {
             document.getElementById(id)?.classList.remove('open');
         });
@@ -53,6 +120,7 @@
     }
 
     function openDishPage(id) {
+        ensureMenuInteractionDom();
         const item = getMenu().find((entry) => sameMenuItemId(entry.id, id));
         if (!item) return;
 
@@ -151,11 +219,13 @@
     }
 
     function closeDishPage() {
+        ensureMenuInteractionDom();
         document.getElementById('dishPage')?.classList.remove('open');
         document.body.style.overflow = '';
     }
 
     function openGallery(items, startIndex = 0) {
+        ensureMenuInteractionDom();
         galleryItems = items.filter((entry) => (entry.images && entry.images.length > 0) || entry.img);
         if (!galleryItems.length) return;
 
@@ -168,12 +238,14 @@
     }
 
     function closeGallery() {
+        ensureMenuInteractionDom();
         const overlay = document.getElementById('galleryOverlay');
         if (overlay) overlay.style.display = 'none';
         document.body.style.overflow = '';
     }
 
     function updateGalleryView() {
+        ensureMenuInteractionDom();
         const item = galleryItems[currentGalleryIdx];
         if (!item) return;
         const img = document.getElementById('galleryImg');
@@ -207,6 +279,7 @@
     }
 
     function openDrawer() {
+        ensureMenuInteractionDom();
         document.getElementById('sharedOverlay')?.classList.add('open');
         document.getElementById('cartDrawer')?.classList.add('open');
         renderDrawer();
@@ -214,6 +287,7 @@
     }
 
     function renderDrawer() {
+        ensureMenuInteractionDom();
         const cart = getCart();
         const serviceType = getServiceType();
         const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -283,17 +357,20 @@
     }
 
     function openHistory() {
+        ensureMenuInteractionDom();
         renderHistory();
         document.getElementById('historyOverlay')?.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
 
     function closeHistory() {
+        ensureMenuInteractionDom();
         document.getElementById('historyOverlay')?.classList.remove('open');
         document.body.style.overflow = '';
     }
 
     function renderHistory() {
+        ensureMenuInteractionDom();
         const history = typeof window.getStoredHistory === 'function'
             ? window.getStoredHistory()
             : [];
@@ -335,6 +412,7 @@
     }
 
     function generateTicket() {
+        ensureMenuInteractionDom();
         const cart = getCart();
         const serviceType = getServiceType();
         if (serviceType === 'delivery' && (!window.currentDeliveryAddress || window.currentDeliveryAddress.trim() === '')) {

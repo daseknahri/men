@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr" id="htmlRoot">
 
 <head>
@@ -25,7 +25,7 @@
 
     <div class="mobile-wrapper is-landing">
 
-        <!-- ═══════════ LANDING PAGE VIEW ═══════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â• LANDING PAGE VIEW â•â•â•â•â•â•â•â•â•â•â• -->
         <div id="landingView">
             <!-- Top Nav on Landing -->
             <nav class="top-nav-bar">
@@ -34,14 +34,14 @@
                     <div class="lang-dropdown" id="langDropdown">
                         <button class="lang-drop-btn" onclick="toggleLangDropdown()">
                             <span id="currentLangDisplay">FR</span>
-                            <span class="chevron">▼</span>
+                            <span class="chevron">â–¼</span>
                         </button>
                         <div class="lang-options" id="langOptions">
-                            <div class="lang-opt" onclick="window.setLang('fr', this)"><span class="flag">🇫🇷</span> FR
+                            <div class="lang-opt" onclick="window.setLang('fr', this)"><span class="flag">ðŸ‡«ðŸ‡·</span> FR
                             </div>
-                            <div class="lang-opt" onclick="window.setLang('en', this)"><span class="flag">🇬🇧</span> EN
+                            <div class="lang-opt" onclick="window.setLang('en', this)"><span class="flag">ðŸ‡¬ðŸ‡§</span> EN
                             </div>
-                            <div class="lang-opt" onclick="window.setLang('ar', this)"><span class="flag">🇲🇦</span> AR
+                            <div class="lang-opt" onclick="window.setLang('ar', this)"><span class="flag">ðŸ‡²ðŸ‡¦</span> AR
                             </div>
                         </div>
                     </div>
@@ -49,12 +49,12 @@
                 <div class="top-nav-right">
                     <button id="cartNavBtnLanding" class="nav-icon-btn nav-cart-btn" onclick="openDrawer()" style="display:none;"
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
-                        🛒 <span id="cartBadgeLanding" class="cart-badge">0</span>
+                        ðŸ›’ <span id="cartBadgeLanding" class="cart-badge">0</span>
                     </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
-                        🕒 <span id="histBadgeLanding" class="history-badge">0</span>
+                        ðŸ•’ <span id="histBadgeLanding" class="history-badge">0</span>
                     </button>
-                    <a href="index.html" class="nav-icon-btn close-btn">✕</a>
+                    <a href="index.html" class="nav-icon-btn close-btn">âœ•</a>
                 </div>
             </nav>
 
@@ -82,7 +82,7 @@
                 <!-- Game Banner (Replaces Pills) -->
                 <div class="game-banner menu-reveal-observe" onclick="openGameModal()">
                     <div class="game-banner-main">
-                        <span class="game-banner-icon">🎮</span>
+                        <span class="game-banner-icon">ðŸŽ®</span>
                         <div>
                             <div class="gb-text" data-i18n="game_title">Qui paie l'addition ?</div>
                             <div class="game-banner-note" data-i18n="game_subtitle">Jouez pour passer le temps !
@@ -98,11 +98,11 @@
                 <div class="promo-section-vibrant menu-reveal-observe">
                     <div class="promo-container-wrapper">
                         <div class="promo-inner-container">
-                            <button class="promo-nav-btn prev" onclick="scrollPromo(-1)">❮</button>
+                            <button class="promo-nav-btn prev" onclick="scrollPromo(-1)">â®</button>
                             <div id="promoCarousel">
                                 <!-- Items injected by menu.js -->
                             </div>
-                            <button class="promo-nav-btn next" onclick="scrollPromo(1)">❯</button>
+                            <button class="promo-nav-btn next" onclick="scrollPromo(1)">â¯</button>
                         </div>
                     </div>
                 </div>
@@ -115,19 +115,19 @@
                 <!-- Info Rows -->
                 <div class="info-section">
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_map_title" title="Voir sur la carte">
-                        <span class="info-icon">📍</span>
+                        <span class="info-icon">ðŸ“</span>
                         <span class="info-text" id="landingLocation"></span>
                     </div>
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_call_title" title="Appeler">
-                        <span class="info-icon">📞</span>
+                        <span class="info-icon">ðŸ“ž</span>
                         <span class="info-text" id="landingPhone"></span>
                     </div>
-                    <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_social_title" title="Nos réseaux sociaux">
-                        <span class="info-icon">📸</span>
+                    <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_social_title" title="Nos rÃ©seaux sociaux">
+                        <span class="info-icon">ðŸ“¸</span>
                         <span class="info-text" id="landingSocial"></span>
                     </div>
                     <div class="info-row is-actionable menu-reveal-observe" data-i18n-title="landing_wifi_title" title="Code WiFi">
-                        <span class="info-icon">📶</span>
+                        <span class="info-icon">ðŸ“¶</span>
                         <span class="info-text" id="landingWifi"></span>
                     </div>
                 </div>
@@ -140,24 +140,24 @@
         </div>
         <!-- END LANDING VIEW -->
 
-        <!-- ═══════════ MENU NAVIGATION VIEW ═══════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â• MENU NAVIGATION VIEW â•â•â•â•â•â•â•â•â•â•â• -->
         <div id="menuNavigationView" style="display:none;">
             <!-- Top Nav for Menu -->
             <nav class="top-nav-bar menu-nav-bar">
                 <div class="top-nav-left">
                     <button id="menuBackBtn" class="nav-icon-btn" onclick="menuGoBack()"
-                        style="display:none;">←</button>
+                        style="display:none;">â†</button>
                     <div class="nav-breadcrumb" id="navBreadcrumb"></div>
                 </div>
                 <div class="top-nav-right">
                     <button id="cartNavBtnMenu" class="nav-icon-btn nav-cart-btn" onclick="openDrawer()" style="display:none;"
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
-                        🛒 <span id="cartBadgeMenu" class="cart-badge">0</span>
+                        ðŸ›’ <span id="cartBadgeMenu" class="cart-badge">0</span>
                     </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
-                        🕒 <span id="histBadgeMenu" class="history-badge">0</span>
+                        ðŸ•’ <span id="histBadgeMenu" class="history-badge">0</span>
                     </button>
-                    <button class="nav-icon-btn" onclick="showLanding()">✕</button>
+                    <button class="nav-icon-btn" onclick="showLanding()">âœ•</button>
                 </div>
             </nav>
 
@@ -199,7 +199,7 @@
         <!-- GLOBAL UI ELEMENTS -->
         <!-- Global Home Bubble -->
         <div class="home-floating-hub" onclick="showLanding()">
-            🏠
+            ðŸ 
         </div>
 
     </div>
@@ -208,72 +208,17 @@
     <div id="superCatOverlay" class="overlay" onclick="closeSuperCatSheet()"></div>
     <div id="superCatSheet" class="super-cat-sheet">
         <button class="super-sheet-close" onclick="closeSuperCatSheet()" data-i18n-aria-label="modal_close" aria-label="Close">&times;</button>
-        <h2 class="super-sheet-title" data-i18n="menu_select_title">Sélectionner un Menu</h2>
+        <h2 class="super-sheet-title" data-i18n="menu_select_title">SÃ©lectionner un Menu</h2>
         <div id="superCatList">
             <!-- Injected by JS -->
         </div>
-    </div>
+    </div>
+    <!-- Deferred interaction overlays mount on demand -->
 
-    <!-- Dish Detail Page (Slide Up Overlay) -->
-    <div id="dishPage" class="dish-page">
-        <button class="dish-page-close" onclick="closeDishPage()" data-i18n-aria-label="modal_close" aria-label="Close">&times;</button>
-        <div class="dish-page-header">
-            <img id="dishPageImg" src="" alt="" class="dish-page-img" width="1200" height="900" decoding="async">
-        </div>
-        <div class="dish-page-body">
-            <h2 id="dishPageName" class="dish-page-name"></h2>
-            <div id="dishPagePrice" class="dish-page-price"></div>
-            <p id="dishPageDesc" class="dish-page-desc"></p>
-            <div id="dishPageLoveContainer" class="dish-page-love-row"></div>
-            <div class="dish-page-footer">
-                <button id="dishPageAddBtn" class="dish-add-btn" data-i18n="add_to_cart">AJOUTER AU PANIER</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- History Overlay -->
-    <div id="historyOverlay" class="history-overlay" onclick="closeHistory()">
-        <div class="history-modal" onclick="event.stopPropagation()">
-            <div class="history-header">
-                <h2 data-i18n="history_title">Historique</h2>
-                <button onclick="closeHistory()" class="history-close-btn" data-i18n-aria-label="modal_close" aria-label="Close">&times;</button>
-            </div>
-            <div id="historyContent">
-                <p class="history-empty" data-i18n="history_empty">Aucune commande récente.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shared Overlay -->
-    <div id="sharedOverlay" class="overlay" onclick="closeAllModals()"></div>
-
-    <!-- Drawer (Cart Confirmation) -->
-    <div id="cartDrawer" class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div id="drawerContent"><!-- Drawer/Cart content here --></div>
-    </div>
-
-    <!-- Ticket Modal -->
-    <div id="ticketModal" class="modal-sheet ticket-sheet">
-        <div id="ticketContent"><!-- Digital Ticket here --></div>
-    </div>
-
-    <!-- Image Gallery Modal -->
-    <div id="galleryOverlay" class="gallery-overlay" onclick="closeGallery()">
-        <button class="gallery-close" onclick="closeGallery()">✕</button>
-        <div class="gallery-container" onclick="event.stopPropagation()">
-            <button class="gallery-nav gallery-prev" onclick="prevGalleryImage()">❮</button>
-            <img id="galleryImg" src="" alt="Gallery Image" width="1200" height="900" decoding="async">
-            <button class="gallery-nav gallery-next" onclick="nextGalleryImage()">❯</button>
-        </div>
-        <div class="gallery-info" onclick="event.stopPropagation()">
-            <div id="galleryTitle" class="gallery-title"></div>
-            <div id="galleryCount" class="gallery-count"></div>
-        </div>
-    </div>
 
     <script src="shared-public.js" defer></script>
     <script src="menu.js" defer></script>
 </body>
 
 </html>
+
