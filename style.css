@@ -7244,10 +7244,12 @@ body:not(.menu-page) .section-tag {
 body:not(.menu-page) .slide-content {
   position: relative;
   z-index: 2;
+  pointer-events: auto;
 }
 
 body:not(.menu-page) .slide-img img {
   filter: saturate(1.04) contrast(1.02);
+  pointer-events: none;
 }
 
 body:not(.menu-page) .utility-nav {
@@ -7535,6 +7537,10 @@ body:not(.menu-page) .footer-copy {
     padding: 12px 16px;
     font-size: 0.7rem;
     letter-spacing: 0.1em;
+    position: relative;
+    z-index: 41;
+    pointer-events: auto;
+    touch-action: manipulation;
   }
 
   body:not(.menu-page) .slide-img {
@@ -7542,6 +7548,7 @@ body:not(.menu-page) .footer-copy {
     height: 178px;
     right: -8px;
     top: 46%;
+    pointer-events: none;
   }
 
   body:not(.menu-page) .side-nav {
@@ -7893,9 +7900,9 @@ body:not(.menu-page) .footer-copy {
   }
 
   body:not(.menu-page) .lang-drop-btn {
-    min-width: 68px;
+    min-width: 58px;
     height: 38px;
-    padding: 0 12px;
+    padding: 0 10px;
     border-radius: 14px;
     background: rgba(255, 248, 238, 0.14);
     border: 1px solid rgba(255, 248, 238, 0.2);
@@ -7906,9 +7913,14 @@ body:not(.menu-page) .footer-copy {
     top: calc(100% + 8px);
     right: 0;
     left: auto;
-    min-width: 126px;
-    max-width: calc(100vw - 20px);
+    min-width: 108px;
+    max-width: min(118px, calc(100vw - 20px));
     border-radius: 16px;
+  }
+
+  body:not(.menu-page) .lang-opt {
+    padding: 8px 9px;
+    font-size: 0.76rem;
   }
 
   body:not(.menu-page) .header {
