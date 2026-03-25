@@ -369,6 +369,52 @@ function getMenuCardImageSrc(src, variant = 'menu') {
     return `/uploads/.thumbs/${filename}.${safeVariant}.webp`;
 }
 
+function getCategoryPreviewSource(cat) {
+    const representativeItem =
+        menu.find((item) => item.cat === cat && item.available !== false && ((item.images && item.images[0]) || item.img))
+        || menu.find((item) => item.cat === cat && ((item.images && item.images[0]) || item.img))
+        || null;
+
+    const itemSrc = representativeItem
+        ? ((representativeItem.images && representativeItem.images[0]) || representativeItem.img || '')
+        : '';
+
+    if (itemSrc) {
+        return {
+            src: getMenuCardImageSrc(itemSrc, 'menu'),
+            originalSrc: itemSrc
+        };
+    }
+
+    const brandingHero = String(window.restaurantConfig?.branding?.heroImage || '').trim();
+    const runtimeHero = document.getElementById('menuHeroImage')?.getAttribute('src') || '';
+    const fallbackSrc = brandingHero || runtimeHero || 'images/hero-default.svg';
+
+    return {
+        src: fallbackSrc,
+        originalSrc: ''
+    };
+}
+
+function buildCategoryNavigationCardMarkup(cat) {
+    const localizedName = window.getLocalizedCategoryName(cat, cat);
+    const preview = getCategoryPreviewSource(cat);
+    const fallbackGlyph = (localizedName || cat || MENU_UI_ICONS.plate).trim().charAt(0).toUpperCase() || '•';
+    const originalSrcAttr = preview.originalSrc && preview.originalSrc !== preview.src
+        ? ` data-original-src="${escapeHtmlAttr(preview.originalSrc)}"`
+        : '';
+
+    return `
+        <button class="menu-category-card menu-reveal-observe" data-cat="${escapeHtmlAttr(cat)}" onclick="showCategoryItems(${serializeInlineId(cat)})">
+            <span class="menu-category-card-media">
+                <img class="menu-deferred-img" data-menu-src="${escapeHtmlAttr(preview.src)}"${originalSrcAttr} data-fallback-emoji="${escapeHtmlAttr(fallbackGlyph)}" alt="${escapeHtmlAttr(localizedName)}" width="960" height="540" loading="lazy" decoding="async" fetchpriority="low">
+            </span>
+            <span class="menu-category-card-shade"></span>
+            <span class="menu-category-card-title">${localizedName}</span>
+        </button>
+    `;
+}
+
 
 let navigationStack = []; // stack: 'landing', 'supercats', 'subcats:NAME', 'items:CAT'
 let currentSuperCat = null;
@@ -1057,6 +1103,7 @@ function showLanding() {
     // Now show landing and hide menu view
     document.getElementById('landingView').style.display = 'block';
     document.getElementById('menuNavigationView').style.display = 'none';
+    document.getElementById('menuNavigationView')?.removeAttribute('data-mode');
     document.querySelector('.mobile-wrapper')?.classList.add('is-landing');
     navigationStack = [];
     updateBackBtn();
@@ -1223,6 +1270,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
     const searchBox = document.getElementById('menuSearchBox');
 
     if (subCatTitle) subCatTitle.textContent = window.getLocalizedSuperCategoryName(sc, sc.name);
+    document.getElementById('menuNavigationView')?.setAttribute('data-mode', 'categories');
 
     navWrapper.style.display = 'block';
     menuContent.style.display = 'none';
@@ -1232,16 +1280,12 @@ function showSubCategoryGrid(sc, addToStack = true) {
     const catNav = document.getElementById('catNavScroll');
     const currentCategories = [...new Set(menu.map(m => m.cat))];
     const filteredCats = sc.cats.filter(c => currentCategories.includes(c));
-    catNav.innerHTML = filteredCats.map(c => `
-        <button class="menu-cat-btn menu-reveal-observe" data-cat="${c}" onclick="showCategoryItems('${c}')">
-            <span class="cat-emoji">${catEmojis[c] || MENU_UI_ICONS.plate}</span>
-            <span class="cat-name">${window.getLocalizedCategoryName(c, c)}</span>
-        </button>
-    `).join('');
+    catNav.classList.add('is-visual-list');
+    catNav.innerHTML = filteredCats.map((c) => buildCategoryNavigationCardMarkup(c)).join('');
+    observeDeferredMenuImages(catNav);
 
-    // Render global featured items for ALL categories in this super-category
-    const featuredItems = menu.filter(m => sc.cats.includes(m.cat) && m.featured);
-    scheduleDeferredFeaturedRender(featuredItems, 'featuredGlobal');
+    // Keep this step focused on picking a category.
+    scheduleDeferredFeaturedRender([], 'featuredGlobal');
 
     updateBackBtn();
     scheduleMenuMotionRefresh();
@@ -1258,10 +1302,13 @@ function showCategoryItems(cat, addToStack = true) {
     const navWrapper = document.getElementById('catNavWrapper');
     const menuContent = document.getElementById('menuContent');
     const searchBox = document.getElementById('menuSearchBox');
+    const catNav = document.getElementById('catNavScroll');
 
+    document.getElementById('menuNavigationView')?.setAttribute('data-mode', 'items');
     navWrapper.style.display = 'none';
     menuContent.style.display = 'block';
     if (searchBox) searchBox.style.display = 'block';
+    catNav?.classList.remove('is-visual-list');
 
     // Update global featured slider for specific category
     const featuredItems = menu.filter(m => m.cat === cat && m.featured && m.available !== false);
