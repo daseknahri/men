@@ -33,7 +33,90 @@ let lastDataVersion = "";
 let syncInFlight = null;
 const PUBLIC_DATA_TIMEOUT_MS = 8000;
 const PUBLIC_RESUME_SYNC_MIN_GAP_MS = 60000;
+const MENU_SNAPSHOT_STORAGE_KEY = 'foody_public_menu_snapshot_v1';
 let lastPublicSyncStartedAt = 0;
+
+function readStoredMenuSnapshot() {
+    try {
+        if (!window.localStorage) return null;
+        const raw = window.localStorage.getItem(MENU_SNAPSHOT_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+    } catch (_error) {
+        return null;
+    }
+}
+
+function persistCurrentMenuSnapshot(version = '') {
+    try {
+        if (!window.localStorage) return;
+        window.localStorage.setItem(MENU_SNAPSHOT_STORAGE_KEY, JSON.stringify({
+            version,
+            menu,
+            catEmojis,
+            promoIds: Array.isArray(window.promoIds) ? window.promoIds : [],
+            restaurantData: {
+                superCategories: Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [],
+                categoryTranslations: window.restaurantConfig?.categoryTranslations || {},
+                wifi: window.restaurantConfig?.wifi || {},
+                socials: window.restaurantConfig?.socials || {},
+                location: window.restaurantConfig?.location || {},
+                phone: window.restaurantConfig?.phone || '',
+                gallery: Array.isArray(window.restaurantConfig?.gallery) ? window.restaurantConfig.gallery : [],
+                hours: Array.isArray(window.restaurantConfig?._hours) ? window.restaurantConfig._hours : [],
+                hoursNote: typeof window.restaurantConfig?._hoursNote === 'string' ? window.restaurantConfig._hoursNote : '',
+                branding: window.restaurantConfig?.branding || {},
+                contentTranslations: window.restaurantConfig?.contentTranslations || {}
+            }
+        }));
+    } catch (_error) {
+        // Ignore storage quota or privacy-mode failures.
+    }
+}
+
+function applyMenuDataSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') return false;
+
+    const source = snapshot.restaurantData || {};
+    let applied = false;
+
+    if (Array.isArray(snapshot.menu)) {
+        menu = snapshot.menu;
+        applied = true;
+    }
+    if (snapshot.catEmojis && typeof snapshot.catEmojis === 'object') {
+        catEmojis = snapshot.catEmojis;
+        window.catEmojis = catEmojis;
+        applied = true;
+    }
+    if (Array.isArray(snapshot.promoIds)) {
+        window.promoIds = snapshot.promoIds;
+    }
+
+    if (typeof window.mergeRestaurantConfig === 'function') {
+        window.mergeRestaurantConfig({
+            superCategories: Array.isArray(source.superCategories) ? source.superCategories : window.restaurantConfig.superCategories,
+            categoryTranslations: source.categoryTranslations || window.restaurantConfig.categoryTranslations,
+            wifi: source.wifi || window.restaurantConfig.wifi,
+            socials: source.socials || window.restaurantConfig.socials,
+            location: source.location || window.restaurantConfig.location,
+            phone: typeof source.phone === 'string' ? source.phone : window.restaurantConfig.phone,
+            gallery: Array.isArray(source.gallery) ? source.gallery : window.restaurantConfig.gallery,
+            _hours: Array.isArray(source.hours) ? source.hours : window.restaurantConfig._hours,
+            _hoursNote: typeof source.hoursNote === 'string' ? source.hoursNote : window.restaurantConfig._hoursNote,
+            branding: source.branding || window.restaurantConfig.branding,
+            contentTranslations: source.contentTranslations || window.restaurantConfig.contentTranslations
+        });
+        applied = true;
+    }
+
+    if (typeof snapshot.version === 'string' && snapshot.version) {
+        lastDataVersion = snapshot.version;
+    }
+
+    return applied;
+}
 
 async function fetchPublicDataWithTimeout() {
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -90,6 +173,7 @@ async function syncDataFromServer() {
             });
         }
         if (data.promoIds) window.promoIds = data.promoIds;
+        persistCurrentMenuSnapshot(nextDataVersion);
 
         console.log('[SYNC] Data updated from server');
         if (typeof window.applyBranding === 'function') {
@@ -276,6 +360,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initMenuApp() {
+    applyMenuDataSnapshot(readStoredMenuSnapshot());
     const savedLang = typeof window.getStoredLanguage === 'function'
         ? window.getStoredLanguage()
         : 'fr';
