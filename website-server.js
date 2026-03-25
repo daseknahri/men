@@ -176,7 +176,61 @@ function buildPublicSitePayload(data) {
   };
 }
 
+function buildPublicHomePayload(data) {
+  const source = data && typeof data === "object" ? data : {};
+  const promoIds = Array.isArray(source.promoIds)
+    ? source.promoIds
+    : (typeof source.promoId === "string" || Number.isFinite(source.promoId) ? [source.promoId] : []);
+  const promoId = promoIds.length ? promoIds[0] : null;
+  const promoItem = Array.isArray(source.menu)
+    ? source.menu.find((item) => String(item?.id) === String(promoId))
+    : null;
+
+  return {
+    wifi: {
+      ssid: asPublicString(source.wifi?.ssid || source.wifi?.name, 120),
+      pass: asPublicString(source.wifi?.pass || source.wifi?.code, 120)
+    },
+    social: source.social && typeof source.social === "object" ? source.social : {},
+    branding: sanitizePublicBranding(source.branding),
+    contentTranslations: source.contentTranslations && typeof source.contentTranslations === "object"
+      ? source.contentTranslations
+      : {},
+    promoId,
+    promoIds,
+    promoItem: promoItem ? sanitizePublicMenuItem(promoItem) : null,
+    hours: Array.isArray(source.hours) ? source.hours.map(sanitizePublicHoursRow) : [],
+    hoursNote: asPublicString(source.hoursNote, 240),
+    gallery: sanitizePublicStringArray(source.gallery, 24, 8192),
+    guestExperience: source.guestExperience && typeof source.guestExperience === "object"
+      ? {
+        paymentMethods: sanitizePublicStringArray(source.guestExperience.paymentMethods, 8, 40),
+        facilities: sanitizePublicStringArray(source.guestExperience.facilities, 12, 40)
+      }
+      : { paymentMethods: [], facilities: [] },
+    sectionVisibility: source.sectionVisibility && typeof source.sectionVisibility === "object"
+      ? source.sectionVisibility
+      : {},
+    sectionOrder: sanitizePublicStringArray(source.sectionOrder, 12, 40),
+    landing: source.landing && typeof source.landing === "object"
+      ? {
+        location: source.landing.location && typeof source.landing.location === "object"
+          ? {
+            address: asPublicString(source.landing.location.address, 240),
+            url: asPublicString(source.landing.location.url, 2048)
+          }
+          : null,
+        phone: asPublicString(source.landing.phone, 120)
+      }
+      : { location: null, phone: "" }
+  };
+}
+
 let cachedPublicPayload = {
+  version: "",
+  json: ""
+};
+let cachedHomePayload = {
   version: "",
   json: ""
 };
@@ -192,6 +246,19 @@ function getCachedPublicPayload(version) {
     json: JSON.stringify(payload)
   };
   return cachedPublicPayload;
+}
+
+function getCachedHomePayload(version) {
+  if (cachedHomePayload.version === version && cachedHomePayload.json) {
+    return cachedHomePayload;
+  }
+
+  const payload = buildPublicHomePayload(readData());
+  cachedHomePayload = {
+    version,
+    json: JSON.stringify(payload)
+  };
+  return cachedHomePayload;
 }
 
 const DENY_PUBLIC_FILES = new Set([
@@ -233,6 +300,20 @@ app.get("/api/data", (req, res) => {
     return;
   }
   const payload = getCachedPublicPayload(version);
+  res.type("application/json").send(payload.json);
+});
+
+app.get("/api/home-data", (req, res) => {
+  res.setHeader("Cache-Control", "private, max-age=0, must-revalidate");
+  const version = getDataVersion();
+  const etag = `W/"${version}"`;
+  res.setHeader("ETag", etag);
+  res.setHeader("X-Data-Version", version);
+  if (req.headers["if-none-match"] === etag) {
+    res.status(304).end();
+    return;
+  }
+  const payload = getCachedHomePayload(version);
   res.type("application/json").send(payload.json);
 });
 

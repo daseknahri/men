@@ -37,6 +37,7 @@ let menu = defaultMenu.map(item => ({ ...item, images: Array.isArray(item.images
 let catEmojis = { ...defaultCatEmojis };
 let wifiData = { ...defaultWifiData };
 let promoId = null;
+let homePromoItem = null;
 let socialLinks = { ...defaultSocialLinks };
 let guestExperience = { ...defaultGuestExperience };
 let sectionVisibility = { ...defaultSectionVisibility };
@@ -105,8 +106,12 @@ function normalizeMenuItem(item) {
 }
 
 function applySiteData(data) {
-    menu = (Array.isArray(data?.menu) ? data.menu : defaultMenu).map(normalizeMenuItem);
-    catEmojis = data?.catEmojis && typeof data.catEmojis === 'object' ? data.catEmojis : { ...defaultCatEmojis };
+    if (Array.isArray(data?.menu)) {
+        menu = data.menu.map(normalizeMenuItem);
+    }
+    if (data?.catEmojis && typeof data.catEmojis === 'object') {
+        catEmojis = data.catEmojis;
+    }
     wifiData = { ...defaultWifiData, ...(data?.wifi && typeof data.wifi === 'object' ? data.wifi : {}) };
     socialLinks = { ...defaultSocialLinks, ...(data?.social && typeof data.social === 'object' ? data.social : {}) };
     guestExperience = {
@@ -120,6 +125,9 @@ function applySiteData(data) {
     sectionVisibility = { ...defaultSectionVisibility, ...(data?.sectionVisibility && typeof data.sectionVisibility === 'object' ? data.sectionVisibility : {}) };
     sectionOrder = Array.isArray(data?.sectionOrder) ? data.sectionOrder.filter(Boolean) : [...defaultSectionOrder];
     promoId = typeof data?.promoId === 'undefined' ? null : data.promoId;
+    if (Object.prototype.hasOwnProperty.call(data || {}, 'promoItem')) {
+        homePromoItem = data?.promoItem ? normalizeMenuItem(data.promoItem) : null;
+    }
     window.promoIds = Array.isArray(data?.promoIds)
         ? data.promoIds
         : promoId !== null
@@ -277,7 +285,7 @@ async function loadSiteData() {
             : null;
         let res;
         try {
-            res = await fetch('/api/data', {
+            res = await fetch('/api/home-data', {
                 headers: lastPublicDataVersion ? { 'If-None-Match': lastPublicDataVersion } : undefined,
                 signal: controller ? controller.signal : undefined
             });
@@ -319,6 +327,27 @@ async function loadSiteData() {
     })();
 
     return homepageSyncInFlight;
+}
+
+async function warmMenuSnapshotFromHomepage() {
+    const snapshot = readStoredMenuSnapshot();
+    if (snapshot?.version && snapshot.version === lastPublicDataVersion && Array.isArray(snapshot.menu) && snapshot.menu.length) {
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/data', {
+            headers: snapshot?.version ? { 'If-None-Match': snapshot.version } : undefined
+        });
+        if (res.status === 304) return;
+        if (!res.ok) return;
+        const data = await res.json();
+        const version = res.headers.get('etag') || res.headers.get('x-data-version') || '';
+        applySiteData(data);
+        persistMenuSnapshotFromSiteData(data, version);
+    } catch (error) {
+        console.warn('Failed to warm menu snapshot from homepage:', error);
+    }
 }
 
 // INIT
@@ -389,6 +418,9 @@ function initApp() {
 
     homepageInitialized = true;
     scheduleDeferredHomepageSections();
+    scheduleLowPriorityTask(() => {
+        warmMenuSnapshotFromHomepage();
+    }, 1800);
 }
 
 // ═══════════════════════ DYNAMIC HOURS ═══════════════════════
@@ -800,12 +832,11 @@ function closeSocialModal() {
 
 function renderPromo() {
     const promoSection = document.getElementById('promo-section');
-    if (!promoId) {
+    const item = homePromoItem || menu.find(m => m.id == promoId);
+    if (!item) {
         if (promoSection) promoSection.style.display = 'none';
         return;
     }
-    const item = menu.find(m => m.id == promoId);
-    if (!item) return;
 
     if (promoSection) {
         promoSection.style.display = 'block';
