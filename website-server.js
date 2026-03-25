@@ -6,7 +6,7 @@ const {
   parsePort,
   setStaticAssetHeaders
 } = require("./server-common");
-const { createThumbnailRequestHandler } = require("./image-thumbnails");
+const { createThumbnailRequestHandler, warmUploadThumbnailCache } = require("./image-thumbnails");
 const { ensureStorage, getDataVersion, readData, uploadsDir } = require("./site-store");
 
 const app = express();
@@ -95,6 +95,11 @@ app.use((_req, res) => {
 
 const server = app.listen(port, "0.0.0.0", () => {
   console.log(`Restaurant website server running on 0.0.0.0:${port}`);
+  setTimeout(() => {
+    warmUploadThumbnailCache({ logPrefix: "website-thumbs" }).catch((error) => {
+      console.warn("[website-thumbs] Warmup failed:", error?.message || error);
+    });
+  }, 250);
 });
 
 module.exports = { app, server };

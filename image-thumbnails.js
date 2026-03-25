@@ -48,17 +48,37 @@ async function ensureThumbnailFile(originalFileName, targetFileName) {
   fs.mkdirSync(thumbnailDir, { recursive: true });
 
   if (!fs.existsSync(thumbnailPath)) {
-    await sharp(originalPath)
-      .rotate()
-      .resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, {
-        fit: "cover",
-        position: "attention"
-      })
-      .webp({
-        quality: 72,
-        effort: 4
-      })
-      .toFile(thumbnailPath);
+    const tempPath = path.join(
+      thumbnailDir,
+      `${safeTargetName}.${process.pid}.${Date.now()}.tmp`
+    );
+
+    try {
+      await sharp(originalPath)
+        .rotate()
+        .resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, {
+          fit: "cover",
+          position: "attention"
+        })
+        .webp({
+          quality: 72,
+          effort: 4
+        })
+        .toFile(tempPath);
+
+      if (!fs.existsSync(thumbnailPath)) {
+        fs.renameSync(tempPath, thumbnailPath);
+      } else if (fs.existsSync(tempPath)) {
+        fs.rmSync(tempPath, { force: true });
+      }
+    } catch (error) {
+      if (fs.existsSync(tempPath)) {
+        fs.rmSync(tempPath, { force: true });
+      }
+      if (!fs.existsSync(thumbnailPath)) {
+        throw error;
+      }
+    }
   }
 
   return thumbnailPath;
@@ -89,8 +109,44 @@ function createThumbnailRequestHandler() {
   };
 }
 
+function listThumbnailSourceFiles() {
+  if (!fs.existsSync(uploadsDir)) return [];
+
+  return fs.readdirSync(uploadsDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((name) => THUMBNAIL_EXTENSIONS.has(path.extname(name).toLowerCase()));
+}
+
+let thumbnailWarmupPromise = null;
+
+function warmUploadThumbnailCache(options = {}) {
+  if (thumbnailWarmupPromise) return thumbnailWarmupPromise;
+
+  const logPrefix = options.logPrefix || "thumbs";
+  const batchSize = Number.isInteger(options.batchSize) && options.batchSize > 0 ? options.batchSize : 12;
+
+  thumbnailWarmupPromise = (async () => {
+    const files = listThumbnailSourceFiles();
+    if (!files.length) return;
+
+    for (let index = 0; index < files.length; index += batchSize) {
+      const batch = files.slice(index, index + batchSize);
+      await Promise.all(batch.map((fileName) => ensureThumbnailFile(fileName, `${fileName}.webp`).catch((error) => {
+        console.warn(`[${logPrefix}] Thumbnail warmup failed for ${fileName}:`, error?.message || error);
+      })));
+      await new Promise((resolve) => setTimeout(resolve, 15));
+    }
+
+    console.log(`[${logPrefix}] Warmed ${files.length} upload thumbnail(s).`);
+  })();
+
+  return thumbnailWarmupPromise;
+}
+
 module.exports = {
   createThumbnailRequestHandler,
   ensureThumbnailFile,
-  getUploadThumbnailPublicUrl
+  getUploadThumbnailPublicUrl,
+  warmUploadThumbnailCache
 };
