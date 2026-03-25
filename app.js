@@ -164,6 +164,16 @@ function initApp() {
     updateWhatsAppLinks();
     renderLocation();
 
+    document.querySelectorAll('.slide-cta').forEach((cta) => {
+        const goToMenu = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            window.location.href = 'menu.html';
+        };
+        cta.addEventListener('click', goToMenu);
+        cta.addEventListener('touchend', goToMenu, { passive: false });
+    });
+
     // Safety check for language initialization
     const initialLangBtn = document.querySelector('.lang-btn') || document.querySelector('.lang-drop-btn');
     const savedLang = typeof window.getStoredLanguage === 'function'

@@ -7913,14 +7913,19 @@ body:not(.menu-page) .footer-copy {
     top: calc(100% + 8px);
     right: 0;
     left: auto;
+    width: 104px;
     min-width: 98px;
-    max-width: min(108px, calc(100vw - 20px));
+    max-width: 104px;
     border-radius: 16px;
   }
 
   body:not(.menu-page) .lang-opt {
     padding: 7px 8px;
     font-size: 0.74rem;
+  }
+
+  body:not(.menu-page) .lang-opt .flag {
+    display: none;
   }
 
   body:not(.menu-page) .header {
