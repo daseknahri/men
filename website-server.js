@@ -241,6 +241,40 @@ function buildPublicHomePayload(data) {
   };
 }
 
+function buildPublicMenuPayload(data) {
+  const source = data && typeof data === "object" ? data : {};
+  return {
+    menu: Array.isArray(source.menu) ? source.menu.map(sanitizePublicMenuItem) : [],
+    catEmojis: source.catEmojis && typeof source.catEmojis === "object" ? source.catEmojis : {},
+    wifi: {
+      ssid: asPublicString(source.wifi?.ssid || source.wifi?.name, 120),
+      pass: asPublicString(source.wifi?.pass || source.wifi?.code, 120)
+    },
+    social: source.social && typeof source.social === "object" ? source.social : {},
+    branding: sanitizePublicBranding(source.branding),
+    contentTranslations: source.contentTranslations && typeof source.contentTranslations === "object"
+      ? source.contentTranslations
+      : {},
+    promoId: typeof source.promoId === "string" || Number.isFinite(source.promoId) ? source.promoId : null,
+    promoIds: Array.isArray(source.promoIds) ? source.promoIds : [],
+    superCategories: Array.isArray(source.superCategories) ? source.superCategories.map(sanitizePublicSuperCategory) : [],
+    landing: source.landing && typeof source.landing === "object"
+      ? {
+        location: source.landing.location && typeof source.landing.location === "object"
+          ? {
+            address: asPublicString(source.landing.location.address, 240),
+            url: asPublicString(source.landing.location.url, 2048)
+          }
+          : null,
+        phone: asPublicString(source.landing.phone, 120)
+      }
+      : { location: null, phone: "" },
+    categoryTranslations: source.categoryTranslations && typeof source.categoryTranslations === "object"
+      ? source.categoryTranslations
+      : {}
+  };
+}
+
 function sendBuiltOrSourceHtml(res, fileName) {
   const builtPath = path.join(publicBuildDir, fileName);
   const sourcePath = path.join(__dirname, fileName);
@@ -249,6 +283,10 @@ function sendBuiltOrSourceHtml(res, fileName) {
 }
 
 let cachedPublicPayload = {
+  version: "",
+  json: ""
+};
+let cachedMenuPayload = {
   version: "",
   json: ""
 };
@@ -268,6 +306,19 @@ function getCachedPublicPayload(version) {
     json: JSON.stringify(payload)
   };
   return cachedPublicPayload;
+}
+
+function getCachedMenuPayload(version) {
+  if (cachedMenuPayload.version === version && cachedMenuPayload.json) {
+    return cachedMenuPayload;
+  }
+
+  const payload = buildPublicMenuPayload(readData());
+  cachedMenuPayload = {
+    version,
+    json: JSON.stringify(payload)
+  };
+  return cachedMenuPayload;
 }
 
 function getCachedHomePayload(version) {
@@ -322,6 +373,20 @@ app.get("/api/data", (req, res) => {
     return;
   }
   const payload = getCachedPublicPayload(version);
+  res.type("application/json").send(payload.json);
+});
+
+app.get("/api/menu-data", (req, res) => {
+  res.setHeader("Cache-Control", "private, max-age=0, must-revalidate");
+  const version = getDataVersion();
+  const etag = `W/"${version}"`;
+  res.setHeader("ETag", etag);
+  res.setHeader("X-Data-Version", version);
+  if (req.headers["if-none-match"] === etag) {
+    res.status(304).end();
+    return;
+  }
+  const payload = getCachedMenuPayload(version);
   res.type("application/json").send(payload.json);
 });
 

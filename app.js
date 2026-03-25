@@ -375,7 +375,7 @@ async function warmMenuSnapshotFromHomepage() {
     }
 
     try {
-        const res = await fetch('/api/data', {
+        const res = await fetch('/api/menu-data', {
             headers: snapshot?.version ? { 'If-None-Match': snapshot.version } : undefined
         });
         if (res.status === 304) return;

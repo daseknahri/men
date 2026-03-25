@@ -195,7 +195,7 @@ async function fetchPublicDataWithTimeout() {
         : null;
 
     try {
-        return await fetch('/api/data', {
+        return await fetch('/api/menu-data', {
             headers: lastDataVersion ? { 'If-None-Match': lastDataVersion } : undefined,
             signal: controller ? controller.signal : undefined
         });
