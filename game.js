@@ -10,6 +10,16 @@ let revealedCount = 0;
 let gameActive = false;
 let gameStylesheetPromise = null;
 
+function gameText(key, fallback, vars = {}) {
+    if (typeof window.formatTranslation === 'function') {
+        return window.formatTranslation(key, fallback, vars);
+    }
+    if (typeof window.getTranslation === 'function') {
+        return window.getTranslation(key, fallback);
+    }
+    return fallback;
+}
+
 function ensureGameStylesheet() {
     if (document.getElementById('gameStylesheet')) {
         return Promise.resolve();
@@ -34,8 +44,60 @@ function ensureGameStylesheet() {
     return gameStylesheetPromise;
 }
 
+function ensureGameModalShell() {
+    if (document.getElementById('gameModal') && document.getElementById('gameOverlay')) {
+        return;
+    }
+
+    document.body.insertAdjacentHTML('beforeend', `
+        <div id="gameOverlay" class="overlay" onclick="closeGameModal()"></div>
+        <div class="game-modal" id="gameModal">
+            <button class="game-close" onclick="closeGameModal()">${gameText('modal_close', 'CLOSE') === 'إغلاق' ? '✕' : '✕'}</button>
+            <div class="game-logo">
+                <div class="game-logo-mark">
+                    <span class="game-logo-who">${gameText('game_logo_who', 'WHO')}</span><br>
+                    <span class="game-logo-pays">${gameText('game_logo_pays', 'PAYS?')}</span>
+                </div>
+            </div>
+            <div id="gameStartScreen" class="game-start-container">
+                <div class="game-subtitle game-subtitle-light">${gameText('game_board_subtitle', 'The one who finds the X, pays the check!')}</div>
+                <div class="gs-how gs-how-light">
+                    <h3>${gameText('game_how_to_play', 'How to play?')}</h3>
+                    <ul>
+                        <li><div class="gs-how-num">1</div><span>${gameText('game_rule_1', 'Wait for your turn and open a box.')}</span></li>
+                        <li><div class="gs-how-num">2</div><span>${gameText('game_rule_2', 'Try to avoid finding the X sign.')}</span></li>
+                        <li><div class="gs-how-num">3</div><span>${gameText('game_rule_3', 'If you find the X, pay the check.')}</span></li>
+                    </ul>
+                </div>
+                <div class="gs-slider-wrap gs-slider-light">
+                    <h4>${gameText('game_players_label', 'Number of Players')}</h4>
+                    <div class="game-slider-stage">
+                        <input type="range" id="playerSlider" class="game-slider" min="2" max="8" value="4" oninput="updatePlayerSlider(this.value)">
+                        <div id="playerSliderVal" class="player-slider-val">4</div>
+                    </div>
+                </div>
+                <button class="gs-btn" onclick="startGame()">${gameText('game_start_button', 'START GAME')}</button>
+            </div>
+            <div id="gameBoardScreen" class="game-board-container" style="display:none;">
+                <div class="game-subtitle game-subtitle-board">${gameText('game_board_subtitle', 'The one who finds the X, pays the check!')}</div>
+                <div class="player-indicators" id="gamePlayerIndicators"></div>
+                <div class="game-grid" id="gameBoardGrid"></div>
+                <div class="loss-popup" id="gameLossPopup" style="display:none;">
+                    <div class="loss-card">
+                        <div class="loss-close" onclick="closeGameModal()">✕</div>
+                        <div class="loss-emoji">❌</div>
+                        <p id="loserText" class="loss-copy">${gameText('game_loss_text', `Player X, you've found the X sign.`, { player: 'X' })}</p>
+                        <h2 class="loss-title">${gameText('game_loss_title', 'Pay the check!')}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `);
+}
+
 async function openGameModal() {
     await ensureGameStylesheet();
+    ensureGameModalShell();
     showGameStart();
     document.getElementById('gameOverlay').classList.add('open');
     document.getElementById('gameModal').classList.add('open');
@@ -43,8 +105,8 @@ async function openGameModal() {
 }
 
 function closeGameModal() {
-    document.getElementById('gameOverlay').classList.remove('open');
-    document.getElementById('gameModal').classList.remove('open');
+    document.getElementById('gameOverlay')?.classList.remove('open');
+    document.getElementById('gameModal')?.classList.remove('open');
     document.body.style.overflow = '';
 }
 
