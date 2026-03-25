@@ -14,7 +14,18 @@ function tx(key, fallback, vars) {
     return fallback;
 }
 
+function ensureDeferredHomepageDom() {
+    const root = document.getElementById('homepageDeferredRoot');
+    const template = document.getElementById('homepageDeferredTemplate');
+    if (!root || !template || root.childElementCount > 0) {
+        return;
+    }
+
+    root.appendChild(template.content.cloneNode(true));
+}
+
 function renderHours() {
+    ensureDeferredHomepageDom();
     const grid = document.getElementById('hoursGrid');
     const noteEl = document.getElementById('hoursNote');
     if (!grid) return;
@@ -56,6 +67,7 @@ function updateWifiUI() {
 }
 
 function updateWhatsAppLinks() {
+    ensureDeferredHomepageDom();
     const { socialLinks = {} } = homepageState();
     const phoneFallback = (window.restaurantConfig?.phone || '').replace(/\D/g, '');
     const wa = (socialLinks.whatsapp || '').replace(/\D/g, '') || phoneFallback;
@@ -83,6 +95,7 @@ function updateWhatsAppLinks() {
 }
 
 function renderSocialLinks() {
+    ensureDeferredHomepageDom();
     const { socialLinks = {} } = homepageState();
     const modalList = document.getElementById('modalSocialList');
     const footerContainer = document.getElementById('footerSocial');
@@ -147,6 +160,7 @@ function renderSocialLinks() {
 }
 
 function renderGallery() {
+    ensureDeferredHomepageDom();
     const grid = document.getElementById('mainGalleryGrid');
     if (!grid) return;
     const gallerySection = document.getElementById('gallery');
@@ -188,6 +202,7 @@ function renderGallery() {
 }
 
 function renderLocation() {
+    ensureDeferredHomepageDom();
     const addressText = document.getElementById('contactAddressText');
     const footerAddressText = document.getElementById('footerAddressText');
     const addressCard = document.getElementById('contactAddressCard');
@@ -270,6 +285,7 @@ function renderLocation() {
 }
 
 function renderPaymentFacilities() {
+    ensureDeferredHomepageDom();
     const { guestExperience = {} } = homepageState();
     const section = document.getElementById('payments');
     const paymentsList = document.getElementById('paymentMethodsList');
@@ -327,6 +343,7 @@ function renderPaymentFacilities() {
 }
 
 function renderSectionLayout() {
+    ensureDeferredHomepageDom();
     const { sectionVisibility = {}, sectionOrder = [], defaultSectionVisibility = {} } = homepageState();
     const visibility = window.restaurantConfig?.sectionVisibility || sectionVisibility || defaultSectionVisibility;
     const orderSource = Array.isArray(window.restaurantConfig?.sectionOrder) ? window.restaurantConfig.sectionOrder : sectionOrder;

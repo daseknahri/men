@@ -400,7 +400,17 @@ function initApp() {
     if (document.getElementById('statusBadge')) updateStatus();
 
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (event) => {
+            const targetSelector = link.getAttribute('href') || '';
+            const needsDeferredSection = targetSelector.startsWith('#') && targetSelector !== '#heroSlider';
+            if (needsDeferredSection && !homepageDeferredSectionsReady) {
+                event.preventDefault();
+                renderDeferredHomepageSections().then(() => {
+                    requestAnimationFrame(() => {
+                        document.querySelector(targetSelector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                });
+            }
             const nav = document.getElementById('headerNav');
             if (nav) nav.classList.remove('mobile-open');
             const menuBtn = document.querySelector('.mobile-menu-btn');
@@ -463,11 +473,12 @@ window.__homepageGetState = function __homepageGetState() {
 };
 
 function renderDeferredHomepageSections() {
-    ensureHomepageExtrasScript()
+    return ensureHomepageExtrasScript()
         .then(() => {
             if (typeof window.__homepageRenderDeferredSections === 'function') {
                 window.__homepageRenderDeferredSections();
             }
+            homepageDeferredSectionsReady = true;
         })
         .catch((error) => {
             console.error('Failed to load homepage extras:', error);
