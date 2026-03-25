@@ -84,6 +84,9 @@ window.defaultCatEmojis = {};
 window.defaultCategoryTranslations = {};
 window.defaultSuperCategories = [];
 
+const STARTER_CATEGORY_TRANSLATION_FALLBACKS = {};
+const STARTER_SUPERCATEGORY_TRANSLATION_FALLBACKS = {};
+
 window.defaultBranding = {
     "presetId": "core",
     "restaurantName": "Restaurant",
