@@ -365,7 +365,7 @@ function getMenuCardImageSrc(src) {
     if (!/\.(jpe?g|png|webp|avif)$/i.test(raw)) return raw;
     const filename = raw.split('/').pop();
     if (!filename) return raw;
-    return `/uploads/.thumbs/${filename}.webp`;
+    return `/uploads/.thumbs/${filename}.menu.webp`;
 }
 
 
@@ -381,11 +381,34 @@ let activeCategoryRenderState = null;
 let activeCategoryRenderToken = 0;
 let featuredRenderToken = 0;
 let menuCategoryMarkupCache = new Map();
-const MENU_INITIAL_CHUNK_SIZE = 8;
-const MENU_CHUNK_SIZE = 12;
+
+function isCompactMenuViewport() {
+    return Boolean(
+        window.matchMedia &&
+        (
+            window.matchMedia('(max-width: 768px)').matches ||
+            window.matchMedia('(pointer: coarse)').matches ||
+            window.matchMedia('(hover: none)').matches
+        )
+    );
+}
+
+function getMenuRenderChunkConfig() {
+    return isCompactMenuViewport()
+        ? { initial: 4, chunk: 6 }
+        : { initial: 8, chunk: 12 };
+}
 
 function prefersReducedMenuMotion() {
-    return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+    return Boolean(
+        saveData ||
+        (window.matchMedia && (
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+            window.matchMedia('(max-width: 768px)').matches ||
+            window.matchMedia('(pointer: coarse)').matches
+        ))
+    );
 }
 
 function ensureMenuMotionObserver() {
@@ -514,7 +537,8 @@ function flushActiveCategoryRenderState() {
     }
 
     while (state.nextIndex < state.items.length) {
-        const endIndex = Math.min(state.nextIndex + MENU_CHUNK_SIZE, state.items.length);
+        const chunkSize = getMenuRenderChunkConfig().chunk;
+        const endIndex = Math.min(state.nextIndex + chunkSize, state.items.length);
         const chunkMarkup = state.items
             .slice(state.nextIndex, endIndex)
             .map((item, index) => buildMenuItemCardMarkup(item, state.category, state.nextIndex + index))
@@ -540,7 +564,8 @@ function scheduleNextCategoryChunk(token) {
         const currentState = activeCategoryRenderState;
         if (!currentState || token !== activeCategoryRenderToken || !currentState.grid) return;
 
-        const endIndex = Math.min(currentState.nextIndex + MENU_CHUNK_SIZE, currentState.items.length);
+        const chunkSize = getMenuRenderChunkConfig().chunk;
+        const endIndex = Math.min(currentState.nextIndex + chunkSize, currentState.items.length);
         const chunkMarkup = currentState.items
             .slice(currentState.nextIndex, endIndex)
             .map((item, index) => buildMenuItemCardMarkup(item, currentState.category, currentState.nextIndex + index))
@@ -1219,7 +1244,7 @@ function renderMenu(categoryFilter = null) {
         const grid = wrap.querySelector('.menu-grid');
         if (!grid) return;
 
-        const initialCount = Math.min(MENU_INITIAL_CHUNK_SIZE, items.length);
+        const initialCount = Math.min(getMenuRenderChunkConfig().initial, items.length);
         grid.innerHTML = items
             .slice(0, initialCount)
             .map((item, itemIndex) => buildMenuItemCardMarkup(item, cat, itemIndex))

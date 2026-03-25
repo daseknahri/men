@@ -278,6 +278,9 @@
 
         .menu-section {
             margin-bottom: 56px;
+            content-visibility: auto;
+            contain-intrinsic-size: 760px;
+            contain: layout paint style;
         }
 
         .menu-section-title {
@@ -323,6 +326,7 @@
             overflow: hidden;
             content-visibility: auto;
             contain-intrinsic-size: 116px;
+            contain: layout paint style;
         }
 
         .menu-item-card::before {
@@ -671,6 +675,41 @@
             .featured-card:hover .featured-img-wrap img,
             .promo-card-vibrant:hover .promo-visual-vibrant img {
                 transform: none !important;
+            }
+        }
+
+        @media (max-width: 768px), (pointer: coarse) {
+            .menu-reveal-observe,
+            .menu-reveal-observe.is-visible {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+            }
+
+            .menu-item-card,
+            .featured-card,
+            .promo-card-vibrant {
+                transition: none !important;
+                backdrop-filter: none !important;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18) !important;
+            }
+
+            .menu-item-card::before,
+            .promo-glow-vibrant {
+                display: none !important;
+            }
+
+            .menu-item-img,
+            .menu-item-add,
+            .menu-item-love,
+            .featured-add-btn {
+                box-shadow: none !important;
+            }
+
+            .menu-search-box input {
+                transition: none !important;
+                box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
             }
         }
 
