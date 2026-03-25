@@ -11,6 +11,9 @@ const THUMBNAIL_QUALITY = Number.parseInt(process.env.IMAGE_THUMB_QUALITY || "72
 const MENU_CARD_THUMB_WIDTH = Number.parseInt(process.env.IMAGE_MENU_THUMB_WIDTH || "192", 10) || 192;
 const MENU_CARD_THUMB_HEIGHT = Number.parseInt(process.env.IMAGE_MENU_THUMB_HEIGHT || "192", 10) || 192;
 const MENU_CARD_THUMB_QUALITY = Number.parseInt(process.env.IMAGE_MENU_THUMB_QUALITY || "60", 10) || 60;
+const MENU_LIST_THUMB_WIDTH = Number.parseInt(process.env.IMAGE_MENU_LIST_THUMB_WIDTH || "160", 10) || 160;
+const MENU_LIST_THUMB_HEIGHT = Number.parseInt(process.env.IMAGE_MENU_LIST_THUMB_HEIGHT || "160", 10) || 160;
+const MENU_LIST_THUMB_QUALITY = Number.parseInt(process.env.IMAGE_MENU_LIST_THUMB_QUALITY || "56", 10) || 56;
 const THUMBNAIL_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 const THUMBNAIL_VARIANTS = Object.freeze({
   default: {
@@ -25,6 +28,13 @@ const THUMBNAIL_VARIANTS = Object.freeze({
     width: MENU_CARD_THUMB_WIDTH,
     height: MENU_CARD_THUMB_HEIGHT,
     quality: MENU_CARD_THUMB_QUALITY,
+    effort: 3
+  },
+  list: {
+    suffix: ".list",
+    width: MENU_LIST_THUMB_WIDTH,
+    height: MENU_LIST_THUMB_HEIGHT,
+    quality: MENU_LIST_THUMB_QUALITY,
     effort: 3
   }
 });
@@ -185,6 +195,9 @@ function warmUploadThumbnailCache(options = {}) {
         }),
         ensureThumbnailFile(fileName, `${fileName}.menu.webp`, "menu").catch((error) => {
           console.warn(`[${logPrefix}] Menu thumbnail warmup failed for ${fileName}:`, error?.message || error);
+        }),
+        ensureThumbnailFile(fileName, `${fileName}.list.webp`, "list").catch((error) => {
+          console.warn(`[${logPrefix}] List thumbnail warmup failed for ${fileName}:`, error?.message || error);
         })
       ])));
       await new Promise((resolve) => setTimeout(resolve, 15));

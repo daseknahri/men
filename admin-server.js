@@ -2922,7 +2922,8 @@ app.post("/api/upload", requireAuth, (req, res, next) => {
 
     Promise.all([
       ensureThumbnailFile(req.file.filename, `${req.file.filename}.webp`, "default"),
-      ensureThumbnailFile(req.file.filename, `${req.file.filename}.menu.webp`, "menu")
+      ensureThumbnailFile(req.file.filename, `${req.file.filename}.menu.webp`, "menu"),
+      ensureThumbnailFile(req.file.filename, `${req.file.filename}.list.webp`, "list")
     ]).catch((thumbnailError) => {
       console.warn("Thumbnail generation failed:", thumbnailError);
     });

@@ -359,13 +359,14 @@ function escapeHtmlAttr(value) {
         .replace(/>/g, '&gt;');
 }
 
-function getMenuCardImageSrc(src) {
+function getMenuCardImageSrc(src, variant = 'menu') {
     const raw = String(src ?? '').trim();
     if (!raw.startsWith('/uploads/')) return raw;
     if (!/\.(jpe?g|png|webp|avif)$/i.test(raw)) return raw;
     const filename = raw.split('/').pop();
     if (!filename) return raw;
-    return `/uploads/.thumbs/${filename}.menu.webp`;
+    const safeVariant = variant === 'list' ? 'list' : 'menu';
+    return `/uploads/.thumbs/${filename}.${safeVariant}.webp`;
 }
 
 
@@ -477,6 +478,7 @@ function loadDeferredMenuImage(img) {
 function ensureMenuImageObserver() {
     if (menuImageObserver || !('IntersectionObserver' in window)) return menuImageObserver;
 
+    const rootMargin = isCompactMenuViewport() ? '120px 0px' : '220px 0px';
     menuImageObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
@@ -484,7 +486,7 @@ function ensureMenuImageObserver() {
             menuImageObserver.unobserve(target);
             loadDeferredMenuImage(target);
         });
-    }, { rootMargin: '220px 0px' });
+    }, { rootMargin });
 
     return menuImageObserver;
 }
@@ -510,7 +512,7 @@ function buildMenuItemCardMarkup(item, cat, itemIndex) {
                 <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
             </button>
             <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
-                ${imgTag(item, { defer: true })}
+                ${imgTag(item, { defer: true, variant: 'list' })}
             </div>
             <div class="menu-item-info">
                 <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
@@ -1014,7 +1016,7 @@ function showLanding() {
     navigationStack = [];
     updateBackBtn();
     scheduleMenuMotionRefresh();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: isCompactMenuViewport() ? 'auto' : 'smooth' });
 }
 
 function showMenuNavigationView(title) {
@@ -1024,7 +1026,7 @@ function showMenuNavigationView(title) {
     document.getElementById('menuNavTitle').textContent = title || window.getTranslation('nav_menu', 'Menu');
     updateBackBtn();
     scheduleMenuMotionRefresh();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: isCompactMenuViewport() ? 'auto' : 'smooth' });
 }
 
 function renderFeaturedSlider(items, containerId) {
@@ -1334,9 +1336,9 @@ function renderMenu(categoryFilter = null) {
 }
 
 function imgTag(item, options = {}) {
-    const { defer = false } = options;
+    const { defer = false, variant = 'menu' } = options;
     const src = (item.images && item.images.length > 0) ? item.images[0] : item.img;
-    const optimizedSrc = getMenuCardImageSrc(src);
+    const optimizedSrc = getMenuCardImageSrc(src, variant);
     const safeFallbackEmoji = catEmojis[item.cat] || MENU_UI_ICONS.plate;
     const originalSrcAttr = optimizedSrc && src && optimizedSrc !== src
         ? ` data-original-src="${escapeHtmlAttr(src)}"`
