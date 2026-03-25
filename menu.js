@@ -475,6 +475,7 @@ function renderSuperCategoryChildNav(sc, activeCat = '') {
             ${filteredCats.map((c) => buildCategorySubnavButtonMarkup(c, c === activeCat)).join('')}
         </div>
     `;
+    scheduleMenuFixedLayout();
 }
 
 
@@ -492,6 +493,34 @@ let activeCategoryRenderToken = 0;
 let featuredRenderToken = 0;
 let menuCategoryMarkupCache = new Map();
 let menuInteractionsScriptPromise = null;
+
+function updateMenuFixedLayout() {
+    const navView = document.getElementById('menuNavigationView');
+    if (!navView) return;
+
+    const topNav = navView.querySelector('.menu-nav-bar');
+    if (!topNav) return;
+
+    const mode = navView.getAttribute('data-mode');
+    const navBottom = Math.max(0, Math.round(topNav.getBoundingClientRect().bottom));
+    navView.style.setProperty('--menu-subnav-top', `${navBottom}px`);
+
+    if (mode === 'items') {
+        const catNavWrapper = document.getElementById('catNavWrapper');
+        const catHeight = catNavWrapper && catNavWrapper.style.display !== 'none'
+            ? Math.max(40, Math.round(catNavWrapper.getBoundingClientRect().height || catNavWrapper.offsetHeight || 0))
+            : 0;
+        navView.style.setProperty('--menu-subnav-height', `${catHeight}px`);
+        navView.style.setProperty('--menu-fixed-stack-height', `${navBottom + catHeight}px`);
+    } else {
+        navView.style.setProperty('--menu-subnav-height', '0px');
+        navView.style.setProperty('--menu-fixed-stack-height', `${navBottom}px`);
+    }
+}
+
+function scheduleMenuFixedLayout() {
+    window.requestAnimationFrame(updateMenuFixedLayout);
+}
 
 function ensureMenuInteractionsScriptLoaded() {
     if (window.__foodyMenuInteractionsLoaded) return Promise.resolve();
@@ -1170,6 +1199,7 @@ function showLanding() {
     navigationStack = [];
     updateBackBtn();
     scheduleMenuMotionRefresh();
+    scheduleMenuFixedLayout();
     window.scrollTo({ top: 0, behavior: isCompactMenuViewport() ? 'auto' : 'smooth' });
 }
 
@@ -1180,6 +1210,7 @@ function showMenuNavigationView(title) {
     document.getElementById('menuNavTitle').textContent = title || window.getTranslation('nav_menu', 'Menu');
     updateBackBtn();
     scheduleMenuMotionRefresh();
+    scheduleMenuFixedLayout();
     window.scrollTo({ top: 0, behavior: isCompactMenuViewport() ? 'auto' : 'smooth' });
 }
 
@@ -1348,6 +1379,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
     scheduleDeferredFeaturedRender([], 'featuredGlobal');
 
     updateBackBtn();
+    scheduleMenuFixedLayout();
     scheduleMenuMotionRefresh();
 }
 
@@ -1372,6 +1404,7 @@ function showCategoryItems(cat, addToStack = true) {
     scheduleDeferredFeaturedRender(featuredItems, 'featuredGlobal');
 
     updateBackBtn();
+    scheduleMenuFixedLayout();
     scheduleMenuMotionRefresh();
 }
 
@@ -1725,6 +1758,9 @@ window.renderDrawer = renderDrawer;
 window.saveCart = saveCart;
 window.updateCartUI = updateCartUI;
 window.openPublicMediaPreview = openGallery;
+
+window.addEventListener('resize', scheduleMenuFixedLayout);
+window.addEventListener('orientationchange', scheduleMenuFixedLayout);
 
 function scrollPromo(dir) {
     const container = document.getElementById('promoCarousel');

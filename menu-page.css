@@ -217,10 +217,11 @@
             --menu-subnav-top: calc(env(safe-area-inset-top, 0px) + 62px);
             --menu-subnav-width: min(calc(100vw - 36px), 860px);
             --menu-subnav-height: 54px;
+            --menu-fixed-stack-height: calc(var(--menu-subnav-top) + var(--menu-subnav-height));
         }
 
         #menuNavigationView[data-mode='items'] .menu-content-area {
-            padding-top: calc(var(--menu-subnav-height) + 8px);
+            padding-top: calc(var(--menu-fixed-stack-height) + 8px);
         }
 
         #menuNavigationView[data-mode='categories'] .cat-nav-wrapper {
@@ -1224,7 +1225,6 @@
             }
 
             #menuNavigationView[data-mode='items'] .cat-nav-wrapper {
-                top: calc(env(safe-area-inset-top, 0px) + 56px);
                 width: calc(100vw - 20px);
                 padding: 5px 0 7px;
                 border-radius: 16px;
@@ -1236,7 +1236,7 @@
             }
 
             #menuNavigationView[data-mode='items'] .menu-content-area {
-                padding-top: 62px;
+                padding-top: calc(var(--menu-fixed-stack-height) + 8px);
             }
 
             .menu-subnav-track {
