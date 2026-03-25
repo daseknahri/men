@@ -47,6 +47,7 @@ let cart = [];
 let serviceType = 'onsite';
 let currentSlide = 0;
 const PUBLIC_DATA_TIMEOUT_MS = 8000;
+const MENU_SNAPSHOT_STORAGE_KEY = 'foody_public_menu_snapshot_v1';
 
 function t(key, fallback, vars) {
     if (typeof window.formatTranslation === 'function') {
@@ -109,6 +110,33 @@ function applySiteData(data) {
     }
 }
 
+function persistMenuSnapshotFromSiteData(data, version = '') {
+    try {
+        if (!window.localStorage) return;
+        window.localStorage.setItem(MENU_SNAPSHOT_STORAGE_KEY, JSON.stringify({
+            version,
+            menu,
+            catEmojis,
+            promoIds: Array.isArray(window.promoIds) ? window.promoIds : [],
+            restaurantData: {
+                superCategories: Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [],
+                categoryTranslations: window.restaurantConfig?.categoryTranslations || {},
+                wifi: window.restaurantConfig?.wifi || {},
+                socials: window.restaurantConfig?.socials || {},
+                location: window.restaurantConfig?.location || {},
+                phone: window.restaurantConfig?.phone || '',
+                gallery: Array.isArray(window.restaurantConfig?.gallery) ? window.restaurantConfig.gallery : [],
+                hours: Array.isArray(window.restaurantConfig?._hours) ? window.restaurantConfig._hours : [],
+                hoursNote: typeof window.restaurantConfig?._hoursNote === 'string' ? window.restaurantConfig._hoursNote : '',
+                branding: window.restaurantConfig?.branding || {},
+                contentTranslations: window.restaurantConfig?.contentTranslations || {}
+            }
+        }));
+    } catch (_error) {
+        // Ignore storage quota or privacy-mode failures.
+    }
+}
+
 async function loadSiteData() {
     try {
         const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -125,7 +153,10 @@ async function loadSiteData() {
             if (timeoutId) clearTimeout(timeoutId);
         }
         if (!res.ok) throw new Error('Server returned ' + res.status);
-        applySiteData(await res.json());
+        const data = await res.json();
+        const version = res.headers.get('etag') || res.headers.get('x-data-version') || '';
+        applySiteData(data);
+        persistMenuSnapshotFromSiteData(data, version);
     } catch (error) {
         console.error('Failed to load site data:', error);
         applySiteData({
