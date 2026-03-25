@@ -751,6 +751,46 @@ window.openSafeExternalUrl = function (value, target = '_blank') {
     return true;
 };
 
+window.bindPublicMediaPreview = function (element, mediaFactory) {
+    if (!element) return;
+
+    const clearPreview = () => {
+        element.onclick = null;
+        element.onkeydown = null;
+        element.removeAttribute('tabindex');
+        element.removeAttribute('role');
+        element.classList.remove('is-previewable');
+    };
+
+    if (typeof mediaFactory !== 'function') {
+        clearPreview();
+        return;
+    }
+
+    const openPreview = () => {
+        const galleryItems = mediaFactory();
+        if (!Array.isArray(galleryItems) || galleryItems.length === 0) return;
+        const previewHandler =
+            typeof window.openPublicMediaPreview === 'function'
+                ? window.openPublicMediaPreview
+                : (typeof window.openGallery === 'function' ? window.openGallery : null);
+        if (previewHandler) {
+            previewHandler(galleryItems, 0);
+        }
+    };
+
+    element.onclick = openPreview;
+    element.onkeydown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPreview();
+        }
+    };
+    element.setAttribute('tabindex', '0');
+    element.setAttribute('role', 'button');
+    element.classList.add('is-previewable');
+};
+
 window.getSafePhoneHref = function (value) {
     const digits = String(value || '').replace(/[^\d+]/g, '');
     return digits ? `tel:${digits}` : '';
@@ -941,6 +981,11 @@ window.applyBranding = function () {
                     image.style.display = '';
                 }
             });
+            window.bindPublicMediaPreview(image, () => [{
+                name: branding.restaurantName || branding.shortName || 'Restaurant',
+                img: branding.heroImage,
+                images: [branding.heroImage]
+            }]);
         }
     });
 
@@ -965,6 +1010,13 @@ window.applyBranding = function () {
 
     const logoImage = document.getElementById('landingLogoImage');
     const logoFallback = document.getElementById('landingLogoFallback');
+    const logoPreviewFactory = branding.logoImage
+        ? () => [{
+            name: `${branding.shortName || branding.restaurantName || 'Restaurant'} Logo`,
+            img: branding.logoImage,
+            images: [branding.logoImage]
+        }]
+        : null;
     if (logoImage) {
         if (branding.logoImage) {
             logoImage.alt = `${branding.shortName} Logo`;
@@ -975,19 +1027,24 @@ window.applyBranding = function () {
                     if (logoFallback) {
                         logoFallback.textContent = window.getRestaurantInitials();
                         logoFallback.style.display = 'flex';
+                        window.bindPublicMediaPreview(logoFallback, null);
                     }
                 },
                 displayValue: 'block'
             });
+            window.bindPublicMediaPreview(logoImage, logoPreviewFactory);
             if (logoFallback) {
                 logoFallback.style.display = 'none';
+                window.bindPublicMediaPreview(logoFallback, logoPreviewFactory);
             }
         } else {
             logoImage.removeAttribute('src');
             logoImage.style.display = 'none';
+            window.bindPublicMediaPreview(logoImage, null);
             if (logoFallback) {
                 logoFallback.textContent = window.getRestaurantInitials();
                 logoFallback.style.display = 'flex';
+                window.bindPublicMediaPreview(logoFallback, null);
             }
         }
     }

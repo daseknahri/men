@@ -593,6 +593,21 @@ body.menu-page {
   animation: menuHeroDrift 16s ease-in-out infinite alternate;
 }
 
+.landing-hero-img.is-previewable,
+.menu-nav-hero-img.is-previewable,
+.landing-logo-img.is-previewable,
+.landing-logo-fallback.is-previewable {
+  cursor: zoom-in;
+}
+
+.landing-hero-img.is-previewable:focus-visible,
+.menu-nav-hero-img.is-previewable:focus-visible,
+.landing-logo-img.is-previewable:focus-visible,
+.landing-logo-fallback.is-previewable:focus-visible {
+  outline: 3px solid rgba(255, 190, 92, 0.82);
+  outline-offset: 4px;
+}
+
 .landing-hero-overlay {
   position: absolute;
   inset: 0;

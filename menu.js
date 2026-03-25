@@ -1620,6 +1620,7 @@ window.closeDishPage = closeDishPage;
 window.renderDrawer = renderDrawer;
 window.saveCart = saveCart;
 window.updateCartUI = updateCartUI;
+window.openPublicMediaPreview = openGallery;
 
 function scrollPromo(dir) {
     const container = document.getElementById('promoCarousel');
