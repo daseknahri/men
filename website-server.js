@@ -97,6 +97,25 @@ function sanitizePublicMenuItem(item) {
   };
 }
 
+function sanitizePublicMenuPageItem(item) {
+  const source = item && typeof item === "object" ? item : {};
+  const images = sanitizePublicStringArray(source.images, 4);
+  return {
+    id: typeof source.id === "string" || Number.isFinite(source.id) ? source.id : "",
+    cat: asPublicString(source.cat, 120),
+    name: asPublicString(source.name, 160),
+    desc: asPublicString(source.desc, 1200),
+    price: Number.isFinite(Number(source.price)) ? Number(source.price) : 0,
+    img: asPublicString(source.img, 8192) || images[0] || "",
+    images,
+    translations: sanitizePublicTranslations(source.translations),
+    featured: Boolean(source.featured),
+    available: source.available !== false,
+    hasSizes: Boolean(source.hasSizes),
+    sizes: source.sizes && typeof source.sizes === "object" ? source.sizes : (Array.isArray(source.sizes) ? source.sizes : [])
+  };
+}
+
 function sanitizePublicBranding(input) {
   const source = input && typeof input === "object" ? input : {};
   return {
@@ -244,7 +263,7 @@ function buildPublicHomePayload(data) {
 function buildPublicMenuPayload(data) {
   const source = data && typeof data === "object" ? data : {};
   return {
-    menu: Array.isArray(source.menu) ? source.menu.map(sanitizePublicMenuItem) : [],
+    menu: Array.isArray(source.menu) ? source.menu.map(sanitizePublicMenuPageItem) : [],
     catEmojis: source.catEmojis && typeof source.catEmojis === "object" ? source.catEmojis : {},
     wifi: {
       ssid: asPublicString(source.wifi?.ssid || source.wifi?.name, 120),
