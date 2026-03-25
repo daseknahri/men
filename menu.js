@@ -452,7 +452,7 @@ function buildCategorySubnavButtonMarkup(cat, isActive = false) {
     const localizedName = window.getLocalizedCategoryName(cat, cat);
 
     return `
-        <button class="menu-cat-btn menu-subnav-btn ${isActive ? 'active' : ''} menu-reveal-observe" data-cat="${escapeHtmlAttr(cat)}" onclick="showCategoryItems(${serializeInlineId(cat)})">
+        <button class="menu-subnav-tab ${isActive ? 'active' : ''} menu-reveal-observe" data-cat="${escapeHtmlAttr(cat)}" onclick="showCategoryItems(${serializeInlineId(cat)})" ${isActive ? 'aria-current="page"' : ''}>
             <span class="menu-subnav-name">${localizedName}</span>
         </button>
     `;
@@ -470,9 +470,11 @@ function renderSuperCategoryChildNav(sc, activeCat = '') {
     navWrapper.style.display = filteredCats.length ? 'block' : 'none';
     subCatTitle.textContent = window.getLocalizedSuperCategoryName(sc, sc.name);
     catNav.classList.remove('is-visual-list');
-    catNav.innerHTML = filteredCats
-        .map((c) => buildCategorySubnavButtonMarkup(c, c === activeCat))
-        .join('');
+    catNav.innerHTML = `
+        <div class="menu-subnav-track" role="tablist" aria-label="${escapeHtmlAttr(window.getLocalizedSuperCategoryName(sc, sc.name))}">
+            ${filteredCats.map((c) => buildCategorySubnavButtonMarkup(c, c === activeCat)).join('')}
+        </div>
+    `;
 }
 
 

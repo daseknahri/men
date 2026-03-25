@@ -237,59 +237,57 @@
 
         #menuNavigationView[data-mode='items'] .cat-nav-scroll,
         #menuNavigationView[data-mode='items'] .cat-nav-scroll.is-visual-list {
-            display: flex !important;
-            grid-template-columns: none;
+            display: block !important;
+            overflow: visible;
+            padding: 0 14px;
+        }
+
+        .menu-subnav-track {
+            display: flex;
             align-items: center;
             flex-wrap: nowrap;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
             overflow-y: hidden;
-            padding: 6px 14px;
+            padding: 2px 0;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
 
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll > * {
-            flex: 0 0 auto;
-        }
-
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            min-height: 38px;
-            padding: 6px 14px;
-            border-radius: 999px;
-            box-shadow: none;
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(197, 150, 102, 0.18);
-        }
-
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card-media,
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card-shade {
+        .menu-subnav-track::-webkit-scrollbar {
             display: none;
         }
 
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card-title {
-            position: static;
-            max-width: none;
-            font-size: 0.84rem;
+        .menu-subnav-tab {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 0 14px;
+            border: 1px solid rgba(197, 150, 102, 0.18);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.76);
+            color: #473127;
+            font-size: 0.78rem;
             font-weight: 700;
-            color: #33231c;
-            text-shadow: none;
-            white-space: nowrap;
             letter-spacing: 0.01em;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(89, 53, 24, 0.06);
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card.active,
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card[aria-current='page'] {
+        .menu-subnav-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(89, 53, 24, 0.1);
+        }
+
+        .menu-subnav-tab.active,
+        .menu-subnav-tab[aria-current='page'] {
             background: linear-gradient(135deg, #ff9f43 0%, #e63946 100%);
             border-color: rgba(255, 210, 138, 0.42);
-            box-shadow: 0 10px 22px rgba(230, 57, 70, 0.18);
-        }
-
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card.active .menu-category-card-title,
-        #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card[aria-current='page'] .menu-category-card-title {
             color: #fffaf3;
+            box-shadow: 0 12px 22px rgba(230, 57, 70, 0.22);
         }
 
         .menu-cat-btn {
@@ -318,27 +316,10 @@
             box-shadow: 0 14px 28px rgba(230, 57, 70, 0.28);
         }
 
-        .menu-subnav-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-            padding: 6px 14px;
-            min-height: 38px;
-            border-radius: 999px;
-            flex: 0 0 auto;
-        }
-
         .menu-subnav-name {
             display: block;
             white-space: nowrap;
-            font-size: 0.84rem;
-            font-weight: 700;
-            letter-spacing: 0.01em;
-        }
-
-        html[dir='rtl'] .menu-subnav-btn {
-            padding: 8px 16px;
+            font: inherit;
         }
 
         .menu-category-card {
@@ -1234,30 +1215,16 @@
 
             #menuNavigationView[data-mode='items'] .cat-nav-scroll,
             #menuNavigationView[data-mode='items'] .cat-nav-scroll.is-visual-list {
-                gap: 8px;
-                padding: 6px 12px;
+                padding: 0 12px;
             }
 
-            .menu-cat-btn {
-                padding: 11px 14px;
-                font-size: 0.8rem;
+            .menu-subnav-track {
+                gap: 7px;
             }
 
-            .menu-subnav-btn {
-                min-height: 34px;
-                padding: 5px 12px;
-            }
-
-            .menu-subnav-name {
-                font-size: 0.72rem;
-            }
-
-            #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card {
-                min-height: 34px;
-                padding: 5px 12px;
-            }
-
-            #menuNavigationView[data-mode='items'] .cat-nav-scroll .menu-category-card-title {
+            .menu-subnav-tab {
+                min-height: 32px;
+                padding: 0 12px;
                 font-size: 0.72rem;
             }
 
