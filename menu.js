@@ -99,10 +99,10 @@ async function syncDataFromServer() {
         }
 
         // Refresh UI
-        if (typeof renderMenu === 'function') renderMenu();
+        if (menuMarkupReady && typeof renderMenu === 'function') renderMenu();
         if (typeof renderPromoCarousel === 'function') renderPromoCarousel();
         if (typeof renderLandingInfo === 'function') renderLandingInfo();
-        if (typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
+        if (superCatSheetReady && typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
         if (typeof renderSuperCatPills === 'function') renderSuperCatPills();
 
         // If we are in the items view, refresh the list
@@ -199,6 +199,8 @@ let navigationStack = []; // stack: 'landing', 'supercats', 'subcats:NAME', 'ite
 let currentSuperCat = null;
 let menuMotionObserver = null;
 let menuMotionRefreshFrame = null;
+let menuMarkupReady = false;
+let superCatSheetReady = false;
 
 function prefersReducedMenuMotion() {
     return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -263,7 +265,11 @@ function scheduleMenuMotionRefresh() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initMenuApp();
-    syncDataFromServer();
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            syncDataFromServer();
+        }, 0);
+    });
 });
 
 function initMenuApp() {
@@ -271,8 +277,6 @@ function initMenuApp() {
         ? window.getStoredLanguage()
         : 'fr';
     window.setLang(savedLang);
-    renderMenu();
-    renderSuperCatSheet();
     renderSuperCatPills();
     renderPromoCarousel();
     renderLandingInfo();
@@ -383,6 +387,18 @@ function renderLandingInfo() {
 
     renderLandingSocialLinks();
     scheduleMenuMotionRefresh();
+}
+
+function ensureMenuMarkupReady() {
+    if (menuMarkupReady) return;
+    renderMenu();
+    menuMarkupReady = true;
+}
+
+function ensureSuperCatSheetReady() {
+    if (superCatSheetReady) return;
+    renderSuperCatSheet();
+    superCatSheetReady = true;
 }
 
 function renderLandingSocialLinks() {
@@ -659,6 +675,7 @@ function renderSuperCatPills() {
 function renderSuperCatSheet() {
     const list = document.getElementById('superCatList');
     if (!list) return;
+    superCatSheetReady = true;
     list.innerHTML = getSuperCategories().map(sc => `
         <div class="super-cat-row menu-reveal-observe" onclick="selectSuperCategory('${sc.id}')">
             <div class="super-cat-row-left">
@@ -675,6 +692,7 @@ function renderSuperCatSheet() {
 }
 
 function openSuperCatSheet() {
+    ensureSuperCatSheetReady();
     document.getElementById('superCatOverlay').classList.add('open');
     document.getElementById('superCatSheet').classList.add('open');
 }
@@ -697,6 +715,7 @@ function selectSuperCategory(scId) {
 
 function showSubCategoryGrid(sc, addToStack = true) {
     if (addToStack) navigationStack.push(`subcats:${sc.id}`);
+    ensureMenuMarkupReady();
 
     showMenuNavigationView(window.getLocalizedSuperCategoryName(sc, sc.name));
 
@@ -734,6 +753,7 @@ function showSubCategoryGrid(sc, addToStack = true) {
 
 function showCategoryItems(cat, addToStack = true) {
     if (addToStack) navigationStack.push(`items:${cat}`);
+    ensureMenuMarkupReady();
 
     showMenuNavigationView(window.getLocalizedCategoryName(cat, cat));
 
@@ -760,7 +780,7 @@ function showCategoryItems(cat, addToStack = true) {
 }
 
 function rerenderCurrentMenuLanguageView() {
-    renderSuperCatSheet();
+    if (superCatSheetReady) renderSuperCatSheet();
     renderSuperCatPills();
     renderLandingInfo();
 
@@ -804,6 +824,7 @@ if (baseMenuSetLang) {
 function renderMenu() {
     const wrap = document.getElementById('menuContent');
     if (!wrap) return;
+    menuMarkupReady = true;
 
     let categories = [...new Set(menu.map(m => m.cat))];
 
