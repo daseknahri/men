@@ -51,6 +51,8 @@ let homepageSliderStarted = false;
 let lastPublicDataVersion = '';
 let homepageDeferredRenderHandle = null;
 let homepageDeferredSectionsReady = false;
+let homepageDeferredIntentArmed = false;
+let homepageDeferredFallbackTimer = null;
 let eventBookingScriptPromise = null;
 let homepageExtrasScriptPromise = null;
 
@@ -249,6 +251,36 @@ function scheduleDeferredHomepageSections() {
     });
 }
 
+function cleanupDeferredHomepageSectionIntent() {
+    if (!homepageDeferredIntentArmed) return;
+    homepageDeferredIntentArmed = false;
+    window.removeEventListener('scroll', onHomepageDeferredIntent);
+    window.removeEventListener('touchmove', onHomepageDeferredIntent);
+    window.removeEventListener('wheel', onHomepageDeferredIntent);
+    window.removeEventListener('keydown', onHomepageDeferredIntent);
+    if (homepageDeferredFallbackTimer) {
+        clearTimeout(homepageDeferredFallbackTimer);
+        homepageDeferredFallbackTimer = null;
+    }
+}
+
+function onHomepageDeferredIntent() {
+    cleanupDeferredHomepageSectionIntent();
+    renderDeferredHomepageSections();
+}
+
+function armDeferredHomepageSections() {
+    if (homepageDeferredSectionsReady || homepageDeferredIntentArmed) return;
+    homepageDeferredIntentArmed = true;
+    window.addEventListener('scroll', onHomepageDeferredIntent, { passive: true });
+    window.addEventListener('touchmove', onHomepageDeferredIntent, { passive: true });
+    window.addEventListener('wheel', onHomepageDeferredIntent, { passive: true });
+    window.addEventListener('keydown', onHomepageDeferredIntent);
+    homepageDeferredFallbackTimer = window.setTimeout(() => {
+        onHomepageDeferredIntent();
+    }, 3200);
+}
+
 function ensureEventBookingScript() {
     if (window.__eventBookingReady) {
         return Promise.resolve();
@@ -306,8 +338,6 @@ async function loadSiteData() {
             refreshHomepageUI();
             if (homepageDeferredSectionsReady) {
                 renderDeferredHomepageSections();
-            } else {
-                scheduleDeferredHomepageSections();
             }
         }
     } catch (error) {
@@ -422,7 +452,7 @@ function initApp() {
     });
 
     homepageInitialized = true;
-    scheduleDeferredHomepageSections();
+    armDeferredHomepageSections();
     scheduleLowPriorityTask(() => {
         warmMenuSnapshotFromHomepage();
     }, 1800);
@@ -479,6 +509,7 @@ function renderDeferredHomepageSections() {
                 window.__homepageRenderDeferredSections();
             }
             homepageDeferredSectionsReady = true;
+            cleanupDeferredHomepageSectionIntent();
         })
         .catch((error) => {
             console.error('Failed to load homepage extras:', error);
