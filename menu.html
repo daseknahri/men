@@ -413,6 +413,10 @@
             object-fit: cover;
         }
 
+        .menu-deferred-img:not([src]) {
+            opacity: 0;
+        }
+
         .menu-item-side {
             display: flex;
             align-items: center;
@@ -656,6 +660,8 @@
             gap: 12px !important;
             box-shadow: 0 22px 40px rgba(0, 0, 0, 0.32) !important;
             z-index: 2 !important;
+            content-visibility: auto;
+            contain-intrinsic-size: 260px;
         }
 
         @media (prefers-reduced-motion: reduce) {

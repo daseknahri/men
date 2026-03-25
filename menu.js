@@ -280,6 +280,15 @@ function serializeInlineId(value) {
     return `'${escaped}'`;
 }
 
+function escapeHtmlAttr(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
 
 let navigationStack = []; // stack: 'landing', 'supercats', 'subcats:NAME', 'items:CAT'
 let currentSuperCat = null;
@@ -288,6 +297,7 @@ let menuMotionRefreshFrame = null;
 let menuMarkupReady = false;
 let superCatSheetReady = false;
 let promoRenderQueued = false;
+let menuImageObserver = null;
 
 function prefersReducedMenuMotion() {
     return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -309,6 +319,50 @@ function ensureMenuMotionObserver() {
     });
 
     return menuMotionObserver;
+}
+
+function loadDeferredMenuImage(img) {
+    if (!img || img.dataset.loaded === '1') return;
+    const src = img.dataset.menuSrc;
+    if (!src) return;
+
+    img.dataset.loaded = '1';
+    img.onerror = () => {
+        img.onerror = null;
+        const fallback = document.createElement('span');
+        fallback.className = 'emoji-placeholder';
+        fallback.textContent = img.dataset.fallbackEmoji || MENU_UI_ICONS.plate;
+        img.replaceWith(fallback);
+    };
+    img.src = src;
+}
+
+function ensureMenuImageObserver() {
+    if (menuImageObserver || !('IntersectionObserver' in window)) return menuImageObserver;
+
+    menuImageObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const target = entry.target;
+            menuImageObserver.unobserve(target);
+            loadDeferredMenuImage(target);
+        });
+    }, { rootMargin: '220px 0px' });
+
+    return menuImageObserver;
+}
+
+function observeDeferredMenuImages(scope = document) {
+    const images = scope.querySelectorAll('.menu-deferred-img[data-menu-src]');
+    if (!images.length) return;
+
+    const observer = ensureMenuImageObserver();
+    if (!observer) {
+        images.forEach((img) => loadDeferredMenuImage(img));
+        return;
+    }
+
+    images.forEach((img) => observer.observe(img));
 }
 
 function refreshMenuMotionTargets() {
@@ -613,7 +667,7 @@ function renderPromoCarousel() {
                 <span class="promo-tag-glow">${t('promo_offer_badge', 'OFFRE')}</span>
                 <span class="promo-discount-badge">-20%</span>
                 <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => String(p.id) === ${serializedId}))">
-                    ${imgTag(item)}
+                    ${imgTag(item, { defer: true })}
                     <div class="promo-glow-vibrant"></div>
                 </div>
                 <div class="promo-info-vibrant">
@@ -631,6 +685,7 @@ function renderPromoCarousel() {
     }).join('');
 
     startPromoAutoSlide(container);
+    observeDeferredMenuImages(container);
     scheduleMenuMotionRefresh();
 }
 
@@ -716,7 +771,7 @@ function renderFeaturedSlider(items, containerId) {
             ${items.map(item => `
                 <div class="featured-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
                     <div class="featured-img-wrap">
-                        ${imgTag(item)}
+                        ${imgTag(item, { defer: true })}
                     </div>
                     <div class="featured-info">
                         <div class="featured-name">${window.getLocalizedMenuName(item)}</div>
@@ -731,6 +786,7 @@ function renderFeaturedSlider(items, containerId) {
     if (typeof window.applyBranding === 'function') {
         window.applyBranding();
     }
+    observeDeferredMenuImages(container);
     scheduleMenuMotionRefresh();
 }
 
@@ -929,7 +985,7 @@ function renderMenu(categoryFilter = null) {
                                 <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
                             </button>
                             <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
-                                ${imgTag(item)}
+                                ${imgTag(item, { defer: true })}
                             </div>
                             <div class="menu-item-info">
                                 <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
@@ -951,13 +1007,18 @@ function renderMenu(categoryFilter = null) {
             </section>
         `;
     }).join('');
+    observeDeferredMenuImages(wrap);
     scheduleMenuMotionRefresh();
 }
 
-function imgTag(item) {
+function imgTag(item, options = {}) {
+    const { defer = false } = options;
     const src = (item.images && item.images.length > 0) ? item.images[0] : item.img;
     const safeFallbackEmoji = catEmojis[item.cat] || MENU_UI_ICONS.plate;
-    if (src) return `<img src="${src}" alt="${window.getLocalizedMenuName(item)}" width="320" height="320" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(safeFallbackEmoji)} }))">`;
+    if (src && defer) {
+        return `<img class="menu-deferred-img" data-menu-src="${escapeHtmlAttr(src)}" data-fallback-emoji="${escapeHtmlAttr(safeFallbackEmoji)}" alt="${escapeHtmlAttr(window.getLocalizedMenuName(item))}" width="320" height="320" loading="lazy" decoding="async" fetchpriority="low">`;
+    }
+    if (src) return `<img src="${escapeHtmlAttr(src)}" alt="${escapeHtmlAttr(window.getLocalizedMenuName(item))}" width="320" height="320" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null; this.replaceWith(Object.assign(document.createElement('span'), { className: 'emoji-placeholder', textContent: ${JSON.stringify(safeFallbackEmoji)} }))">`;
     return `<span class="emoji-placeholder">${safeFallbackEmoji}</span>`;
 }
 

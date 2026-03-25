@@ -5913,6 +5913,8 @@ body[data-theme-preset='traditional'] .about-section {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   scroll-snap-align: start;
   cursor: pointer;
+  content-visibility: auto;
+  contain-intrinsic-size: 220px;
 }
 
 .featured-card:hover {
