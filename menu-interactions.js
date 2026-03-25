@@ -380,7 +380,7 @@
             ? `<p class="history-empty">${t('history_empty', 'Aucune commande recente.')}</p>`
             : history.map((ticketHtml, index) => `
                 <div class="history-ticket history-ticket-wrap">
-                    ${ticketHtml}
+                    ${renderHistoryTicketCard(ticketHtml)}
                     <button onclick="deleteHistoryItem(${index})" class="history-delete-btn" title="${t('history_delete_title', 'Supprimer')}">${MENU_UI_ICONS.trash}</button>
                 </div>
             `).join('');
@@ -409,6 +409,136 @@
             window.setStoredHistory(history);
         }
         runtime()?.updateHistoryBadge?.();
+    }
+
+    function escapeHistoryHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function parseLegacyHistoryEntry(entry) {
+        const raw = String(entry || '').trim();
+        const lines = raw.split('\n').map((line) => line.trim()).filter(Boolean);
+        if (!lines.length) return null;
+
+        const ticketLine = lines[0] || '';
+        const dateLine = lines[1] || '';
+        const typeLine = lines.find((line) => /^type\s*:/i.test(line)) || '';
+        const totalLine = lines.find((line) => /^total\s*:/i.test(line)) || '';
+        const dividerIndex = lines.findIndex((line) => line === '---');
+        const itemLines = dividerIndex >= 0 ? lines.slice(dividerIndex + 1) : [];
+
+        return {
+            legacy: true,
+            orderNo: ticketLine.replace(/^ticket\s*#?/i, '').trim(),
+            createdAtLabel: dateLine,
+            serviceLabel: typeLine.replace(/^type\s*:/i, '').trim(),
+            totalLabel: totalLine.replace(/^total\s*:/i, '').trim(),
+            items: itemLines.map((line) => ({ label: line }))
+        };
+    }
+
+    function normalizeHistoryEntry(entry) {
+        if (!entry) return null;
+        if (typeof entry === 'string') return parseLegacyHistoryEntry(entry);
+        if (typeof entry !== 'object') return null;
+
+        const items = Array.isArray(entry.items)
+            ? entry.items.map((item) => ({
+                qty: Number.isFinite(Number(item?.qty)) ? Number(item.qty) : 1,
+                name: typeof item?.name === 'string' ? item.name.trim() : '',
+                total: Number.isFinite(Number(item?.total)) ? Number(item.total) : null,
+                label: typeof item?.label === 'string' ? item.label.trim() : ''
+            })).filter((item) => item.name || item.label)
+            : [];
+
+        return {
+            legacy: false,
+            orderNo: typeof entry.orderNo === 'string' ? entry.orderNo.trim() : String(entry.orderNo || '').trim(),
+            createdAt: typeof entry.createdAt === 'string' ? entry.createdAt : '',
+            serviceLabel: typeof entry.serviceLabel === 'string' ? entry.serviceLabel.trim() : '',
+            total: Number.isFinite(Number(entry.total)) ? Number(entry.total) : null,
+            currency: typeof entry.currency === 'string' && entry.currency.trim() ? entry.currency.trim() : 'MAD',
+            address: typeof entry.address === 'string' ? entry.address.trim() : '',
+            items
+        };
+    }
+
+    function formatHistoryDateParts(value, fallbackLabel = '') {
+        const date = value ? new Date(value) : null;
+        if (!date || Number.isNaN(date.getTime())) {
+            return {
+                date: fallbackLabel,
+                time: ''
+            };
+        }
+        return {
+            date: date.toLocaleDateString(),
+            time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+    }
+
+    function renderHistoryTicketCard(entry) {
+        const normalized = normalizeHistoryEntry(entry);
+        if (!normalized) return '';
+
+        const dateParts = formatHistoryDateParts(normalized.createdAt, normalized.createdAtLabel || '');
+        const itemsMarkup = normalized.items.map((item) => {
+            if (item.label && !item.name) {
+                return `<div class="history-line-item is-legacy">${escapeHistoryHtml(item.label)}</div>`;
+            }
+
+            return `
+                <div class="history-line-item">
+                    <div class="history-line-item-main">
+                        <span class="history-line-item-qty">${item.qty}&times;</span>
+                        <span class="history-line-item-name">${escapeHistoryHtml(item.name)}</span>
+                    </div>
+                    ${Number.isFinite(item.total) ? `<span class="history-line-item-total">${item.total.toFixed(0)} ${escapeHistoryHtml(normalized.currency)}</span>` : ''}
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="history-ticket-card${normalized.legacy ? ' is-legacy' : ''}">
+                <div class="history-ticket-top">
+                    <div>
+                        <div class="history-ticket-label">${t('ticket_number_prefix', 'TICKET')}</div>
+                        <div class="history-ticket-number">#${escapeHistoryHtml(normalized.orderNo || '----')}</div>
+                    </div>
+                    <div class="history-ticket-status">${escapeHistoryHtml(normalized.serviceLabel || t('service_onsite', 'Sur place'))}</div>
+                </div>
+                <div class="history-ticket-meta">
+                    <div class="history-ticket-meta-row">
+                        <span>${t('ticket_date', 'Date')}</span>
+                        <strong>${escapeHistoryHtml(dateParts.date || '')}</strong>
+                    </div>
+                    ${dateParts.time ? `
+                        <div class="history-ticket-meta-row">
+                            <span>Time</span>
+                            <strong>${escapeHistoryHtml(dateParts.time)}</strong>
+                        </div>
+                    ` : ''}
+                    <div class="history-ticket-meta-row">
+                        <span>${t('ticket_total', 'TOTAL')}</span>
+                        <strong>${Number.isFinite(normalized.total) ? `${normalized.total.toFixed(0)} ${escapeHistoryHtml(normalized.currency)}` : escapeHistoryHtml(normalized.totalLabel || '')}</strong>
+                    </div>
+                    ${normalized.address ? `
+                        <div class="history-ticket-address">
+                            <span>${MENU_UI_ICONS.address}</span>
+                            <span>${escapeHistoryHtml(normalized.address)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="history-ticket-items">
+                    ${itemsMarkup}
+                </div>
+            </div>
+        `;
     }
 
     function generateTicket() {
@@ -482,8 +612,19 @@
         const now = new Date();
         const cart = getCart();
         const serviceType = getServiceType();
-        const historyText = `${t('ticket_number_prefix', 'TICKET')} #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\n${t('ticket_type_label', 'Type')}: ${serviceLabel}\n${serviceType === 'delivery' ? `${t('ticket_addr', 'Adresse')}: ${window.currentDeliveryAddress.trim()}\n` : ''}${t('ticket_total', 'TOTAL')}: ${total.toFixed(0)} MAD\n---\n${cart.map((item) => item.qty + 'x ' + window.getLocalizedMenuName(item)).join('\n')}`;
-        saveToHistory(historyText);
+        saveToHistory({
+            orderNo: String(orderNo),
+            createdAt: now.toISOString(),
+            serviceLabel,
+            total,
+            currency: 'MAD',
+            address: serviceType === 'delivery' ? window.currentDeliveryAddress.trim() : '',
+            items: cart.map((item) => ({
+                qty: item.qty,
+                name: window.getLocalizedMenuName(item),
+                total: item.price * item.qty
+            }))
+        });
         setCart([]);
         window.currentDeliveryAddress = '';
         runtime()?.saveCart?.();
@@ -495,8 +636,18 @@
     function finalizeOrderSilent(orderNo, total, serviceLabel, btn) {
         const now = new Date();
         const cart = getCart();
-        const historyText = `${t('ticket_number_prefix', 'TICKET')} #${orderNo}\n${now.toLocaleDateString()} ${now.toLocaleTimeString()}\n${t('ticket_type_label', 'Type')}: ${serviceLabel}\n${t('ticket_total', 'TOTAL')}: ${total.toFixed(0)} MAD\n---\n${cart.map((item) => item.qty + 'x ' + window.getLocalizedMenuName(item)).join('\n')}`;
-        saveToHistory(historyText);
+        saveToHistory({
+            orderNo: String(orderNo),
+            createdAt: now.toISOString(),
+            serviceLabel,
+            total,
+            currency: 'MAD',
+            items: cart.map((item) => ({
+                qty: item.qty,
+                name: window.getLocalizedMenuName(item),
+                total: item.price * item.qty
+            }))
+        });
         setCart([]);
         window.currentDeliveryAddress = '';
         runtime()?.saveCart?.();
