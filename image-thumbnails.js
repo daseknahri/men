@@ -5,8 +5,9 @@ const sharp = require("sharp");
 const { uploadsDir } = require("./site-store");
 
 const THUMBNAIL_DIRNAME = ".thumbs";
-const THUMBNAIL_WIDTH = 320;
-const THUMBNAIL_HEIGHT = 320;
+const THUMBNAIL_WIDTH = Number.parseInt(process.env.IMAGE_THUMB_WIDTH || "320", 10) || 320;
+const THUMBNAIL_HEIGHT = Number.parseInt(process.env.IMAGE_THUMB_HEIGHT || "320", 10) || 320;
+const THUMBNAIL_QUALITY = Number.parseInt(process.env.IMAGE_THUMB_QUALITY || "72", 10) || 72;
 const THUMBNAIL_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
 function getThumbnailDir() {
@@ -61,7 +62,7 @@ async function ensureThumbnailFile(originalFileName, targetFileName) {
           position: "attention"
         })
         .webp({
-          quality: 72,
+          quality: THUMBNAIL_QUALITY,
           effort: 4
         })
         .toFile(tempPath);
@@ -148,5 +149,7 @@ module.exports = {
   createThumbnailRequestHandler,
   ensureThumbnailFile,
   getUploadThumbnailPublicUrl,
+  getThumbnailDir,
+  listThumbnailSourceFiles,
   warmUploadThumbnailCache
 };
