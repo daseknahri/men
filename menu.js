@@ -298,6 +298,10 @@ let menuMarkupReady = false;
 let superCatSheetReady = false;
 let promoRenderQueued = false;
 let menuImageObserver = null;
+let activeCategoryRenderState = null;
+let activeCategoryRenderToken = 0;
+const MENU_INITIAL_CHUNK_SIZE = 8;
+const MENU_CHUNK_SIZE = 12;
 
 function prefersReducedMenuMotion() {
     return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -363,6 +367,96 @@ function observeDeferredMenuImages(scope = document) {
     }
 
     images.forEach((img) => observer.observe(img));
+}
+
+function buildMenuItemCardMarkup(item, cat, itemIndex) {
+    return `
+        <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
+            <button class="love-btn menu-item-love ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
+                    onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
+                <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
+            </button>
+            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
+                ${imgTag(item, { defer: true })}
+            </div>
+            <div class="menu-item-info">
+                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
+                <div class="menu-item-desc">${window.getLocalizedMenuDescription(item)}</div>
+                <div class="menu-item-price">
+                    ${item.hasSizes
+                        ? `<span style="font-size:0.7em; opacity:0.7;">${t('price_from', 'À partir de')}</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
+                        : (window.isItemInPromo(item.id)
+                            ? `<span class="price-discounted">${window.getItemPrice(item).toFixed(0)} MAD</span> <span class="price-original-item">${item.price.toFixed(0)} MAD</span>`
+                            : `${item.price.toFixed(0)} MAD`)}
+                </div>
+            </div>
+            <div class="menu-item-side">
+                <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
+            </div>
+        </div>
+    `;
+}
+
+function flushActiveCategoryRenderState() {
+    if (!activeCategoryRenderState) return;
+
+    const state = activeCategoryRenderState;
+    if (!state.grid) {
+        activeCategoryRenderState = null;
+        return;
+    }
+
+    while (state.nextIndex < state.items.length) {
+        const endIndex = Math.min(state.nextIndex + MENU_CHUNK_SIZE, state.items.length);
+        const chunkMarkup = state.items
+            .slice(state.nextIndex, endIndex)
+            .map((item, index) => buildMenuItemCardMarkup(item, state.category, state.nextIndex + index))
+            .join('');
+        state.grid.insertAdjacentHTML('beforeend', chunkMarkup);
+        state.nextIndex = endIndex;
+    }
+
+    observeDeferredMenuImages(state.grid);
+    scheduleMenuMotionRefresh();
+    activeCategoryRenderState = null;
+}
+
+function scheduleNextCategoryChunk(token) {
+    const state = activeCategoryRenderState;
+    if (!state || token !== activeCategoryRenderToken || state.nextIndex >= state.items.length) {
+        if (state && state.nextIndex >= state.items.length) activeCategoryRenderState = null;
+        return;
+    }
+
+    const run = () => {
+        const currentState = activeCategoryRenderState;
+        if (!currentState || token !== activeCategoryRenderToken || !currentState.grid) return;
+
+        const endIndex = Math.min(currentState.nextIndex + MENU_CHUNK_SIZE, currentState.items.length);
+        const chunkMarkup = currentState.items
+            .slice(currentState.nextIndex, endIndex)
+            .map((item, index) => buildMenuItemCardMarkup(item, currentState.category, currentState.nextIndex + index))
+            .join('');
+        currentState.grid.insertAdjacentHTML('beforeend', chunkMarkup);
+        currentState.nextIndex = endIndex;
+        observeDeferredMenuImages(currentState.grid);
+        scheduleMenuMotionRefresh();
+
+        if (currentState.nextIndex >= currentState.items.length) {
+            activeCategoryRenderState = null;
+            return;
+        }
+
+        scheduleNextCategoryChunk(token);
+    };
+
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => run(), { timeout: 500 });
+    } else {
+        requestAnimationFrame(() => {
+            setTimeout(run, 0);
+        });
+    }
 }
 
 function refreshMenuMotionTargets() {
@@ -967,10 +1061,46 @@ function renderMenu(categoryFilter = null) {
     const wrap = document.getElementById('menuContent');
     if (!wrap) return;
     menuMarkupReady = true;
+    activeCategoryRenderToken += 1;
+    activeCategoryRenderState = null;
 
     let categories = categoryFilter
         ? [categoryFilter]
         : [...new Set(menu.map(m => m.cat))];
+
+    if (categories.length === 1) {
+        const cat = categories[0];
+        const items = menu.filter(m => m.cat === cat && m.available !== false);
+        wrap.innerHTML = `
+            <section class="menu-section menu-reveal-observe" id="cat-${cat.replace(/\s/g, '-')}">
+                <h2 class="menu-section-title">${catEmojis[cat] || MENU_UI_ICONS.plate} ${window.getLocalizedCategoryName(cat, cat)}</h2>
+                <div class="menu-grid"></div>
+            </section>
+        `;
+
+        const grid = wrap.querySelector('.menu-grid');
+        if (!grid) return;
+
+        const initialCount = Math.min(MENU_INITIAL_CHUNK_SIZE, items.length);
+        grid.innerHTML = items
+            .slice(0, initialCount)
+            .map((item, itemIndex) => buildMenuItemCardMarkup(item, cat, itemIndex))
+            .join('');
+
+        observeDeferredMenuImages(grid);
+        scheduleMenuMotionRefresh();
+
+        if (initialCount < items.length) {
+            activeCategoryRenderState = {
+                category: cat,
+                items,
+                nextIndex: initialCount,
+                grid
+            };
+            scheduleNextCategoryChunk(activeCategoryRenderToken);
+        }
+        return;
+    }
 
     wrap.innerHTML = categories.map(cat => {
         const items = menu.filter(m => m.cat === cat && m.available !== false);
@@ -978,31 +1108,7 @@ function renderMenu(categoryFilter = null) {
             <section class="menu-section menu-reveal-observe" id="cat-${cat.replace(/\s/g, '-')}">
                 <h2 class="menu-section-title">${catEmojis[cat] || MENU_UI_ICONS.plate} ${window.getLocalizedCategoryName(cat, cat)}</h2>
                 <div class="menu-grid">
-                    ${items.map((item, itemIndex) => `
-                        <div class="menu-item-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
-                            <button class="love-btn menu-item-love ${window.getLikeCount(item.id) > 0 ? 'loved text-pop' : ''}" 
-                                    onclick="event.stopPropagation(); window.handleToggleLike(${serializeInlineId(item.id)}, this)">
-                                <span class="love-icon">${MENU_UI_ICONS.heart}</span><span class="love-count">${window.getLikeCount(item.id)}</span>
-                            </button>
-                            <div class="menu-item-img" onclick="event.stopPropagation(); openGallery(menu.filter(m => m.cat === ${serializeInlineId(cat)}), ${itemIndex})">
-                                ${imgTag(item, { defer: true })}
-                            </div>
-                            <div class="menu-item-info">
-                                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
-                                <div class="menu-item-desc">${window.getLocalizedMenuDescription(item)}</div>
-                                <div class="menu-item-price">
-                                    ${item.hasSizes
-                ? `<span style="font-size:0.7em; opacity:0.7;">${t('price_from', 'Ã€ partir de')}</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
-                : (window.isItemInPromo(item.id)
-                    ? `<span class="price-discounted">${window.getItemPrice(item).toFixed(0)} MAD</span> <span class="price-original-item">${item.price.toFixed(0)} MAD</span>`
-                                    : `${item.price.toFixed(0)} MAD`)}
-                                </div>
-                            </div>
-                            <div class="menu-item-side">
-                                <button class="menu-item-add" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
-                            </div>
-                        </div>
-                    `).join('')}
+                    ${items.map((item, itemIndex) => buildMenuItemCardMarkup(item, cat, itemIndex)).join('')}
                 </div>
             </section>
         `;
@@ -1201,6 +1307,9 @@ document.addEventListener('keydown', (e) => {
 
 function searchMenu(q) {
     const query = q.toLowerCase().trim();
+    if (query && activeCategoryRenderState) {
+        flushActiveCategoryRenderState();
+    }
 
     document.querySelectorAll('.menu-item-card').forEach(card => {
         const name = card.querySelector('.menu-item-name').textContent.toLowerCase();
