@@ -7,12 +7,13 @@
     "start": "node website-server.js",
     "start:website": "node website-server.js",
     "start:admin": "node admin-server.js",
+    "build:public": "node scripts/build-public-assets.js",
     "check": "node --check website-server.js && node --check admin-server.js && node --check site-store.js && node --check server-common.js && node --check media-library/library.js && node --check seller-jobs/jobs.js && node --check app.js && node --check admin.js",
     "media:check": "node scripts/media-library-check.js",
     "uploads:audit": "node scripts/uploads-audit.js",
     "thumbs:build": "node scripts/build-upload-thumbnails.js",
     "smoke": "node scripts/smoke-check.js",
-    "predeploy": "npm run check && npm run smoke"
+    "predeploy": "npm run build:public && npm run check && npm run smoke"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
   "type": "commonjs",
   "dependencies": {
     "compression": "^1.8.1",
+    "esbuild": "^0.25.11",
     "express": "^4.21.2",
     "multer": "^2.1.1",
     "sharp": "^0.34.5"

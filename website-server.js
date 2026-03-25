@@ -1,6 +1,7 @@
 const express = require("express");
 const compression = require("compression");
 const path = require("path");
+const fs = require("fs");
 
 const {
   createBuildFingerprint,
@@ -12,6 +13,17 @@ const { ensureStorage, getDataVersion, readData, uploadsDir } = require("./site-
 
 const app = express();
 const port = parsePort(process.env.PORT, 3002);
+const publicBuildDir = path.join(__dirname, "public-build");
+const PUBLIC_BUILD_FILES = new Set([
+  "/style.css",
+  "/menu-page.css",
+  "/game.css",
+  "/shared-public.js",
+  "/app.js",
+  "/menu.js",
+  "/homepage-extras.js",
+  "/game.js"
+]);
 const build = createBuildFingerprint([
   path.join(__dirname, "website-server.js"),
   path.join(__dirname, "index.html"),
@@ -326,6 +338,16 @@ app.use("/uploads", express.static(uploadsDir, {
   immutable: true,
   maxAge: "30d"
 }));
+
+app.get(Array.from(PUBLIC_BUILD_FILES), (req, res, next) => {
+  const builtPath = path.join(publicBuildDir, req.path.replace(/^\//, ""));
+  if (!fs.existsSync(builtPath)) {
+    next();
+    return;
+  }
+  setStaticAssetHeaders(res, builtPath);
+  res.sendFile(builtPath);
+});
 
 app.get("/", (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
