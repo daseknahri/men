@@ -6915,10 +6915,14 @@ body:not(.menu-page) .dot-active {
 
 body:not(.menu-page) .about-section {
   padding-top: 92px;
+  position: relative;
+  overflow: hidden;
 }
 
 body:not(.menu-page) .about-header {
   margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
 }
 
 body:not(.menu-page) .section-title {
@@ -6928,16 +6932,22 @@ body:not(.menu-page) .section-title {
 body:not(.menu-page) .about-grid {
   gap: 44px;
   align-items: start;
+  position: relative;
+  z-index: 1;
 }
 
 body:not(.menu-page) .about-text {
   max-width: 60ch;
+  position: relative;
 }
 
 body:not(.menu-page) .about-card {
   padding: 24px 18px;
   border-radius: 22px;
   text-align: left;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(255, 245, 232, 0.96) 100%);
+  border: 1px solid rgba(232, 214, 188, 0.9);
+  box-shadow: 0 20px 42px rgba(75, 47, 24, 0.08);
 }
 
 body:not(.menu-page) .card-number {
@@ -6948,6 +6958,17 @@ body:not(.menu-page) .card-label {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.72rem;
+}
+
+body:not(.menu-page) .about-section::before {
+  content: "";
+  position: absolute;
+  inset: 24px auto auto 50%;
+  width: min(560px, 72vw);
+  height: 340px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 188, 106, 0.18) 0%, rgba(255, 188, 106, 0.08) 34%, transparent 72%);
+  pointer-events: none;
 }
 
 body:not(.menu-page) .payment-facilities-section {
@@ -7333,6 +7354,18 @@ body:not(.menu-page) .about-text {
   box-shadow: 0 22px 50px rgba(90, 61, 35, 0.08);
 }
 
+body:not(.menu-page) .about-text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 34px;
+  right: 34px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0.92;
+}
+
 body:not(.menu-page) .about-signature {
   border-top-color: rgba(230, 216, 199, 0.92);
 }
@@ -7629,6 +7662,11 @@ body:not(.menu-page) .footer-copy {
   body:not(.menu-page) .about-text {
     padding: 20px 16px;
     border-radius: 22px;
+  }
+
+  body:not(.menu-page) .about-text::before {
+    left: 16px;
+    right: 16px;
   }
 
   body:not(.menu-page) .about-text h3 {
@@ -8108,8 +8146,9 @@ body:not(.menu-page) .footer-copy {
   }
 
   html[dir="rtl"] body:not(.menu-page) .lang-options {
-    left: 0;
-    right: auto;
+    left: auto !important;
+    right: 0 !important;
+    transform-origin: top right;
   }
 
   html[dir="rtl"] body:not(.menu-page) .header-inner {
