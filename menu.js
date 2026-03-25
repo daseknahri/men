@@ -104,8 +104,6 @@ async function syncDataFromServer() {
         if (typeof renderPromoCarousel === 'function') scheduleDeferredPromoRender();
         if (typeof renderLandingInfo === 'function') renderLandingInfo();
         if (superCatSheetReady && typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
-        if (typeof renderSuperCatPills === 'function') renderSuperCatPills();
-
         // If we are in the items view, refresh the list
         if (navigationStack.length > 0) {
             const last = navigationStack[navigationStack.length - 1];
@@ -279,13 +277,16 @@ function initMenuApp() {
         ? window.getStoredLanguage()
         : 'fr';
     window.setLang(savedLang);
-    renderSuperCatPills();
     renderLandingInfo();
     updateCartUI();
     updateHistoryBadge();
-    window.updateStatus();
-    window.applyBranding();
     scheduleMenuMotionRefresh();
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            window.updateStatus();
+            window.applyBranding();
+        }, 0);
+    });
     scheduleDeferredPromoRender();
 }
 
@@ -677,16 +678,6 @@ function menuGoBack() {
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SUPER CATEGORY SHEET â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-function renderSuperCatPills() {
-    const container = document.getElementById('superCatPills');
-    if (!container) return;
-    container.innerHTML = getSuperCategories().map((sc, i) => `
-        <button class="super-cat-pill ${i === 0 ? 'active' : ''}" onclick="openSuperCatSheet()">
-            ${sc.emoji} ${window.getLocalizedSuperCategoryName(sc, sc.name)}
-        </button>
-    `).join('');
-}
-
 function renderSuperCatSheet() {
     const list = document.getElementById('superCatList');
     if (!list) return;
@@ -789,7 +780,6 @@ function showCategoryItems(cat, addToStack = true) {
 
 function rerenderCurrentMenuLanguageView() {
     if (superCatSheetReady) renderSuperCatSheet();
-    renderSuperCatPills();
     renderLandingInfo();
 
     const currentState = navigationStack[navigationStack.length - 1] || '';
