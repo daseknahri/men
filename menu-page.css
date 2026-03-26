@@ -2032,4 +2032,208 @@
                 font-size: 0.88rem;
             }
         }
-    
+
+        /* ===== Impeccable App Pass: Menu ===== */
+        .top-nav-bar {
+            width: min(1160px, calc(100% - 28px));
+            padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+        }
+
+        .top-nav-left,
+        .top-nav-right {
+            gap: 10px;
+        }
+
+        .nav-icon-btn,
+        .lang-drop-btn {
+            box-shadow: 0 14px 28px rgba(12, 16, 24, 0.16);
+        }
+
+        .landing-hero {
+            height: 228px;
+        }
+
+        .landing-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            padding: 22px 16px 28px;
+        }
+
+        .landing-rest-name {
+            width: 100%;
+            margin: 0;
+            letter-spacing: -0.03em;
+        }
+
+        .landing-status {
+            width: fit-content;
+            margin-top: -8px;
+        }
+
+        .view-menu-btn {
+            width: min(340px, 100%);
+            min-height: 58px;
+            margin-inline: auto;
+            box-shadow: 0 20px 40px rgba(226, 27, 27, 0.18);
+        }
+
+        .featured-section {
+            width: 100%;
+            margin: 4px 0 28px;
+        }
+
+        .featured-header-sexy {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 0 4px 18px;
+        }
+
+        .featured-header-label {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 146, 43, 0.1);
+            border: 1px solid rgba(255, 171, 106, 0.26);
+            color: #d36a19;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .featured-header-title {
+            margin: 0;
+            color: #231814;
+            font-family: ui-serif, Georgia, "Times New Roman", serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            line-height: 0.98;
+            letter-spacing: -0.04em;
+            text-wrap: balance;
+        }
+
+        .featured-header-title span {
+            display: inline-block;
+        }
+
+        .featured-slider {
+            gap: 18px;
+            padding: 6px 4px 24px;
+            scroll-padding-inline: 4px;
+        }
+
+        .featured-card {
+            flex: 0 0 236px;
+            border-radius: 28px;
+            box-shadow: 0 24px 40px rgba(0, 0, 0, 0.24);
+        }
+
+        .featured-img-wrap {
+            height: 156px;
+        }
+
+        .featured-info {
+            padding: 18px 16px 60px;
+        }
+
+        .featured-name {
+            margin-bottom: 10px;
+        }
+
+        .featured-desc {
+            margin-bottom: 14px;
+        }
+
+        .featured-price-row {
+            align-items: end;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+        .info-row {
+            min-height: 118px;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 16px 14px;
+            border-radius: 24px;
+            box-shadow: 0 16px 30px rgba(75, 47, 24, 0.08);
+        }
+
+        .info-text {
+            text-align: left;
+            text-wrap: balance;
+        }
+
+        .social-links.social-links-minimal {
+            width: 100%;
+            padding-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-bar {
+                width: calc(100% - 16px);
+                padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+            }
+
+            .landing-hero {
+                height: 208px;
+            }
+
+            .landing-body {
+                gap: 18px;
+                padding: 18px 14px 24px;
+            }
+
+            .view-menu-btn {
+                min-height: 54px;
+            }
+
+            .featured-header-sexy {
+                gap: 10px;
+                margin: 0 2px 14px;
+                align-items: center;
+            }
+
+            .featured-header-title {
+                font-size: 1.9rem;
+            }
+
+            .featured-slider {
+                gap: 14px;
+                padding: 4px 2px 20px;
+            }
+
+            .featured-card {
+                flex-basis: 204px;
+                border-radius: 24px;
+            }
+
+            .featured-img-wrap {
+                height: 140px;
+            }
+
+            .info-section {
+                gap: 10px;
+            }
+
+            .info-row {
+                min-height: 108px;
+                padding: 14px 12px;
+                border-radius: 20px;
+            }
+        }
+
+        html[dir="rtl"] .info-text {
+            text-align: right;
+        }

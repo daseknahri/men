@@ -648,8 +648,8 @@ body:not(.menu-page) .utility-btn-label {
   }
 
   body:not(.menu-page) .slide-title {
-    max-width: 6ch;
-    font-size: clamp(2rem, 12vw, 3.3rem);
+    max-width: 5.4ch;
+    font-size: clamp(1.82rem, 11vw, 3rem);
     line-height: 0.92;
   }
 
@@ -785,4 +785,57 @@ html[dir="rtl"] body:not(.menu-page) .utility-btn-label {
 html[dir="rtl"] body:not(.menu-page) .slide-img {
   left: -8px;
   right: auto;
+}
+
+/* ===== Impeccable App Pass: Homepage Shell ===== */
+body:not(.menu-page) .header-inner {
+  min-height: 60px;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+body:not(.menu-page) .slide-content {
+  max-width: 500px;
+}
+
+body:not(.menu-page) .slide-title {
+  letter-spacing: 0.02em;
+}
+
+body:not(.menu-page) .utility-nav {
+  width: min(540px, calc(100% - 36px));
+  margin-top: -40px;
+  gap: 10px;
+}
+
+body:not(.menu-page) .utility-btn {
+  min-height: 58px;
+  border-radius: 17px;
+}
+
+@media (max-width: 768px) {
+  body:not(.menu-page) .header-inner {
+    border-radius: 20px;
+  }
+
+  body:not(.menu-page) .slide-content {
+    max-width: min(100%, 214px);
+  }
+
+  body:not(.menu-page) .slide-title {
+    max-width: 4.8ch;
+    font-size: clamp(1.64rem, 10.2vw, 2.76rem);
+  }
+
+  body:not(.menu-page) .slide-img {
+    width: 154px;
+    height: 154px;
+    top: 48%;
+    right: -12px;
+  }
+
+  body:not(.menu-page) .utility-nav {
+    width: calc(100% - 24px);
+    margin-top: -24px;
+  }
 }

@@ -5248,6 +5248,125 @@
             background: linear-gradient(135deg, #25D366, #128C7E);
             animation: none;
         }
+
+        /* Impeccable app pass */
+        #adminSidebar {
+            background: linear-gradient(180deg, #18191f 0%, #111318 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .sidebar {
+            padding: 22px 18px 18px;
+        }
+
+        .sidebar .nav-btn {
+            min-height: 48px;
+            padding: 13px 15px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: none;
+        }
+
+        .sidebar .nav-btn.active {
+            box-shadow: 0 14px 28px rgba(226, 27, 27, 0.2);
+        }
+
+        .main {
+            background:
+                radial-gradient(circle at top right, rgba(255, 184, 108, 0.16), transparent 22%),
+                linear-gradient(180deg, #fff9f0 0%, #fffdf9 48%, #fff8ef 100%);
+        }
+
+        .menu-builder-shell {
+            width: min(100%, 1160px);
+        }
+
+        .menu-builder-stage {
+            gap: 14px;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 18px 38px rgba(75, 47, 24, 0.07);
+        }
+
+        .menu-builder-table-wrap {
+            padding: 10px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .menu-builder-table {
+            border-spacing: 0 8px;
+        }
+
+        .menu-builder-table td {
+            padding: 16px;
+        }
+
+        .menu-builder-entry {
+            gap: 12px;
+        }
+
+        .menu-builder-entry-copy strong {
+            font-size: 0.98rem;
+        }
+
+        .menu-builder-row-copy {
+            max-width: 42ch;
+            font-size: 0.88rem;
+        }
+
+        .menu-builder-count-pill {
+            min-height: 36px;
+            padding: 0 11px;
+        }
+
+        .menu-builder-item-actions {
+            gap: 6px;
+        }
+
+        .menu-builder-item-actions .action-btn,
+        .menu-builder-item-actions .menu-builder-toggle {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 12px 12px calc(96px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .menu-builder-stage {
+                gap: 12px;
+                padding: 14px;
+                border-radius: 24px;
+            }
+
+            .menu-builder-table-wrap {
+                padding: 8px;
+                border-radius: 20px;
+            }
+
+            .menu-builder-table td {
+                padding: 14px;
+            }
+
+            .mobile-bottom-nav {
+                left: 10px;
+                right: 10px;
+                bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+                padding: 7px;
+                border-radius: 18px;
+            }
+
+            .mobile-bottom-nav-btn {
+                padding: 8px 4px;
+                font-size: 0.68rem;
+            }
+        }
     </style>
 
     <script src="shared.js"></script>
