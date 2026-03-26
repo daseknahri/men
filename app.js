@@ -676,62 +676,8 @@ function getHomepageFeaturedItems() {
 function renderHomepageFeatured() {
     const mount = document.getElementById('menu-area');
     if (!mount) return;
-
-    const items = getHomepageFeaturedItems();
-    if (!items.length) {
-        mount.innerHTML = '';
-        mount.style.display = 'none';
-        return;
-    }
-
-    const label = t('featured_label', 'Featured Selection');
-    const title = t('featured_best', 'Our Favorites');
-    const cta = t('view_menu', 'View Menu');
-
-    mount.style.display = 'block';
-    mount.innerHTML = `
-      <section class="promo-section home-featured-spotlight">
-        <div class="promo-inner home-featured-inner">
-          <div class="home-featured-head">
-            <div>
-              <p class="section-tag home-featured-tag">${escapeHtml(label)}</p>
-              <h2 class="section-title home-featured-title">${escapeHtml(title)}</h2>
-            </div>
-            <a href="menu.html" class="slide-cta home-featured-cta">${escapeHtml(cta)}</a>
-          </div>
-          <div class="promo-carousel-container home-featured-slider">
-            ${items.map((item) => `
-              <a class="promo-card-vibrant home-featured-card" href="menu.html" aria-label="${escapeHtml(window.getLocalizedMenuName(item) || '')}">
-                <span class="promo-tag-glow">${escapeHtml(label)}</span>
-                <div class="promo-visual-vibrant home-featured-image-wrap">
-                  <img
-                    id="homeFeaturedImg${escapeHtml(String(item.id))}"
-                    alt="${escapeHtml(window.getLocalizedMenuName(item) || '')}"
-                    width="320"
-                    height="240"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div class="promo-info-vibrant home-featured-copy">
-                  <div class="promo-name-vibrant">${escapeHtml(window.getLocalizedMenuName(item) || '')}</div>
-                  <div class="home-featured-desc">${escapeHtml(window.getLocalizedMenuDescription(item, t('dish_default_desc', 'A carefully prepared dish made with our best ingredients.')) || '')}</div>
-                  <div class="promo-price-vibrant"><span class="price-new">MAD ${Number(window.getItemPrice(item) || 0).toFixed(0)}</span></div>
-                </div>
-              </a>
-            `).join('')}
-          </div>
-        </div>
-      </section>
-    `;
-
-    items.forEach((item) => {
-        const image = document.getElementById(`homeFeaturedImg${String(item.id)}`);
-        if (!image) return;
-        window.setSafeImageSource(image, item.img || '', {
-            fallbackSrc: window.defaultBranding?.heroImage || 'images/hero-default.svg'
-        });
-    });
+    mount.innerHTML = '';
+    mount.style.display = 'none';
 }
 
 
