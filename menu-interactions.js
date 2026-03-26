@@ -137,12 +137,7 @@
         let selectedSize = item.hasSizes ? 'small' : null;
         const updateSizePrice = () => {
             const currentPrice = window.getItemPrice(item, selectedSize);
-            const originalPrice = selectedSize ? (item.sizes?.[selectedSize] || item.price) : item.price;
-            if (window.isItemInPromo(item.id)) {
-                priceEl.innerHTML = `<span style="color:#ffd700; font-weight:800;">${currentPrice.toFixed(0)} MAD</span> <span style="text-decoration:line-through; font-size:0.8em; opacity:0.6;">${originalPrice.toFixed(0)} MAD</span>`;
-            } else {
-                priceEl.textContent = `${currentPrice.toFixed(0)} MAD`;
-            }
+            priceEl.textContent = `${currentPrice.toFixed(0)} MAD`;
         };
 
         const sizeSelectorHtml = item.hasSizes ? `
@@ -197,7 +192,7 @@
             imgEl.onclick = null;
         }
 
-        nameEl.textContent = window.getLocalizedMenuName(item) + (window.isItemInPromo(item.id) ? t('dish_promo_suffix', ' (PROMO)') : '');
+        nameEl.textContent = window.getLocalizedMenuName(item);
         updateSizePrice();
         descEl.textContent = window.getLocalizedMenuDescription(item, t('dish_default_desc', 'A carefully prepared dish made with our best ingredients.'));
         addBtn.onclick = () => {

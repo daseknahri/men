@@ -1196,7 +1196,6 @@ function renderMenuBuilder() {
                 </td>
                 <td data-label="Price"><span class="menu-builder-row-meta">MAD ${price.toFixed(2)}</span></td>
                 <td data-label="Likes"><span class="menu-builder-likes">${ADMIN_ICON.heart} ${likes}</span></td>
-                <td data-label="Promo"><button type="button" class="promo-star action-btn menu-builder-toggle ${hasPromoId(item.id) ? 'promo-active' : ''}" onclick='event.stopPropagation(); togglePromo(${inlineId})'>${ADMIN_ICON.star}</button></td>
                 <td data-label="Featured"><button type="button" class="promo-star action-btn menu-builder-toggle ${item.featured ? 'promo-active' : ''}" onclick='event.stopPropagation(); toggleFeatured(${inlineId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">${ADMIN_ICON.sparkle}</button></td>
                 <td data-label="Actions">
                     <div class="menu-builder-item-actions">
@@ -1643,7 +1642,6 @@ function renderMenuTable() {
                 <td>${itemCat}</td>
                 <td>MAD ${safePrice.toFixed(2)}</td>
                 <td><span style="color:#e01e2f">${ADMIN_ICON.heart}</span> ${likeCount}</td>
-                <td><span class="promo-star action-btn ${hasPromoId(item.id) ? 'promo-active' : ''}" onclick='togglePromo(${inlineItemId})'>${ADMIN_ICON.star}</span></td>
                 <td><span class="promo-star action-btn ${item.featured ? 'promo-active' : ''}" onclick='toggleFeatured(${inlineItemId})' style="filter: ${item.featured ? 'none' : 'grayscale(1)'}; opacity: ${item.featured ? '1' : '0.5'};">${ADMIN_ICON.sparkle}</span></td>
                 <td>
                     <button class="action-btn" onclick='editItem(${inlineItemId})' title="Edit item">${ADMIN_ICON.edit}</button>

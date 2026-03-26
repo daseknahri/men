@@ -110,7 +110,6 @@ function persistCurrentMenuSnapshot(version = '') {
             menu,
             catEmojis,
             categoryImages,
-            promoIds: Array.isArray(window.promoIds) ? window.promoIds : [],
             restaurantData: {
                 superCategories: Array.isArray(window.restaurantConfig?.superCategories) ? window.restaurantConfig.superCategories : [],
                 categoryImages,
@@ -162,10 +161,6 @@ function applyMenuDataSnapshot(snapshot) {
         window.categoryImages = categoryImages;
         applied = true;
     }
-    if (Array.isArray(snapshot.promoIds)) {
-        window.promoIds = snapshot.promoIds;
-    }
-
     if (typeof window.mergeRestaurantConfig === 'function') {
         const snapshotWifi = source.wifi && typeof source.wifi === 'object'
             ? {
@@ -255,7 +250,6 @@ async function syncDataFromServer() {
                 contentTranslations: data.contentTranslations || window.restaurantConfig.contentTranslations
             });
         }
-        if (data.promoIds) window.promoIds = data.promoIds;
         persistCurrentMenuSnapshot(nextDataVersion);
 
         console.log('[SYNC] Data updated from server');
@@ -271,7 +265,6 @@ async function syncDataFromServer() {
         // Refresh UI
         const currentState = navigationStack[navigationStack.length - 1] || '';
         if (menuMarkupReady && typeof renderMenu === 'function' && !currentState.startsWith('items:')) renderMenu();
-        if (typeof renderPromoCarousel === 'function') scheduleDeferredPromoRender();
         if (typeof renderLandingInfo === 'function') renderLandingInfo();
         if (superCatSheetReady && typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
         // If we are in the items view, refresh the list
@@ -486,7 +479,6 @@ let menuMotionRefreshFrame = null;
 let categoryChunkObserver = null;
 let menuMarkupReady = false;
 let superCatSheetReady = false;
-let promoRenderQueued = false;
 let menuImageObserver = null;
 let activeCategoryRenderState = null;
 let activeCategoryRenderToken = 0;
@@ -697,14 +689,12 @@ function buildMenuItemCardMarkup(item, cat, itemIndex) {
                 ${imgTag(item, { defer: true, variant: 'list' })}
             </div>
             <div class="menu-item-info">
-                <div class="menu-item-name">${window.getLocalizedMenuName(item)} ${window.isItemInPromo(item.id) ? `<span class="promo-tag-small">${t('promo_small_badge', 'PROMO')}</span>` : ''}</div>
+                <div class="menu-item-name">${window.getLocalizedMenuName(item)}</div>
                 <div class="menu-item-desc">${window.getLocalizedMenuDescription(item)}</div>
                 <div class="menu-item-price">
                     ${item.hasSizes
                         ? `<span style="font-size:0.7em; opacity:0.7;">${t('price_from', 'À partir de')}</span> ${window.getItemPrice(item, 'small').toFixed(0)} MAD`
-                        : (window.isItemInPromo(item.id)
-                            ? `<span class="price-discounted">${window.getItemPrice(item).toFixed(0)} MAD</span> <span class="price-original-item">${item.price.toFixed(0)} MAD</span>`
-                            : `${item.price.toFixed(0)} MAD`)}
+                        : `${item.price.toFixed(0)} MAD`}
                 </div>
             </div>
             <div class="menu-item-side">
@@ -889,26 +879,6 @@ function initMenuApp() {
             window.updateStatus();
             window.applyBranding();
         }, 0);
-    });
-    scheduleDeferredPromoRender();
-}
-
-function scheduleDeferredPromoRender() {
-    if (promoRenderQueued) return;
-    promoRenderQueued = true;
-
-    const run = () => {
-        promoRenderQueued = false;
-        renderPromoCarousel();
-    };
-
-    if (typeof window.requestIdleCallback === 'function') {
-        window.requestIdleCallback(() => run(), { timeout: 1200 });
-        return;
-    }
-
-    requestAnimationFrame(() => {
-        setTimeout(run, 120);
     });
 }
 
@@ -1102,83 +1072,6 @@ function openSocialModal() {
     drawer.classList.add('open');
     document.getElementById('sharedOverlay').classList.add('open');
 }
-
-let promoAutoSlideInterval = null;
-
-function renderPromoCarousel() {
-    const container = document.getElementById('promoCarousel');
-    if (!container) return;
-
-    if (promoAutoSlideInterval) clearInterval(promoAutoSlideInterval);
-
-    const promoIds = window.getPromoIds();
-    const promoItems = menu.filter(m => promoIds.includes(m.id));
-
-    if (promoItems.length === 0) {
-        container.innerHTML = `<div class="promo-empty-msg">${t('promo_empty', `${MENU_UI_ICONS.fire} Découvrez nos promos du jour bientôt !`)}</div>`;
-        scheduleMenuMotionRefresh();
-        return;
-    }
-
-    container.innerHTML = promoItems.map(item => {
-        const discountedPrice = window.getItemPrice(item);
-        const serializedId = serializeInlineId(item.id);
-        return `
-            <div class="promo-card-vibrant menu-reveal-observe" onclick="openDishPage(${serializedId})">
-                <span class="promo-tag-glow">${t('promo_offer_badge', 'OFFRE')}</span>
-                <span class="promo-discount-badge">-20%</span>
-                <div class="promo-visual-vibrant" onclick="event.stopPropagation(); openGallery(menu.filter(m => window.getPromoIds().includes(m.id)), menu.filter(m => window.getPromoIds().includes(m.id)).findIndex(p => String(p.id) === ${serializedId}))">
-                    ${imgTag(item, { defer: true })}
-                    <div class="promo-glow-vibrant"></div>
-                </div>
-                <div class="promo-info-vibrant">
-                    <div class="promo-name-vibrant">${window.getLocalizedMenuName(item)}</div>
-                    <div class="promo-price-vibrant">
-                        <span class="price-new">${discountedPrice.toFixed(0)} MAD</span>
-                        <span class="price-old">${item.price.toFixed(0)} MAD</span>
-                    </div>
-                </div>
-                <button class="promo-add-vibrant" onclick="event.stopPropagation();addToCart(${serializedId})">
-                    ${t('promo_add_short', 'AJOUTER')}
-                </button>
-            </div>
-        `;
-    }).join('');
-
-    startPromoAutoSlide(container);
-    observeDeferredMenuImages(container);
-    scheduleMenuMotionRefresh();
-}
-
-function startPromoAutoSlide(container) {
-    if (!container) return;
-
-    if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        container.onmouseenter = null;
-        container.onmouseleave = null;
-        container.ontouchstart = null;
-        container.ontouchend = null;
-        return;
-    }
-
-    let isPaused = false;
-    container.onmouseenter = () => isPaused = true;
-    container.onmouseleave = () => isPaused = false;
-    container.ontouchstart = () => isPaused = true;
-    container.ontouchend = () => isPaused = false;
-
-    promoAutoSlideInterval = setInterval(() => {
-        if (isPaused) return;
-
-        const maxScroll = container.scrollWidth - container.clientWidth;
-        if (container.scrollLeft >= maxScroll - 5) {
-            container.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-            container.scrollBy({ left: 300, behavior: 'smooth' });
-        }
-    }, 2000); // Faster slide (2 seconds)
-}
-
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LANDING & VIEWS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
@@ -1761,11 +1654,3 @@ window.openPublicMediaPreview = openGallery;
 
 window.addEventListener('resize', scheduleMenuFixedLayout);
 window.addEventListener('orientationchange', scheduleMenuFixedLayout);
-
-function scrollPromo(dir) {
-    const container = document.getElementById('promoCarousel');
-    if (!container) return;
-    const scrollAmount = container.clientWidth * 0.8 * dir;
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
-window.scrollPromo = scrollPromo;
