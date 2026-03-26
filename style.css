@@ -7100,12 +7100,24 @@ body:not(.menu-page) .footer-copy {
 
   body:not(.menu-page) .top-bar-inner {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 8px;
   }
 
-  body:not(.menu-page) .status-badge,
+  body:not(.menu-page) .status-badge {
+    display: inline-flex;
+    justify-self: start;
+    padding: 4px 10px;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  body:not(.menu-page) .status-text {
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+  }
+
   body:not(.menu-page) .top-contact {
     display: none;
   }
