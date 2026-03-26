@@ -1533,6 +1533,8 @@ body.menu-page {
 }
 
 .nav-icon-btn {
+  position: relative;
+}
 
 .dish-page {
   position: fixed;
