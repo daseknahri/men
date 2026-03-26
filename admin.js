@@ -575,6 +575,27 @@ function buildCategoryTranslations(baseName) {
     return next;
 }
 
+function getAssignedSuperCategoryIdForCategory(catKey = '') {
+    const safeKey = typeof catKey === 'string' ? catKey.trim() : '';
+    if (!safeKey) return '';
+    const configured = Array.isArray(restaurantConfig.superCategories) ? restaurantConfig.superCategories : [];
+    const match = configured.find((entry) => Array.isArray(entry?.cats) && entry.cats.includes(safeKey));
+    return match?.id || '';
+}
+
+function populateCategorySuperCategoryOptions(selectedId = '') {
+    const select = document.getElementById('catSuperCategory');
+    if (!select) return;
+
+    const configured = Array.isArray(restaurantConfig.superCategories) ? restaurantConfig.superCategories : [];
+    const currentValue = selectedId || select.value || '';
+    const options = ['<option value="">Select a super category</option>']
+        .concat(configured.map((entry) => `<option value="${escapeHtml(entry.id)}">${escapeHtml(entry.name)}</option>`));
+
+    select.innerHTML = options.join('');
+    select.value = currentValue;
+}
+
 function setSuperCategoryTranslationFields(input, fallbackName = '', fallbackDesc = '') {
     const translations = normalizeEntityTranslations(input);
     ['fr', 'en', 'ar'].forEach((lang) => {
@@ -590,6 +611,7 @@ function resetCategoryFormState() {
     if (form) form.reset();
     const editingKeyInput = document.getElementById('catEditingKey');
     if (editingKeyInput) editingKeyInput.value = '';
+    populateCategorySuperCategoryOptions(menuBuilderSelectedSuperCategoryId || '');
     setCategoryTranslationFields();
     updateCategoryImagePreview();
 }
@@ -1826,8 +1848,13 @@ function initForms() {
         const editingKeyInput = document.getElementById('catEditingKey');
         const previousKey = editingKeyInput ? editingKeyInput.value.trim() : '';
         const categoryName = document.getElementById('catName').value.trim();
+        const selectedSuperCategoryId = document.getElementById('catSuperCategory')?.value?.trim() || '';
         if (!categoryName) {
             showToast('Category name is required.');
+            return;
+        }
+        if (!selectedSuperCategoryId) {
+            showToast('Please choose a super category.');
             return;
         }
         const nextEmoji = document.getElementById('catEmoji')?.value
@@ -1854,14 +1881,24 @@ function initForms() {
             menu.forEach((item) => {
                 if (item.cat === previousKey) item.cat = categoryName;
             });
-            (restaurantConfig.superCategories || []).forEach((sc) => {
-                if (Array.isArray(sc.cats)) {
-                    sc.cats = sc.cats.map((cat) => cat === previousKey ? categoryName : cat);
-                }
-            });
             delete catEmojis[previousKey];
             delete categoryTranslations[previousKey];
             delete categoryImages[previousKey];
+        }
+
+        (restaurantConfig.superCategories || []).forEach((sc) => {
+            const currentCats = Array.isArray(sc.cats) ? sc.cats : [];
+            sc.cats = currentCats.filter((cat) => cat !== previousKey && cat !== categoryName);
+        });
+
+        const selectedSuperCategory = (restaurantConfig.superCategories || []).find((sc) => sc.id === selectedSuperCategoryId);
+        if (!selectedSuperCategory) {
+            showToast('Selected super category was not found.');
+            return;
+        }
+        selectedSuperCategory.cats = Array.isArray(selectedSuperCategory.cats) ? selectedSuperCategory.cats : [];
+        if (!selectedSuperCategory.cats.includes(categoryName)) {
+            selectedSuperCategory.cats.push(categoryName);
         }
 
         catEmojis[categoryName] = nextEmoji;
@@ -1871,6 +1908,7 @@ function initForms() {
         categoryTranslations[categoryName] = nextTranslations;
         const saved = await saveAndRefresh();
         if (saved) {
+            menuBuilderSelectedSuperCategoryId = selectedSuperCategoryId;
             resetCategoryFormState();
             closeMenuCrudModal();
             showToast(previousKey ? 'Category updated.' : 'Category added.');
@@ -3570,6 +3608,7 @@ function editCat(cat) {
     if (editingKeyInput) editingKeyInput.value = cat;
     const catNameInput = document.getElementById('catName');
     if (catNameInput) catNameInput.value = cat;
+    populateCategorySuperCategoryOptions(getAssignedSuperCategoryIdForCategory(cat));
     const catImageInput = document.getElementById('catImage');
     if (catImageInput) catImageInput.value = categoryImages?.[cat] || '';
     const catImageUpload = document.getElementById('catImageUpload');
@@ -3577,7 +3616,19 @@ function editCat(cat) {
     setCategoryTranslationFields(cat);
     updateCategoryImagePreview();
 }
-function deleteCat(cat) { if (menu.some(m => m.cat === cat)) return alert('Delete the products in this category first.'); delete catEmojis[cat]; delete categoryTranslations[cat]; delete categoryImages[cat]; window.categoryImages = categoryImages; saveAndRefresh(); }
+function deleteCat(cat) {
+    if (menu.some(m => m.cat === cat)) return alert('Delete the products in this category first.');
+    (restaurantConfig.superCategories || []).forEach((sc) => {
+        if (Array.isArray(sc.cats)) {
+            sc.cats = sc.cats.filter((entry) => entry !== cat);
+        }
+    });
+    delete catEmojis[cat];
+    delete categoryTranslations[cat];
+    delete categoryImages[cat];
+    window.categoryImages = categoryImages;
+    saveAndRefresh();
+}
 function initWifiForm() {
     const fields = {
         'wifiSSID': restaurantConfig.wifi.name,
