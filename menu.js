@@ -266,6 +266,7 @@ async function syncDataFromServer() {
         const currentState = navigationStack[navigationStack.length - 1] || '';
         if (menuMarkupReady && typeof renderMenu === 'function' && !currentState.startsWith('items:')) renderMenu();
         if (typeof renderLandingInfo === 'function') renderLandingInfo();
+        refreshLandingFeatured();
         if (superCatSheetReady && typeof renderSuperCatSheet === 'function') renderSuperCatSheet();
         // If we are in the items view, refresh the list
         if (navigationStack.length > 0) {
@@ -871,6 +872,7 @@ function initMenuApp() {
         : 'fr';
     window.setLang(savedLang);
     renderLandingInfo();
+    refreshLandingFeatured();
     updateCartUI();
     updateHistoryBadge();
     scheduleMenuMotionRefresh();
@@ -1089,7 +1091,7 @@ function showLanding() {
     document.getElementById('menuNavigationView').style.display = 'none';
     document.getElementById('menuNavigationView')?.removeAttribute('data-mode');
     document.querySelector('.mobile-wrapper')?.classList.add('is-landing');
-    scheduleDeferredFeaturedRender(menu.filter(m => m.featured && m.available !== false), 'featuredLanding');
+    refreshLandingFeatured();
     navigationStack = [];
     updateBackBtn();
     scheduleMenuMotionRefresh();
@@ -1106,6 +1108,13 @@ function showMenuNavigationView(title) {
     scheduleMenuMotionRefresh();
     scheduleMenuFixedLayout();
     window.scrollTo({ top: 0, behavior: isCompactMenuViewport() ? 'auto' : 'smooth' });
+}
+
+function refreshLandingFeatured() {
+    scheduleDeferredFeaturedRender(
+        menu.filter((item) => item?.featured && item?.available !== false),
+        'featuredLanding'
+    );
 }
 
 function renderFeaturedSlider(items, containerId) {
