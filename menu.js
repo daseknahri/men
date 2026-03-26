@@ -1129,12 +1129,18 @@ function renderFeaturedSlider(items, containerId) {
         <div class="featured-slider">
             ${items.map(item => `
                 <div class="featured-card menu-reveal-observe" onclick="openDishPage(${serializeInlineId(item.id)})">
+                    <div class="featured-card-glow"></div>
+                    <div class="featured-card-badge">${t('featured_label', 'Signature')}</div>
                     <div class="featured-img-wrap">
                         ${imgTag(item, { defer: true })}
                     </div>
                     <div class="featured-info">
                         <div class="featured-name">${window.getLocalizedMenuName(item)}</div>
-                        <div class="featured-price">${window.getItemPrice(item).toFixed(0)} MAD</div>
+                        <div class="featured-desc">${window.getLocalizedMenuDescription(item, t('dish_default_desc', 'Une préparation soignée avec les meilleurs ingrédients.'))}</div>
+                        <div class="featured-price-row">
+                            <div class="featured-price">${window.getItemPrice(item).toFixed(0)} MAD</div>
+                            <div class="featured-hint">${t('view_menu', 'Voir le Menu')}</div>
+                        </div>
                     </div>
                     <button class="featured-add-btn" onclick="event.stopPropagation();addToCart(${serializeInlineId(item.id)})">+</button>
                 </div>
