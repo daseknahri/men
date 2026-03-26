@@ -842,7 +842,6 @@ function refreshMenuMotionTargets() {
 }
 
 function scheduleMenuMotionRefresh() {
-    if (prefersReducedMenuMotion()) return;
     if (menuMotionRefreshFrame) {
         cancelAnimationFrame(menuMotionRefreshFrame);
     }
