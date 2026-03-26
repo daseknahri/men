@@ -38,6 +38,9 @@
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
                         &#128722; <span id="cartBadgeLanding" class="cart-badge">0</span>
                     </button>
+                    <button class="nav-icon-btn" onclick="openGameModal()" data-i18n-title="game_title" data-i18n-aria-label="game_title" title="Game" aria-label="Game">
+                        &#127918;
+                    </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
                         &#128339; <span id="histBadgeLanding" class="history-badge">0</span>
                     </button>
@@ -66,27 +69,12 @@
                     <span class="dot"></span> <span id="statusText" data-i18n="status_loading">Chargement...</span>
                 </div>
 
-                <!-- Game Banner (Replaces Pills) -->
-                <div class="game-banner menu-reveal-observe" onclick="openGameModal()">
-                    <div class="game-banner-main">
-                        <span class="game-banner-icon">&#127918;</span>
-                        <div>
-                            <div class="gb-text" data-i18n="game_title">Qui paie l'addition ?</div>
-                            <div class="game-banner-note" data-i18n="game_subtitle">Jouez pour passer le temps !
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="game-banner-cta">
-                        <span data-i18n="game_cta">JOUER</span></div>
-                </div>
-
-                <div id="featuredLanding" class="featured-section menu-reveal-observe" style="display:none;"></div>
-
                 <!-- View Menu Button -->
                 <button class="view-menu-btn menu-reveal-observe" onclick="openSuperCatSheet()">
                     <span data-i18n="view_menu">Voir le Menu</span>
                 </button>
+
+                <div id="featuredLanding" class="featured-section menu-reveal-observe" style="display:none;"></div>
 
                 <!-- Info Rows -->
                 <div class="info-section">
@@ -129,6 +117,9 @@
                     <button id="cartNavBtnMenu" class="nav-icon-btn nav-cart-btn" onclick="openDrawer()" style="display:none;"
                         data-i18n-title="confirm_cart_label" data-i18n-aria-label="confirm_cart_label" title="Cart" aria-label="Cart">
                         &#128722; <span id="cartBadgeMenu" class="cart-badge">0</span>
+                    </button>
+                    <button class="nav-icon-btn" onclick="openGameModal()" data-i18n-title="game_title" data-i18n-aria-label="game_title" title="Game" aria-label="Game">
+                        &#127918;
                     </button>
                     <button class="nav-icon-btn" onclick="openHistory()" data-i18n-title="history_button_title" data-i18n-aria-label="history_button_title" title="History" aria-label="History">
                         &#128339; <span id="histBadgeMenu" class="history-badge">0</span>
