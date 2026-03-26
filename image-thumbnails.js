@@ -147,6 +147,16 @@ function parseRequestedThumbnailFile(requestedFile) {
     }
   }
 
+  for (const legacyVariant of ["menu", "list"]) {
+    const legacySuffix = `.${legacyVariant}`;
+    if (withoutWebp.endsWith(legacySuffix)) {
+      return {
+        originalFileName: withoutWebp.slice(0, -legacySuffix.length),
+        variant: legacyVariant
+      };
+    }
+  }
+
   return {
     originalFileName: withoutWebp,
     variant: "default"
