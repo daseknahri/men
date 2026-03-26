@@ -9,6 +9,7 @@ const OUT_DIR = path.join(ROOT, "public-build");
 
 const ASSETS = [
   { input: "style.css", loader: "css" },
+  { input: "menu-shell.css", loader: "css" },
   { input: "menu-page.css", loader: "css" },
   { input: "game.css", loader: "css" },
   { input: "shared-public.js", loader: "js" },
@@ -57,6 +58,7 @@ async function minifyHtmlFile(input, version) {
   const source = await fs.readFile(inputPath, "utf8");
   const versionedSource = source
     .replace(/href="style\.css"/g, `href="${versionedAssetPath("style.css", version)}"`)
+    .replace(/href="menu-shell\.css"/g, `href="${versionedAssetPath("menu-shell.css", version)}"`)
     .replace(/href="menu-page\.css"/g, `href="${versionedAssetPath("menu-page.css", version)}"`)
     .replace(/href="shared-public\.js"/g, `href="${versionedAssetPath("shared-public.js", version)}"`)
     .replace(/href="app\.js"/g, `href="${versionedAssetPath("app.js", version)}"`)
