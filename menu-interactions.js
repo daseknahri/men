@@ -43,6 +43,8 @@
     let galleryItems = [];
     let currentGalleryIdx = 0;
     let interactionDomReady = false;
+    let currentDishImages = [];
+    let currentDishImageIdx = 0;
 
     function buildGalleryEntries(items) {
         return (Array.isArray(items) ? items : []).flatMap((entry) => {
@@ -86,10 +88,12 @@
             <div id="dishPage" class="dish-page">
                 <button class="dish-page-close" onclick="closeDishPage()" aria-label="${t('modal_close', 'Close')}">&times;</button>
                 <div class="dish-page-header">
+                    <button id="dishPagePrev" class="dish-page-media-nav dish-page-media-prev" type="button" onclick="prevDishImage()" aria-label="${t('gallery_prev', 'Previous image')}">&#10094;</button>
                     <img id="dishPageImg" src="" alt="" class="dish-page-img" width="1200" height="900" decoding="async">
+                    <button id="dishPageNext" class="dish-page-media-nav dish-page-media-next" type="button" onclick="nextDishImage()" aria-label="${t('gallery_next', 'Next image')}">&#10095;</button>
+                    <div id="dishPageCount" class="dish-page-media-count"></div>
                 </div>
                 <div class="dish-page-body">
-                    <div id="dishPageThumbs" class="dish-page-thumbs"></div>
                     <h2 id="dishPageName" class="dish-page-name"></h2>
                     <div id="dishPagePrice" class="dish-page-price"></div>
                     <p id="dishPageDesc" class="dish-page-desc"></p>
@@ -158,12 +162,14 @@
 
         const page = document.getElementById('dishPage');
         const imgEl = document.getElementById('dishPageImg');
-        const thumbsEl = document.getElementById('dishPageThumbs');
+        const prevBtn = document.getElementById('dishPagePrev');
+        const nextBtn = document.getElementById('dishPageNext');
+        const countEl = document.getElementById('dishPageCount');
         const nameEl = document.getElementById('dishPageName');
         const priceEl = document.getElementById('dishPagePrice');
         const descEl = document.getElementById('dishPageDesc');
         const addBtn = document.getElementById('dishPageAddBtn');
-        if (!page || !imgEl || !thumbsEl || !nameEl || !priceEl || !descEl || !addBtn) return;
+        if (!page || !imgEl || !prevBtn || !nextBtn || !countEl || !nameEl || !priceEl || !descEl || !addBtn) return;
 
         page.dataset.itemId = String(item.id);
 
@@ -212,36 +218,42 @@
             ? item.images.filter((value) => typeof value === 'string' && value.trim())
             : [];
         const fallbackImg = typeof item.img === 'string' && item.img.trim() ? item.img.trim() : '';
-        const detailImages = itemImages.length ? itemImages : (fallbackImg ? [fallbackImg] : []);
-        const primaryImage = detailImages[0] || '';
+        currentDishImages = itemImages.length ? itemImages : (fallbackImg ? [fallbackImg] : []);
+        currentDishImageIdx = 0;
 
-        if (primaryImage) {
-            window.setSafeImageSource(imgEl, primaryImage, {
+        const syncDishImage = () => {
+            const activeImage = currentDishImages[currentDishImageIdx] || '';
+            if (!activeImage) {
+                imgEl.removeAttribute('src');
+                imgEl.style.display = 'none';
+                imgEl.onclick = null;
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                countEl.style.display = 'none';
+                return;
+            }
+
+            window.setSafeImageSource(imgEl, activeImage, {
                 onMissing: () => {
                     imgEl.removeAttribute('src');
                     imgEl.style.display = 'none';
                 },
                 displayValue: 'block'
             });
-            imgEl.onclick = () => openGallery([item], 0);
+            imgEl.onclick = () => openGallery([item], currentDishImageIdx);
             imgEl.style.cursor = 'zoom-in';
             imgEl.classList.remove('dish-page-img-animate');
             void imgEl.offsetWidth;
             imgEl.classList.add('dish-page-img-animate');
-        } else {
-            imgEl.removeAttribute('src');
-            imgEl.style.display = 'none';
-            imgEl.onclick = null;
-        }
+            const hasMultipleImages = currentDishImages.length > 1;
+            prevBtn.style.display = hasMultipleImages ? 'flex' : 'none';
+            nextBtn.style.display = hasMultipleImages ? 'flex' : 'none';
+            countEl.style.display = hasMultipleImages ? 'inline-flex' : 'none';
+            countEl.textContent = `${currentDishImageIdx + 1} / ${currentDishImages.length}`;
+        };
 
-        thumbsEl.innerHTML = detailImages.length > 1
-            ? detailImages.map((imageSrc, index) => `
-                <button class="dish-thumb ${index === 0 ? 'is-active' : ''}" type="button" onclick="openDishGallery(${serializeInlineId(item.id)}, ${index})" aria-label="${t('lightbox_view', 'Open image')} ${index + 1}">
-                    <img src="${imageSrc.replace(/"/g, '&quot;')}" alt="${(typeof window.getLocalizedMenuName === 'function' ? window.getLocalizedMenuName(item) : (item.name || '')).replace(/"/g, '&quot;')}" width="96" height="96" loading="lazy" decoding="async">
-                </button>
-            `).join('')
-            : '';
-        thumbsEl.style.display = detailImages.length > 1 ? 'flex' : 'none';
+        page.__syncDishImage = syncDishImage;
+        syncDishImage();
 
         nameEl.textContent = window.getLocalizedMenuName(item);
         updateSizePrice();
@@ -274,6 +286,24 @@
         const item = getMenu().find((entry) => sameMenuItemId(entry.id, id));
         if (!item) return;
         openGallery([item], startIndex);
+    }
+
+    function nextDishImage() {
+        const page = document.getElementById('dishPage');
+        if (!page || !currentDishImages.length) return;
+        currentDishImageIdx = (currentDishImageIdx + 1) % currentDishImages.length;
+        if (typeof page.__syncDishImage === 'function') {
+            page.__syncDishImage();
+        }
+    }
+
+    function prevDishImage() {
+        const page = document.getElementById('dishPage');
+        if (!page || !currentDishImages.length) return;
+        currentDishImageIdx = (currentDishImageIdx - 1 + currentDishImages.length) % currentDishImages.length;
+        if (typeof page.__syncDishImage === 'function') {
+            page.__syncDishImage();
+        }
     }
 
     function openGallery(items, startIndex = 0) {
@@ -749,6 +779,8 @@
     window.openDishPage = openDishPage;
     window.closeDishPage = closeDishPage;
     window.openDishGallery = openDishGallery;
+    window.nextDishImage = nextDishImage;
+    window.prevDishImage = prevDishImage;
     window.openGallery = openGallery;
     window.closeGallery = closeGallery;
     window.updateGalleryView = updateGalleryView;
