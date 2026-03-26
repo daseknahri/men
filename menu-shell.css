@@ -1518,6 +1518,38 @@ body.menu-page {
   z-index: 10;
 }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(88px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: min(280px, calc(100vw - 32px));
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(22, 25, 32, 0.98) 0%, rgba(34, 39, 49, 0.98) 100%);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  z-index: 5200;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @keyframes badge-pulse {
   0% {
     transform: scale(1);
