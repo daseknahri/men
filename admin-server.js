@@ -2089,6 +2089,27 @@ function buildMenuItemImagePrompt(input) {
   ].filter(Boolean).join(" ");
 }
 
+function buildCategoryImagePrompt(input) {
+  const categoryName = asImporterString(input?.categoryName);
+  const superCategoryName = asImporterString(input?.superCategoryName);
+  const translations = input?.translations && typeof input.translations === "object" ? input.translations : {};
+  const translatedNames = ["fr", "en", "ar"]
+    .map((lang) => asImporterString(translations?.[lang]?.name))
+    .filter(Boolean)
+    .join(" / ");
+
+  return [
+    "Create a realistic restaurant menu category image for a mobile ordering app.",
+    "Return one single real-looking food or drink photograph, not an illustration, emoji, icon, or poster.",
+    categoryName ? `Primary category: ${categoryName}.` : "",
+    superCategoryName ? `Top-level menu group: ${superCategoryName}.` : "",
+    translatedNames ? `Category names across languages: ${translatedNames}.` : "",
+    "Show a representative plated dish or beverage style for this category only.",
+    "The result should feel premium and appetizing, with believable tableware, natural restaurant lighting, and a composition that works behind category cards.",
+    "Avoid text, labels, logos, watermark, collage, packaging, hands, and visible people."
+  ].filter(Boolean).join(" ");
+}
+
 async function generateMenuItemMediaImage(input) {
   if (!process.env.OPENAI_API_KEY) {
     const error = new Error("openai_not_configured");
@@ -2191,6 +2212,77 @@ async function generateMenuItemMediaImage(input) {
     url,
     prompt,
     libraryAssetId,
+    model: generationResult.model,
+    quality: generationResult.quality
+  };
+}
+
+async function generateCategoryMediaImage(input) {
+  if (!process.env.OPENAI_API_KEY) {
+    const error = new Error("openai_not_configured");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const categoryName = asImporterString(input?.categoryName);
+  if (!categoryName) {
+    const error = new Error("category_name_required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const prompt = buildCategoryImagePrompt(input);
+
+  async function requestCategoryImage(model) {
+    const quality = resolveOpenAiItemMediaQuality(model);
+    const normalizedModel = asImporterString(model).toLowerCase();
+    const body = {
+      model,
+      prompt,
+      size: "1024x1024",
+      quality
+    };
+    if (normalizedModel === "dall-e-3" || normalizedModel === "dall-e-2") {
+      body.response_format = "b64_json";
+    }
+    const response = await fetch(OPENAI_IMAGES_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify(body)
+    });
+    const payload = await response.json().catch(() => ({}));
+    return { response, payload, model, quality };
+  }
+
+  let generationResult = await requestCategoryImage(OPENAI_ITEM_MEDIA_MODEL);
+  if (!generationResult.response.ok) {
+    const initialMessage = generationResult.payload?.error?.message || generationResult.payload?.message || "openai_category_media_request_failed";
+    if (OPENAI_ITEM_MEDIA_MODEL !== "dall-e-3" && isOrgVerificationError(initialMessage)) {
+      generationResult = await requestCategoryImage("dall-e-3");
+    }
+  }
+
+  if (!generationResult.response.ok) {
+    const message = generationResult.payload?.error?.message || generationResult.payload?.message || "openai_category_media_request_failed";
+    const error = new Error(message);
+    error.statusCode = generationResult.response.status || 502;
+    throw error;
+  }
+
+  const base64Image = extractImagesApiBase64(generationResult.payload);
+  if (!base64Image) {
+    const error = new Error("empty_generated_image");
+    error.statusCode = 502;
+    throw error;
+  }
+
+  const url = await saveGeneratedImage(base64Image, "category-generated");
+  return {
+    url,
+    prompt,
     model: generationResult.model,
     quality: generationResult.quality
   };
@@ -3202,6 +3294,20 @@ app.post("/api/media/generate-menu-item", requireAuth, requireAiMediaTools, asyn
     res.status(error.statusCode || 500).json({
       ok: false,
       error: error.message || "menu_item_media_generation_failed"
+    });
+  }
+});
+
+app.post("/api/media/generate-category-image", requireAuth, requireAiMediaTools, async (req, res) => {
+  try {
+    const payload = req.body && typeof req.body === "object" ? req.body : {};
+    const result = await generateCategoryMediaImage(payload);
+    res.json({ ok: true, ...result });
+  } catch (error) {
+    console.error("CATEGORY MEDIA GENERATION ERROR:", error);
+    res.status(error.statusCode || 500).json({
+      ok: false,
+      error: error.message || "category_media_generation_failed"
     });
   }
 });

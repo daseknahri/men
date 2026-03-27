@@ -614,6 +614,7 @@ function resetCategoryFormState() {
     populateCategorySuperCategoryOptions(menuBuilderSelectedSuperCategoryId || '');
     setCategoryTranslationFields();
     updateCategoryImagePreview();
+    syncCategoryImageAiControls();
 }
 
 function normalizeCategoryImagePath(value) {
@@ -3613,6 +3614,7 @@ function editCat(cat) {
     if (catImageUpload) catImageUpload.value = '';
     setCategoryTranslationFields(cat);
     updateCategoryImagePreview();
+    syncCategoryImageAiControls();
 }
 function deleteCat(cat) {
     if (menu.some(m => m.cat === cat)) return alert('Delete the products in this category first.');
@@ -3750,6 +3752,26 @@ async function handleModalImageUpload(input) {
     }
 }
 
+function setCategoryImageProgress(active, text = 'Processing category image...') {
+    const progressEl = document.getElementById('catImageProgress');
+    const progressTextEl = document.getElementById('catImageProgressText');
+    const buttonEl = document.getElementById('catGenerateImageBtn');
+    if (progressEl) progressEl.hidden = !active;
+    if (progressTextEl) progressTextEl.textContent = text;
+    if (buttonEl) {
+        buttonEl.disabled = active || !adminCapabilities.aiMediaToolsEnabled;
+        buttonEl.textContent = active ? 'Generating...' : 'Generate with AI';
+    }
+}
+
+function syncCategoryImageAiControls() {
+    const buttonEl = document.getElementById('catGenerateImageBtn');
+    if (buttonEl) {
+        buttonEl.style.display = adminCapabilities.aiMediaToolsEnabled ? '' : 'none';
+    }
+    setCategoryImageProgress(false);
+}
+
 function addModalImageUrl() {
     const url = document.getElementById('modalImgUrl').value.trim();
     if (!url) return;
@@ -3842,6 +3864,54 @@ window.generateModalImageWithAI = async function () {
         buttonEl.disabled = false;
         buttonEl.textContent = originalLabel;
         setImageModalProgress(false);
+    }
+}
+
+window.generateCategoryImageWithAI = async function () {
+    if (!adminCapabilities.aiMediaToolsEnabled) {
+        showToast('AI image generation is disabled.');
+        return;
+    }
+
+    const categoryName = document.getElementById('catName')?.value?.trim();
+    const selectedSuperCategoryId = document.getElementById('catSuperCategory')?.value?.trim() || '';
+    const selectedSuperCategory = (restaurantConfig.superCategories || []).find((sc) => sc.id === selectedSuperCategoryId);
+    const imageInput = document.getElementById('catImage');
+    if (!categoryName || !imageInput) {
+        showToast('Category name is required before generating an image.');
+        return;
+    }
+
+    setCategoryImageProgress(true, 'Generating category image with AI...');
+    try {
+        const response = await fetch('/api/media/generate-category-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                categoryName,
+                superCategoryName: selectedSuperCategory?.name || '',
+                translations: buildCategoryTranslations(categoryName)
+            })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok || !data.url) {
+            throw new Error(data.error || 'AI category image generation failed.');
+        }
+
+        imageInput.value = data.url;
+        updateCategoryImagePreview();
+        showToast('AI image generated for the category.');
+    } catch (error) {
+        console.error('Category AI image generation error:', error);
+        const message = error?.message === 'openai_not_configured'
+            ? 'Set OPENAI_API_KEY before using AI image generation.'
+            : /verify organization|verified to use the model/i.test(error?.message || '')
+                ? 'Your OpenAI organization is not verified for the configured image model. Use OPENAI_ITEM_MEDIA_MODEL=dall-e-3 or wait for verification to propagate.'
+                : error.message;
+        showToast(`AI image generation failed: ${message}`);
+    } finally {
+        setCategoryImageProgress(false);
     }
 }
 
