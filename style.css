@@ -7901,6 +7901,11 @@ html[dir="rtl"] body:not(.menu-page) .slide-img {
     max-width: 5.2ch;
   }
 
+  html[dir="rtl"] body:not(.menu-page) .slide-sub {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
   html[dir="rtl"] body:not(.menu-page) .slide-desc {
     max-width: 22ch;
     margin-left: auto;
@@ -7908,7 +7913,7 @@ html[dir="rtl"] body:not(.menu-page) .slide-img {
   }
 
   html[dir="rtl"] body:not(.menu-page) .slide-cta {
-    align-self: flex-start;
+    align-self: flex-end;
   }
 
   html[dir="rtl"] body:not(.menu-page) .slide-img {
